@@ -234,8 +234,8 @@ var NAV = (function () {
     if (window.maplibregl) return Promise.resolve();
     if (libP) return libP;
     libP = new Promise(function (res, rej) {
-      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'lib/maplibre-gl.css'; document.head.appendChild(l);
-      var s = document.createElement('script'); s.src = 'lib/maplibre-gl.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = (window.DEWS_BASE || '') + 'lib/maplibre-gl.css'; document.head.appendChild(l);
+      var s = document.createElement('script'); s.src = (window.DEWS_BASE || '') + 'lib/maplibre-gl.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
     });
     return libP;
   }

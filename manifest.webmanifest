@@ -2,7 +2,7 @@
   "name": "DEWS — Disaster readiness",
   "short_name": "DEWS",
   "description": "Disaster readiness in English and 中文. Works offline.",
-  "start_url": "./",
+  "start_url": "./mobile/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F3F1EC",

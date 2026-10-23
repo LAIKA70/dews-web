@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DEWS — 电脑版 Desktop</title>
+<meta name="description" content="DEWS — disaster readiness in English and 中文. Works offline.">
+<meta name="theme-color" content="#F3F1EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1113" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="../app.css">
+</head>
+<body>
+<div id="app"></div>
+<div id="layer"></div>
+<noscript><p style="padding:24px">DEWS needs JavaScript. In a life-threatening emergency, call 000.</p></noscript>
+<script>window.DEWS_BASE = '../'; window.DEWS_LAYOUT = 'desktop';</script>
+<script src="../content.js"></script>
+<script src="../nav.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>

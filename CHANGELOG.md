@@ -2,6 +2,13 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.4.0 — 2026-10-23 · Desktop version and a start page
+
+- **Start page** at `laika70.github.io/dews-web/`: choose **手机版 Mobile** or **电脑版 Desktop**. It recommends the one that fits your device.
+- **Mobile version** is now at `/mobile/`. The installed app opens here.
+- **Desktop version** at `/desktop/`: a sidebar instead of bottom tabs, and two columns on wide screens. Big map next to the place list, the emergency compass with a map beside the disaster guides, the kit calculator next to the checklist, and your profile next to settings.
+- Both versions share the same code and content, so a change to one updates both. Each links to the other under Me → About.
+
 ## 2.3.0 — 2026-10-23 · Learn, MVP mode, one consistent look
 
 - **Learn about disasters** (new, MVP 2): for bushfire, flood, storm, heatwave and earthquake: what it is, how to prepare now, and the supplies you'll need. Add supplies to your emergency kit with one tap, then pack them off in the kit checklist. Every item comes from an official source (NSW RFS, NSW SES / council, NSW Government, SecureNT, DFES WA).

@@ -536,3 +536,6 @@ var STR23 = {
 };
 for (var k23 in STR23) STR[k23] = STR23[k23];
 DEWS_VERSION = '2.3.0';
+STR.desktopLabel = ['Desktop', '电脑版']; STR.mobileLabel = ['Mobile', '手机版'];
+STR.mobileLink = ['Mobile version', '手机版']; STR.desktopLink = ['Desktop version', '电脑版'];
+DEWS_VERSION = '2.4.0';

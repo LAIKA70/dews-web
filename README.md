@@ -4,7 +4,7 @@ DEWS is a disaster-readiness guide in English and 中文. It's built for people
 in Australia who may not read English warnings easily, starting with
 international students. It is survival-first and offline-first.
 
-**[Open DEWS →](https://laika70.github.io/dews-web/)** · [Version 1](https://laika70.github.io/dews-web/v1/) · [What changed](CHANGELOG.md)
+**[Start page](https://laika70.github.io/dews-web/)** · **[手机版 Mobile](https://laika70.github.io/dews-web/mobile/)** · **[电脑版 Desktop](https://laika70.github.io/dews-web/desktop/)** · [Version 1](https://laika70.github.io/dews-web/v1/) · [What changed](CHANGELOG.md) · [Design decisions](DESIGN-DECISIONS.md)
 
 ## What it does
 
@@ -20,8 +20,12 @@ Warnings, places and the help-request agency are **sample data** in this version
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The app: layout, styles and logic |
+| `index.html` | Start page: choose mobile or desktop |
+| `mobile/`, `desktop/` | The two versions (small shells that load the shared files) |
+| `app.js`, `app.css` | The app's logic and styles, shared by both versions |
+| `nav.js` | Location, compass, nearby places, walking route, map |
 | `content.js` | All text, safety steps and sources (English + 中文) |
+| `lib/` | MapLibre GL JS (BSD-3), bundled so the map works offline |
 | `sw.js` | Makes the app work offline. Bump `CACHE` when you change any file. |
 | `manifest.webmanifest`, `icon*` | Lets people add DEWS to their home screen |
 | `v1/` | The original version |

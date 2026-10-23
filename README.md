@@ -1,25 +1,35 @@
-# DEWS — web demo
+# DEWS — web (v2)
 
-A browser-based demo of DEWS, a conceptual disaster-preparedness dashboard
-designed "for all humanity," with a focus on underserved, low-resource regions.
+DEWS is a disaster-readiness guide in English and 中文. It's built for people
+in Australia who may not read English warnings easily, starting with
+international students. It is survival-first and offline-first.
 
-## Live demo
+**[Open DEWS →](https://laika70.github.io/dews-web/)** · [Version 1](https://laika70.github.io/dews-web/v1/) · [What changed](CHANGELOG.md)
 
-**[Open the live demo →](https://laika70.github.io/dews-web/)**
+## What it does
 
-Works on any phone or desktop browser. No install required.
+- **Emergency mode**: call 000, tell family you're safe, request help, step-by-step guides for bushfire, flood, storm, heatwave and earthquake, and tools (torch, SOS light, whistle, help card).
+- **Check-in**: when a warning covers your area, DEWS asks whether you're affected and whether you need help.
+- **Prepare**: an emergency kit calculator, a household / share-house plan, and scenario practice.
+- **Nearby**: shelters, hospitals, water and charging points, with distance and direction.
+- **Me**: an emergency card in English for responders, plus language, text size and theme settings.
 
-## About
+Warnings, places and the help-request agency are **sample data** in this version.
 
-DEWS is built survival-first and offline-first. This web version demonstrates
-the Layer 1 concept: tools that work with no signal and no setup.
+## Files
 
-- **Stay ready** — survival tips and a personal readiness checklist
-- **Emergency** — large-button guidance for earthquake, flood, and wildfire
-- **Nearby help** — offline-style list of shelters, water, and hospitals
-- **Bilingual** — English / 中文
+| File | What it is |
+| --- | --- |
+| `index.html` | The app: layout, styles and logic |
+| `content.js` | All text, safety steps and sources (English + 中文) |
+| `sw.js` | Makes the app work offline. Bump `CACHE` when you change any file. |
+| `manifest.webmanifest`, `icon*` | Lets people add DEWS to their home screen |
+| `v1/` | The original version |
 
-The real product is a native iOS app (SwiftUI), kept in a separate repository.
-This web demo exists so the concept can be opened instantly by anyone with a link.
+## Rules for content
 
-All data is stored locally in the browser. No server, no tracking.
+Every safety instruction must come from an official source listed in
+`content.js` → `SOURCES`. Don't add advice without one.
+
+All data stays in the browser. No server, no tracking.
+DEWS is a guide. It does not replace official warnings or 000.

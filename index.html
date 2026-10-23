@@ -44,7 +44,7 @@
     color-scheme:dark;
   }
 }
-:root[data-theme="dark"], body.em{
+:root[data-theme="dark"]{
   --bg:#0F1113; --surface:#181B1E; --surface-2:#22262A; --line:#30353A;
   --ink:#F1EFEA; --ink-2:#BEC2C7; --ink-3:#959AA0;
   --primary:#F1EFEA; --on-primary:#0F1113;
@@ -54,20 +54,17 @@
   --glass:rgba(30,33,37,.74); --glass-line:rgba(255,255,255,.12); --glass-edge:rgba(0,0,0,.4); --glass-hi:rgba(255,255,255,.10); --glass-shadow:0 10px 30px rgba(0,0,0,.45);
   color-scheme:dark;
 }
-body.em{ --bg:#0A0B0C; }
+body.em::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;background:var(--red);z-index:60}
 /* ===== trial palettes (A Eucalypt, B Harbour, C Okabe–Ito) ===== */
 :root[data-palette="a"]{--bg:#F5F3EE; --surface:#FFFFFF; --surface-2:#EAE7E0; --line:#D9D4CA; --ink:#1F2A27; --ink-2:#4A5652; --ink-3:#5D6763; --primary:#2E5E4E; --on-primary:#FFFFFF; --red:#B4432F; --red-text:#9E3826; --red-soft:#F6E3DE; --orange:#E58A3A; --orange-text:#94501A; --yellow:#F2CB57; --green:#2F7A55; --green-text:#276848; --green-soft:#DFEEE5; --blue:#2F6690; --focus:#2F6690;}
 @media (prefers-color-scheme: dark){:root[data-palette="a"]:not([data-theme="light"]){--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}}
 :root[data-palette="a"][data-theme="dark"]{--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}
-:root[data-palette="a"] body.em{--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4; --bg:#0C100E;}
 :root[data-palette="b"]{--bg:#F3F5F7; --surface:#FFFFFF; --surface-2:#E6EAEE; --line:#D3D9DF; --ink:#17212B; --ink-2:#45515D; --ink-3:#5D6975; --primary:#1F4E79; --on-primary:#FFFFFF; --red:#BC463C; --red-text:#A23A31; --red-soft:#F7E2DF; --orange:#EC8B3B; --orange-text:#985017; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#186A5F; --green-soft:#DCEFEC; --blue:#1F5FAD; --focus:#1F5FAD;}
 @media (prefers-color-scheme: dark){:root[data-palette="b"]:not([data-theme="light"]){--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}}
 :root[data-palette="b"][data-theme="dark"]{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}
-:root[data-palette="b"] body.em{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0; --bg:#0A0F14;}
 :root[data-palette="c"]{--bg:#F7F7F5; --surface:#FFFFFF; --surface-2:#ECECE8; --line:#D8D8D2; --ink:#1A1A1A; --ink-2:#4A4A4A; --ink-3:#646464; --primary:#0068A3; --on-primary:#FFFFFF; --red:#B34A00; --red-text:#A04200; --red-soft:#F8E5D8; --orange:#E69F00; --orange-text:#8A5F00; --yellow:#F0E442; --green:#007A5E; --green-text:#006B52; --green-soft:#D9F0E8; --blue:#0068A3; --focus:#0068A3;}
 @media (prefers-color-scheme: dark){:root[data-palette="c"]:not([data-theme="light"]){--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}}
 :root[data-palette="c"][data-theme="dark"]{--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}
-:root[data-palette="c"] body.em{--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9; --bg:#0B0B0B;}
 :root[data-size="lg"]{ font-size:118.75%; }
 :root[data-size="xl"]{ font-size:137.5%; }
 
@@ -397,7 +394,18 @@ textarea.input{min-height:96px;resize:vertical}
     border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 0 0 1px var(--glass-edge),var(--glass-shadow)}
   :root:not([data-glass="off"]) .top{background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%)}
 }
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  :root:not([data-glass="off"]) body{background:transparent}
+  :root:not([data-glass="off"]) body::after{content:"";position:fixed;inset:-15%;z-index:-1;pointer-events:none;
+    background:radial-gradient(38% 30% at 12% 8%,color-mix(in srgb,var(--green) 18%,transparent),transparent 70%),
+      radial-gradient(42% 34% at 92% 28%,color-mix(in srgb,var(--blue) 14%,transparent),transparent 70%),
+      radial-gradient(50% 36% at 30% 92%,color-mix(in srgb,var(--yellow) 16%,transparent),transparent 70%)}
+  :root:not([data-glass="off"]) .card,:root:not([data-glass="off"]) .prep-card,:root:not([data-glass="off"]) .link-row,:root:not([data-glass="off"]) .num,:root:not([data-glass="off"]) .alert.none,:root:not([data-glass="off"]) .guide,:root:not([data-glass="off"]) .hz,:root:not([data-glass="off"]) .tool,:root:not([data-glass="off"]) .idcard,:root:not([data-glass="off"]) .fork-o,:root:not([data-glass="off"]) .eta,:root:not([data-glass="off"]) .lang-pick button,:root:not([data-glass="off"]) .ob-art{background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-color:var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 0 0 1px var(--glass-edge),0 4px 18px rgba(0,0,0,.06)}
+}
 @media (prefers-reduced-transparency: reduce){
+  :root body::after{display:none}
+  :root body{background:var(--bg)!important}
+  :root .card,:root .prep-card,:root .link-row,:root .num,:root .alert.none,:root .guide,:root .hz,:root .tool,:root .idcard,:root .fork-o,:root .eta,:root .lang-pick button,:root .ob-art{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
   :root .glass,:root .tabs,:root .sheet{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
   :root .top{background:var(--bg)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 }
@@ -580,7 +588,12 @@ function kitItems(){
   var items = KIT.items.slice();
   if (S.kit.baby) items.push(KIT.baby);
   if (S.kit.pet) items.push(KIT.pet);
-  return items;
+  return items.concat(kitExtras());
+}
+function kitExtras(){
+  var ex = S.kit.extra || {}, out = [];
+  Object.keys(LEARN).forEach(function(h){ LEARN[h].supplies.forEach(function(it){ if (ex[it[0]]) out.push(it); }); });
+  return out;
 }
 function kitDone(){ var it = kitItems(), n = 0; it.forEach(function(i){ if (S.kit.have[i[0]]) n++; }); return { n: n, total: it.length }; }
 function planDone(){
@@ -621,16 +634,22 @@ function render(){
     top = normalTop();
     if (p[0] === 'prepare') main = p[1] === 'kit' ? vKit() : p[1] === 'plan' ? vPlan() : p[1] === 'quiz' ? vQuiz() : vPrepare();
     else if (p[0] === 'map') main = vMap();
+    else if (p[0] === 'learn') main = p[1] ? vLearn(p[1]) : vLearnList();
+    else if (S.mvp && !p[0]) main = vKit();
     else if (p[0] === 'me') main = p[1] === 'card' ? vCardEdit() : p[1] === 'sources' ? vSources() : vMe();
     else if (p[0] === 'alert') main = vAlert();
     else main = vHome();
   }
-  var tab = p[0] === 'prepare' ? 'prepare' : p[0] === 'map' ? 'map' : p[0] === 'me' ? 'me' : 'home';
-  var tabs = '<nav class="tabs" aria-label="Main"><div class="tabs-in">' +
+  var tab = p[0] === 'prepare' || (S.mvp && !p[0]) ? 'prepare' : p[0] === 'learn' ? (S.mvp ? 'learn' : 'prepare') : p[0] === 'map' ? 'map' : p[0] === 'me' ? 'me' : 'home';
+  var tabs = '<nav class="tabs" aria-label="Main"><div class="tabs-in">' + (S.mvp ?
+    tabLink('#/prepare/kit', 'bag', t('tabKit'), tab === 'prepare') +
+    tabLink('#/learn', 'quiz', t('tabLearn'), tab === 'learn') +
+    tabLink('#/map', 'arrow', t('tabGo'), tab === 'map') +
+    tabLink('#/me', 'user', t('tabProfile'), tab === 'me') :
     tabLink('#/', 'sun', t('tabHome'), tab === 'home') +
     tabLink('#/prepare', 'shield', t('tabPrep'), tab === 'prepare') +
     tabLink('#/map', 'pin', t('tabMap'), tab === 'map') +
-    tabLink('#/me', 'user', t('tabMe'), tab === 'me') + '</div></nav>';
+    tabLink('#/me', 'user', t('tabMe'), tab === 'me')) + '</div></nav>';
   document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs);
   renderLayer();
   after(p);
@@ -736,24 +755,24 @@ function sosRoute(p){
   return { main: vSos(), back: null };
 }
 function vSos(){
-  var ctx = S.demo.alert ? hz(SAMPLE_ALERT.hazard) : null;
+  var ctx = S.demo.alert && !S.mvp ? hz(SAMPLE_ALERT.hazard) : null;
   var list = HAZARDS.slice();
   if (ctx) list.sort(function(a, b){ return (b.id === ctx.id) - (a.id === ctx.id); });
   return (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[SAMPLE_ALERT.level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(SAMPLE_ALERT.action)) + '</span><span class="chip sample">' + t('sample') + '</span></a>' : '') +
     '<div class="em-actions"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + guideCard() +
-    '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
-    '<a class="emb" href="#/sos/help">' + ic('users', 'lg') + t('emHelp') + '</a></div></div>' +
+    (S.mvp ? '' : '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
+    '<a class="emb" href="#/sos/help">' + ic('users', 'lg') + t('emHelp') + '</a></div>') + '</div>' +
     '<h1 class="em-h">' + t('emTitle') + '</h1>' +
     list.map(function(h){
       var on = ctx && ctx.id === h.id;
       return '<a class="hz' + (on ? ' ctx' : '') + '" href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('sample') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
     }).join('') +
-    '<h2 class="label">' + t('emTools') + '</h2>' +
+    (S.mvp ? '<button class="link-row" style="margin-top:12px;width:100%;text-align:left" data-a="tool" data-t="card"><span class="badge">' + ic('card') + '</span><span class="grow"><span class="t">' + t('showCard') + '</span></span></button>' : '<h2 class="label">' + t('emTools') + '</h2>' +
     '<div class="tools">' +
     '<button class="tool" data-a="tool" data-t="torch">' + ic('torch', 'lg') + t('torch') + '</button>' +
     '<button class="tool" data-a="tool" data-t="flash">' + ic('flash', 'lg') + t('sosFlash') + '</button>' +
     '<button class="tool" data-a="tool" data-t="whistle">' + ic('whistle', 'lg') + t('whistle') + '</button>' +
-    '<button class="tool" data-a="tool" data-t="card">' + ic('card', 'lg') + t('showCard') + '</button></div>';
+    '<button class="tool" data-a="tool" data-t="card">' + ic('card', 'lg') + t('showCard') + '</button></div>');
 }
 function vFork(h){
   return '<div class="hz-head">' + ic(h.icon, 'xl') + '<h1>' + esc(tx(h.name)) + '</h1></div>' +
@@ -821,6 +840,30 @@ function vSent(){
   };
 }
 
+/* ---------- LEARN ---------- */
+function learnCount(id){ var ex = S.kit.extra || {}, L = LEARN[id]; return L.supplies.filter(function(it){ return ex[it[0]]; }).length; }
+function learnDone(){ return HAZARDS.filter(function(h){ return learnCount(h.id) === LEARN[h.id].supplies.length; }).length; }
+function vLearnList(){
+  return '<div class="page-head"><h1>' + t('learnTitle') + '</h1><p class="sub">' + t('learnSub') + '</p></div><div class="stack">' +
+    HAZARDS.map(function(h){
+      var n = learnCount(h.id), tot = LEARN[h.id].supplies.length;
+      return '<a class="link-row" href="#/learn/' + h.id + '"><span class="badge">' + ic(h.icon) + '</span><span class="grow"><span class="t">' + esc(tx(h.name)) + '</span><br><span class="d">' + n + ' / ' + tot + ' ' + t('learnAdded') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>';
+    }).join('') + '</div>';
+}
+function vLearn(id){
+  var h = hz(id), L = LEARN[id]; if (!h || !L) return vLearnList();
+  var ex = S.kit.extra || {}, all = L.supplies.every(function(it){ return ex[it[0]]; });
+  return backTo('#/learn') + '<div class="hz-head">' + ic(h.icon, 'xl') + '<h1>' + esc(tx(h.name)) + '</h1></div>' +
+    '<h2 class="label" style="margin-top:8px">' + t('learnWhat') + '</h2><div class="card"><p>' + esc(tx(L.what)) + '</p></div>' +
+    '<h2 class="label">' + t('learnPrep') + '</h2><div class="card"><ul class="bullets">' + L.prep.map(function(x){ return '<li>' + esc(tx(x)) + '</li>'; }).join('') + '</ul></div>' +
+    '<h2 class="label">' + t('learnSupplies') + '</h2><div class="card" style="padding-top:4px;padding-bottom:4px">' + L.supplies.map(function(it, i){
+      return '<button class="check" style="' + (i === 0 ? 'border-top:0' : '') + '" data-a="learnItem" data-v="' + it[0] + '" aria-pressed="' + !!ex[it[0]] + '"><span class="bx">' + ic('check') + '</span><span class="tx" style="color:var(--ink)">' + esc(li() ? it[2] : it[1]) + '</span></button>';
+    }).join('') + '</div>' +
+    '<button class="btn ' + (all ? 'btn-line' : 'btn-primary') + '" style="margin-top:12px" data-a="learnAll" data-v="' + id + '">' + ic(all ? 'check' : 'bag') + (all ? t('learnAdded') : t('learnAddAll')) + '</button>' +
+    '<a class="link-row" style="margin-top:12px" href="#/sos/h/' + id + '"><span class="badge" style="background:var(--red);color:var(--on-red)">' + ic('alert') + '</span><span class="grow"><span class="t">' + t('learnDuring') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
+    L.src.map(srcLine).join('');
+}
+
 /* ---------- PREPARE ---------- */
 function vPrepare(){
   var k = kitDone(), p = planDone(), q = S.quiz.best;
@@ -830,22 +873,24 @@ function vPrepare(){
   }
   return '<div class="page-head"><h1>' + t('prepTitle') + '</h1><p class="sub">' + t('prepSub') + '</p></div>' +
     pc('#/prepare/kit', 'bag', t('kitTitle'), t('kitSub'), k.n, k.total, k.n + ' / ' + k.total + ' ' + t('kitHave')) +
+    pc('#/learn', 'quiz', t('learnTitle'), t('learnSub'), learnDone(), HAZARDS.length, learnDone() + ' / ' + HAZARDS.length) +
     pc('#/prepare/plan', 'users', t('planTitle'), t('planSub'), p.n, p.total, p.n + ' / ' + p.total) +
     pc('#/prepare/quiz', 'quiz', t('quizTitle'), t('quizSub'), q == null ? 0 : q, QUIZ.length, q == null ? '— / ' + QUIZ.length : q + ' / ' + QUIZ.length);
 }
 function backTo(h){ return '<div class="page-head" style="padding-bottom:0"><a class="iconbtn" href="' + h + '">' + ic('chevL') + t('back') + '</a></div>'; }
 function vKit(){
   var items = kitItems(), water = KIT.waterPerPerson * S.kit.people;
-  return backTo('#/prepare') + '<div class="page-head"><h1>' + t('kitTitle') + '</h1><p class="sub">' + t('kitSub') + '</p></div>' +
+  return (S.mvp ? '' : backTo('#/prepare')) + '<div class="page-head"><h1>' + t('kitTitle') + '</h1><p class="sub">' + t('kitSub') + '</p></div>' +
     '<section class="card"><div class="calc"><span style="font-weight:650">' + t('kitPeople') + '</span>' +
     '<div class="stepper"><button data-a="kitPeople" data-d="-1" aria-label="−">' + ic('minus') + '</button><output aria-live="polite">' + S.kit.people + '</output><button data-a="kitPeople" data-d="1" aria-label="+">' + ic('plus') + '</button></div></div>' +
     '<button class="toggle" data-a="kitToggle" data-v="baby" aria-pressed="' + S.kit.baby + '"><span class="grow">' + t('kitBaby') + '</span><span class="sw"></span></button>' +
     '<button class="toggle" data-a="kitToggle" data-v="pet" aria-pressed="' + S.kit.pet + '"><span class="grow">' + t('kitPet') + '</span><span class="sw"></span></button>' +
     '<div class="water"><b>' + water + '</b><span style="font-weight:650">' + t('kitLitres') + '</span><span class="small" style="width:100%">' + t('kitWater') + ' · ' + KIT.waterPerPerson + ' L × ' + S.kit.people + '</span></div></section>' +
-    '<section style="margin-top:16px">' + items.map(function(i){
-      var on = !!S.kit.have[i[0]];
-      return '<button class="check" data-a="kitItem" data-v="' + i[0] + '" aria-pressed="' + on + '"><span class="bx">' + ic('check') + '</span><span class="tx">' + esc(li() ? i[2] : i[1]) + '</span>' + (i[0] === 'water' ? '<span class="qty">' + water + ' L</span>' : '') + '</button>';
-    }).join('') + '</section>' + srcLine('kit');
+    '<section style="margin-top:16px">' + items.map(function(i, n){
+      var on = !!S.kit.have[i[0]], firstEx = kitExtras().length && i === kitExtras()[0] || (kitExtras()[0] && i[0] === kitExtras()[0][0]);
+      return (firstEx ? '<h2 class="label">' + t('kitExtra') + '</h2>' : '') + '<button class="check" data-a="kitItem" data-v="' + i[0] + '" aria-pressed="' + on + '"><span class="bx">' + ic('check') + '</span><span class="tx">' + esc(li() ? i[2] : i[1]) + '</span>' + (i[0] === 'water' ? '<span class="qty">' + water + ' L</span>' : '') + '</button>';
+    }).join('') + '</section>' + srcLine('kit') +
+    (S.mvp ? '' : '') + '<a class="link-row" style="margin-top:16px" href="#/learn"><span class="badge">' + ic('quiz') + '</span><span class="grow"><span class="t">' + t('learnTitle') + '</span><br><span class="d">' + t('learnSub') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>';
 }
 function vPlan(){
   var p = S.plan;
@@ -993,7 +1038,9 @@ function vMe(){
     '<h2 class="label" style="margin-top:0">' + t('profileTitle') + '</h2><a class="idcard" href="#/me/card" style="display:block"><div class="idcard-h">' + ic('card') + 'EMERGENCY CARD<span class="sp" style="flex:1"></span>' + t('cardEdit') + '</div>' +
     '<div class="idcard-b">' + (c.name || kv ? '<div class="nm">' + esc(c.name || '—') + '</div><dl class="kv">' + kv + '</dl>' : '<p class="small">' + t('cardEmpty') + '</p>') + '</div></a>' +
     '<p class="small" style="margin-top:8px">' + t('cardSub') + ' ' + t('cardPrivacy') + '</p>' +
+    '<p class="small" style="margin-top:4px">' + t('emCardWho') + '</p>' +
     '<h2 class="label">' + t('settings') + '</h2><section class="card">' +
+    '<button class="toggle" data-a="mvpToggle" aria-pressed="' + !!S.mvp + '" style="margin-bottom:8px"><span class="grow"><b>' + t('mvp') + '</b><br><span class="small">' + t('mvpSub') + '</span></span><span class="sw"></span></button>' +
     '<div class="set" style="margin-top:0"><span>' + t('language') + '</span>' + segc('lang', [['en', 'English'], ['zh', '中文']]) + '</div>' +
     '<div class="set"><span>' + t('textSize') + '</span>' + segc('size', [['std', t('sizeStd')], ['lg', t('sizeLg')], ['xl', t('sizeXl')]]) + '</div>' +
     '<div class="set"><span>' + t('theme') + '</span>' + segc('theme', [['auto', t('themeAuto')], ['light', t('themeLight')], ['dark', t('themeDark')]]) + '</div>' +
@@ -1010,7 +1057,8 @@ function vCardEdit(){
   function f(k, label, ph, type){ return '<label class="field"><span>' + label + '</span><input class="input" ' + (type ? 'type="' + type + '" ' : '') + 'data-bind="card.' + k + '" value="' + esc(c[k] || '') + '" placeholder="' + esc(ph || '') + '"></label>'; }
   var gname = { mobility: 'gMobility', senses: 'gSenses', support: 'gSupport', health: 'gHealth' };
   return backTo('#/me') + '<div class="page-head"><h1>' + t('profileTitle') + '</h1><p class="sub">' + t('profileSub') + '</p></div>' +
-    '<div class="callout">' + ic('shield') + '<span>' + t('cardPrivacy') + '</span></div>' +
+    '<div class="callout">' + ic('shield') + '<span>' + t('cardPrivacy') + ' ' + t('emCardWho') + '</span></div>' +
+    '<div class="callout" style="margin-top:8px">' + ic('phone') + '<span>' + t('emCardNote') + '</span></div>' +
     '<h2 class="label">' + t('secBasic') + '</h2><section class="card" style="padding-top:0">' +
     f('name', t('fName'), 'Wei Zhang') + f('lang', t('fLang'), 'Mandarin Chinese') + f('address', t('fAddress')) + '</section>' +
     '<h2 class="label">' + t('secNeeds') + '</h2><section class="card"><p class="small">' + t('needsHint') + '</p>' +
@@ -1152,6 +1200,9 @@ var A = {
   recenter: function(){ NAV.recenter(); },
   follow: function(){ NAV.setFollow(!NAV.state.follow); },
   pickPlace: function(el){ NAV.setTarget(el.dataset.id); },
+  learnItem: function(el){ if (!S.kit.extra) S.kit.extra = {}; S.kit.extra[el.dataset.v] = !S.kit.extra[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
+  learnAll: function(el){ if (!S.kit.extra) S.kit.extra = {}; var L = LEARN[el.dataset.v], all = L.supplies.every(function(it){ return S.kit.extra[it[0]]; }); L.supplies.forEach(function(it){ S.kit.extra[it[0]] = !all; }); save(); var y = window.scrollY; render(); window.scrollTo(0, y); if (!all) toast(t('learnAdded')); },
+  mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ S.demo.alert = true; S.demo.answered = false; CI = null; save(); location.hash = '#/'; render(); },
   demoToggle: function(){ S.demo.alert = !S.demo.alert; S.demo.answered = false; save(); render(); },
@@ -1225,7 +1276,7 @@ function after(p){
   var m = document.getElementById('main'); if (m && p[0] === 'sos' && p[3]) { var n = m.querySelector('.now'); if (n) n.setAttribute('tabindex', '-1'); }
   if (S.lang && usesNav(p)) NAV.auto();
   var slot = document.getElementById('mapSlot');
-  if (slot && NAV.mapState() !== 'failed') NAV.mount(slot, { dark: document.body.classList.contains('em') || isDark() });
+  if (slot && NAV.mapState() !== 'failed') NAV.mount(slot, { dark: isDark() });
   updateLive();
 }
 var navRendering = false;

@@ -1,7 +1,7 @@
 /* DEWS service worker — keeps the app working with no signal.
  * App files: network first (so updates show at once), cache when offline.
  * Map tiles: cache first, so places you've viewed work offline. */
-var CACHE = 'dews-v2.2.0';
+var CACHE = 'dews-v2.3.0';
 var TILES = 'dews-tiles';
 var TILE_MAX = 600;
 var FILES = ['./', './index.html', './content.js', './nav.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png',

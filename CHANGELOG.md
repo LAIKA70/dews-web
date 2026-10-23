@@ -2,6 +2,14 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.3.0 — 2026-10-23 · Learn, MVP mode, one consistent look
+
+- **Learn about disasters** (new, MVP 2): for bushfire, flood, storm, heatwave and earthquake: what it is, how to prepare now, and the supplies you'll need. Add supplies to your emergency kit with one tap, then pack them off in the kit checklist. Every item comes from an official source (NSW RFS, NSW SES / council, NSW Government, SecureNT, DFES WA).
+- **MVP mode** (Me → MVP mode): shows only the 4 core features, Kit · Learn · Directions · Profile. In emergency mode it keeps Call 000, the live compass, the disaster guides and the "Show to others" card.
+- **One consistent look**: emergency mode no longer switches to a dark screen. It follows your appearance setting and shows a red line across the top instead.
+- **Frosted glass** now covers the cards too, over a soft, low-saturation background. It turns off with Me → Glass effect, or automatically if your phone is set to reduce transparency.
+- The profile explains who the emergency card is for, and suggests also filling in your phone's built-in Medical ID, which works from the lock screen.
+
 ## 2.2.0 — 2026-10-23 · Personal profile and colour trial
 
 - **Personal profile** (Me → My profile), in sections: About you, Access and mobility, Health, Emergency contact. New: uses a wheelchair, uses crutches/cane/walker, cannot use stairs, cannot walk far or fast, blind/low vision, deaf/hard of hearing, needs powered medical equipment, assistance animal, needs simple instructions, carries an EpiPen, pregnant, plus a free-text disability field.

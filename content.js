@@ -372,7 +372,7 @@ var STR21 = {
   guideEnableSub: ['DEWS will point you to the nearest safe place.', 'DEWS 会直接指向最近的安全点。'],
   guideLocating: ['Finding your location…', '正在定位…'],
   guideDenied: ['Location is off. Turn it on in your phone settings to get directions.', '定位已关闭。请在手机设置里打开，才能指路。'],
-  compassTap: ['Tap to turn on the compass', '点一下开启指南针'],
+  compassTap: ['Turn on compass', '开启指南针'],
   compassNone: ['No compass on this device — the arrow points north-up.', '这台设备没有指南针，箭头以正北为上。'],
   viaRoute: ['along the walking route', '沿步行路线'],
   straight: ['straight line — follow roads and paths', '直线方向，请沿道路走'],
@@ -434,3 +434,105 @@ var STR22 = {
 for (var k22 in STR22) STR[k22] = STR22[k22];
 STR.palette = ['Colour palette (trial)', '配色方案（试用）'];
 STR.palA = ['Eucalypt', '桉叶']; STR.palB = ['Harbour', '港湾']; STR.palC = ['Clear', '通用']; STR.palInk = ['v2.0', '原版'];
+
+/* v2.3 — learn about each hazard (MVP 2). Every item is from the source named in `src`. Checked 2026-10-23. */
+SOURCES.fireWear = { t: 'NSW RFS — What to wear', u: 'https://www.rfs.nsw.gov.au/plan-and-prepare/prepare-your-family/what-to-wear' };
+SOURCES.floodPrep = { t: 'Wingecarribee Shire Council (with NSW SES) — Floods', u: 'https://www.wsc.nsw.gov.au/Residents/Emergency-Information/Floods-and-Storms/Floods' };
+SOURCES.stormPrep = { t: 'NSW Government — Prepare your home for storms', u: 'https://www.nsw.gov.au/emergency/storms/prepare-your-home' };
+SOURCES.quakePrep = { t: 'DFES WA — Prepare for an earthquake', u: 'https://www.dfes.wa.gov.au/hazard-information/earthquake/prepare' };
+
+var LEARN = {
+  fire: {
+    what: ['Fire in bush, grass or forest. Wind can push it fast, and embers can start new fires ahead of the main fire.', '发生在灌木、草地或森林里的火。风会让它迅速蔓延，飞溅的火星还会在主火线前方引燃新的火。'],
+    prep: [
+      ['Decide now what your household will do if a fire starts. On some days staying won’t be an option.', '现在就决定起火时全家怎么做。有些日子根本不能留下。'],
+      ['Set your leave trigger in advance, e.g. a fire within a set distance.', '提前定好撤离条件，例如火在多远范围内就走。'],
+      ['Know more than one route out — roads can close at short notice.', '准备不止一条离开的路线，道路可能很快封闭。']
+    ],
+    supplies: [
+      ['f-clothes', 'Long-sleeved shirt and heavy cotton pants (wool, cotton drill or denim — not synthetic)', '长袖上衣和厚棉长裤（羊毛、棉斜纹布或牛仔布，不要合成纤维）'],
+      ['f-boots', 'Sturdy leather boots or shoes, with wool or cotton socks', '结实的皮靴或皮鞋，配羊毛或棉袜'],
+      ['f-hat', 'Wide-brimmed or hard hat', '宽檐帽或安全帽'],
+      ['f-goggles', 'Glasses or goggles', '眼镜或护目镜'],
+      ['f-gloves', 'Gloves', '手套'],
+      ['f-mask', 'Non-synthetic mask or cloth for nose and mouth', '非合成材质的口罩或布，用来捂住口鼻']
+    ],
+    src: ['fire', 'fireWear']
+  },
+  flood: {
+    what: ['Water covering land that is usually dry. Flash floods can rise within minutes, even where it hasn’t flooded before.', '平时干燥的地方被水淹没。山洪可能几分钟内暴涨，以前没淹过的地方也可能发生。'],
+    prep: [
+      ['Know your risk: near a creek, river, drain or low-lying area?', '了解风险：你住在小溪、河流、排水沟附近或低洼地吗？'],
+      ['Set watch zones in the Hazards Near Me app.', '在 Hazards Near Me 应用里设置关注区域。'],
+      ['Plan to leave low-lying areas early, before flooding — only if it’s safe.', '计划在洪水来之前尽早离开低洼地，前提是安全。'],
+      ['Check on neighbours who may need extra help.', '关心可能需要额外帮助的邻居。']
+    ],
+    supplies: [
+      ['w-container', 'Waterproof container for your emergency kit', '装应急包的防水容器'],
+      ['w-bag', 'Waterproof bag for valuables and documents', '装贵重物品和证件的防水袋'],
+      ['w-matches', 'Candles and waterproof matches', '蜡烛和防水火柴'],
+      ['w-plan', 'Copy of your household emergency plan', '一份家庭应急计划的副本']
+    ],
+    src: ['floodPrep', 'flood']
+  },
+  storm: {
+    what: ['Strong wind, heavy rain, hail or lightning. Storms bring down trees and power lines and can cause flash flooding.', '强风、暴雨、冰雹或雷电。风暴会吹倒树木和电线，还可能引发山洪。'],
+    prep: [
+      ['Choose your shelter room — usually the smallest room with the fewest windows.', '选好避险房间，通常是窗户最少的最小房间。'],
+      ['Learn where to turn off water, power and gas.', '知道水、电、燃气的总开关在哪。'],
+      ['Secure outdoor items like furniture.', '固定好户外物品，比如家具。'],
+      ['Renting? Report roof or gutter problems to your property manager in writing.', '租房？屋顶或排水槽有问题，书面告知房屋中介。']
+    ],
+    supplies: [
+      ['s-batteries', 'Tested spare batteries', '测试过的备用电池'],
+      ['s-surge', 'Surge protectors for devices', '电器用的防浪涌插座']
+    ],
+    src: ['stormPrep', 'storm']
+  },
+  heat: {
+    what: ['Several days of unusually high temperatures. Heat can make anyone sick, and can be life-threatening.', '连续几天异常高温。高温会让任何人生病，严重时会危及生命。'],
+    prep: [
+      ['Close curtains or blinds on sunny sides of your home; open windows at night.', '关上向阳一侧的窗帘或百叶窗，晚上开窗。'],
+      ['Avoid hard physical activity in the heat.', '高温时避免剧烈活动。'],
+      ['Limit alcohol, hot drinks and sugary drinks.', '少喝酒、热饮和含糖饮料。'],
+      ['See a doctor if you have a long-term illness or feel unwell.', '有慢性病或感到不适时去看医生。']
+    ],
+    supplies: [
+      ['h-water', 'Water — at least 3 litres per person per day', '饮用水：每人每天至少 3 升'],
+      ['h-clothes', 'Light, loose, light-coloured clothes and a wide-brimmed hat', '轻薄、宽松、浅色的衣服和宽檐帽'],
+      ['h-sunscreen', 'Sunscreen SPF30 or higher', 'SPF30 以上的防晒霜'],
+      ['h-fan', 'Fan and damp towels if you have no air-conditioning', '没有空调时准备风扇和湿毛巾']
+    ],
+    src: ['heat']
+  },
+  quake: {
+    what: ['Sudden shaking of the ground. Earthquakes are less common in Australia, but they do happen, with no warning.', '地面突然震动。澳洲地震较少，但确实会发生，而且没有预警。'],
+    prep: [
+      ['Find safe “Drop, Cover and Hold On” spots at home.', '在家里找好可以“趴下、掩护、抓牢”的安全位置。'],
+      ['Secure tall or heavy furniture — shelves, bookcases, fridges.', '固定高大或沉重的家具，比如架子、书柜、冰箱。'],
+      ['Keep heavy or fragile things on low shelves (under 1.5 m).', '把重的或易碎的东西放在低处（1.5 米以下）。'],
+      ['Decide who turns off power, gas and water — and how.', '决定由谁关电、燃气和水，以及怎么关。']
+    ],
+    supplies: [
+      ['q-protect', 'Sturdy shoes, gloves, goggles and a mask', '结实的鞋、手套、护目镜和口罩'],
+      ['q-torch', 'Waterproof or wind-up torch', '防水或手摇手电筒'],
+      ['q-whistle', 'Whistle to signal for help', '求救用的哨子'],
+      ['q-docs', 'Copies of passport, ID and insurance in a waterproof carrier', '护照、证件和保险的复印件，放进防水袋']
+    ],
+    src: ['quakePrep', 'quake']
+  }
+};
+var STR23 = {
+  learnTitle: ['Learn about disasters', '了解灾害'],
+  learnSub: ['What each disaster is, how to prepare, and what to add to your kit.', '每种灾害是什么、怎么提前准备、应急包里要加什么。'],
+  learnWhat: ['What it is', '这是什么'], learnPrep: ['Prepare now', '提前准备'], learnSupplies: ['What you’ll need', '需要的物资'],
+  learnAddAll: ['Add all to my kit', '全部加入我的应急包'], learnAdded: ['In your kit', '已在应急包里'],
+  learnDuring: ['What to do when it happens', '发生时怎么做'],
+  kitExtra: ['Added from Learn', '从“了解灾害”加入的'],
+  tabLearn: ['Learn', '学习'], tabKit: ['Kit', '物资'], tabGo: ['Directions', '指路'], tabProfile: ['Profile', '档案'],
+  mvp: ['MVP mode', 'MVP 模式'], mvpSub: ['Show only the 4 core features: kit, learn, directions, profile.', '只显示 4 个核心功能：物资、学习、指路、档案。'],
+  emCardNote: ['Also fill in your phone’s own Medical ID — responders can open it from the lock screen.', '也请填写手机自带的“医疗急救卡”（Medical ID），救援人员在锁屏上就能打开。'],
+  emCardWho: ['Your emergency card is for paramedics and helpers when you can’t speak for yourself — injured, in shock, or facing a language barrier.', '应急卡给救护人员和帮忙的人看：在你受伤、惊慌或语言不通、无法亲自说明时使用。']
+};
+for (var k23 in STR23) STR[k23] = STR23[k23];
+DEWS_VERSION = '2.3.0';

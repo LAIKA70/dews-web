@@ -3,7 +3,7 @@
  * listed in SOURCES. Do not add guidance without a source. Checked 2026-10-23.
  * Each text is [English, 中文].
  */
-var DEWS_VERSION = '2.0.1';
+var DEWS_VERSION = '2.1.0';
 var CONTENT_CHECKED = '2026-10-23';
 
 var SOURCES = {
@@ -212,8 +212,10 @@ var SAMPLE_PLACES = [
 ];
 
 var PLACE_TYPES = {
-  shelter:  { icon: 'home', name: ['Shelter', '避难'] },
+  assembly: { icon: 'users', name: ['Assembly point', '集合点'] },
+  shelter:  { icon: 'home', name: ['Shelter', '避难所'] },
   hospital: { icon: 'cross', name: ['Hospital', '医院'] },
+  rescue:   { icon: 'shield', name: ['Fire / police', '消防 / 警察'] },
   water:    { icon: 'drop', name: ['Water', '饮水'] },
   power:    { icon: 'bolt', name: ['Power', '充电'] }
 };
@@ -362,3 +364,50 @@ var STR = {
   issued: ['Issued', '发布于'],
   whatToDo: ['What to do', '该怎么做']
 };
+
+/* v2.1 — guidance, map, onboarding */
+var STR21 = {
+  guideTitle: ['Nearest safe place', '最近的安全点'],
+  guideEnable: ['Turn on location and compass', '开启定位和指南针'],
+  guideEnableSub: ['DEWS will point you to the nearest safe place.', 'DEWS 会直接指向最近的安全点。'],
+  guideLocating: ['Finding your location…', '正在定位…'],
+  guideDenied: ['Location is off. Turn it on in your phone settings to get directions.', '定位已关闭。请在手机设置里打开，才能指路。'],
+  compassTap: ['Tap to turn on the compass', '点一下开启指南针'],
+  compassNone: ['No compass on this device — the arrow points north-up.', '这台设备没有指南针，箭头以正北为上。'],
+  viaRoute: ['along the walking route', '沿步行路线'],
+  straight: ['straight line — follow roads and paths', '直线方向，请沿道路走'],
+  minWalk: ['min walk', '分钟步行'],
+  openMap: ['Open map', '打开地图'],
+  goTitle: ['Get to safety', '前往安全点'],
+  nextPlace: ['Next nearest', '换一个'],
+  recenter: ['Show me and the target', '显示我和目的地'],
+  followHeading: ['Rotate map with me', '地图跟随朝向'],
+  srcOsm: ['Places from OpenStreetMap (community data).', '地点来自 OpenStreetMap（社区数据）。'],
+  srcCache: ['Saved places — works offline.', '已保存的地点，离线可用。'],
+  srcSample: ['Sample places — not real.', '示例地点，不是真实地点。'],
+  officialNote: ['Official evacuation centres are announced by emergency services during an event. Follow their instructions first.', '官方疏散中心会在灾害发生时由应急部门公布，请优先听从官方指示。'],
+  hazardWarn: ['Never walk toward fire, smoke or floodwater, even if the arrow points that way.', '即使箭头指向那里，也绝不要朝火、烟或洪水走。'],
+  mapFailed: ['The map can’t load right now — directions still work.', '地图暂时无法加载，方向指引仍可使用。'],
+  arrived: ['You’re there', '已到达'],
+  startGuide: ['Start directions', '开始指路'],
+  mapLoading: ['Loading map…', '正在加载地图…'],
+  away: ['away', ''],
+  dStraight: ['Walk straight ahead', '直走'], dBearR: ['Bear right', '稍向右走'], dRight: ['Turn right', '向右转'], dBackR: ['Turn back, to your right', '向右后方走'],
+  dAround: ['Turn around', '掉头走'], dBackL: ['Turn back, to your left', '向左后方走'], dLeft: ['Turn left', '向左转'], dBearL: ['Bear left', '稍向左走'],
+  dHead: ['Head', '朝'], dHeadSuffix: ['', '方向走'],
+  /* onboarding */
+  obContinue: ['Continue', '继续'], obNext: ['Next', '下一步'], obSkip: ['Skip', '跳过'], obBack: ['Back', '上一步'],
+  ob1T: ['Welcome to DEWS', '欢迎使用 DEWS'],
+  ob1D: ['Get ready before a disaster, and know what to do during one. Once loaded, it works without signal.', '灾害前做好准备，灾害中知道该做什么。加载一次后，没有信号也能用。'],
+  ob2T: ['Emergency', '紧急'],
+  ob2D: ['On any screen, tap the red button: call 000, tell family you’re safe, get step-by-step help and directions to safety.', '任何页面点右上角红色按钮：拨打 000、给家人报平安、看分步指引，并指向安全点。'],
+  ob3T: ['Today', '今天'], ob3D: ['Warnings for your area, and how prepared you are.', '你所在区域的预警，和你的准备进度。'],
+  ob4T: ['Prepare', '准备'], ob4D: ['Work out your emergency kit, make a household plan and practise scenarios.', '算出应急包、写好家庭计划、做情景练习。'],
+  ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, assembly points and drinking water.', '实时地图，找到最近的医院、集合点和饮水点。'],
+  ob6T: ['Me', '我的'], ob6D: ['Your emergency card for responders, plus text size and appearance.', '给救援人员看的应急卡，以及字号和外观设置。'],
+  obPermT: ['Let DEWS guide you', '让 DEWS 为你指路'],
+  obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。'],
+  obAllow: ['Allow location & compass', '允许定位和指南针'], obLater: ['Not now', '以后再说'],
+  glass: ['Glass effect', '玻璃效果'], glassOn: ['On', '开'], glassOff: ['Off (more solid)', '关（更清晰）']
+};
+for (var k21 in STR21) STR[k21] = STR21[k21];

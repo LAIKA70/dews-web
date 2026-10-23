@@ -2,6 +2,19 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.1.0 — 2026-10-23 · Directions to safety
+
+- **First-time guide**: choose your language first, then one short screen for each part of the app (Emergency, Today, Prepare, Nearby, Me), then permission for location and compass. Everything after the first screen is in the language you chose.
+- **Live compass in emergency mode**: the moment you open Emergency, a compass card points to the nearest safe place (assembly point, fire/police station or hospital). It turns as you turn your phone and says what to do: "Walk straight ahead", "Turn right", "Turn around". It shows the distance and walking time.
+- **Live map**: tap the compass card for a full-screen map with your position, which way you're facing, nearby safe places and the walking route. You can pick a different place, re-centre, or rotate the map with you.
+- **Real places**: hospitals, assembly points, fire and police stations and drinking water come from OpenStreetMap. They're saved on your phone, so they still work offline. Sample places are shown only when nothing else is available.
+- **Walking route** when online (OpenStreetMap routing). Offline, the arrow points in a straight line and reminds you to follow roads.
+- **Safety note** on every direction screen: never walk toward fire, smoke or floodwater, even if the arrow points that way. Official evacuation centres are announced by emergency services.
+- **Nearby tab** now uses the live map too.
+- **Glass effect** on the floating layers (tab bar, top bar, sheets, map controls). You can turn it off under Me → Glass effect. It also turns off automatically if your phone is set to reduce transparency.
+- **Updates show straight away**: when you're online the app now loads the newest version first, and uses the saved copy only when offline.
+- Map: OpenFreeMap tiles, MapLibre GL JS (included in the app, so it works offline). Places you've viewed on the map are cached.
+
 ## 2.0.1 — 2026-10-23 · Accessibility
 
 - New **Extra large** text size (Me → Text size), for older users and anyone who wants bigger text. Large is now a little bigger too.

@@ -2,6 +2,13 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.0.1 — 2026-10-23 · Accessibility
+
+- New **Extra large** text size (Me → Text size), for older users and anyone who wants bigger text. Large is now a little bigger too.
+- Screen readers: every screen now has a main heading, the Call 000 bar is labelled, and focus moves to the new content when you change screens. The map radar is hidden from screen readers because the list below gives the same information.
+- Phone numbers no longer break across two lines.
+- Automated accessibility check (axe-core, WCAG 2.2 AA): 0 issues on all 14 screens, light and dark.
+
 ## 2.0.0 — 2026-10-23 · Full redesign
 
 The whole app was redesigned: features, layout and look.

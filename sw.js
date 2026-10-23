@@ -1,6 +1,6 @@
 /* DEWS service worker — keeps the app working with no signal.
  * Bump CACHE when any file changes so phones pick up the new version. */
-var CACHE = 'dews-v2.0.0';
+var CACHE = 'dews-v2.0.1';
 var FILES = ['./', './index.html', './content.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './v1/', './v1/index.html'];
 
 self.addEventListener('install', function (e) {

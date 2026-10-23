@@ -3,7 +3,7 @@
  * listed in SOURCES. Do not add guidance without a source. Checked 2026-10-23.
  * Each text is [English, 中文].
  */
-var DEWS_VERSION = '2.0.0';
+var DEWS_VERSION = '2.0.1';
 var CONTENT_CHECKED = '2026-10-23';
 
 var SOURCES = {
@@ -336,7 +336,7 @@ var STR = {
   cardPrivacy: ['Saved only on this phone. Never uploaded.', '只保存在这台手机上，不会上传。'],
   settings: ['Settings', '设置'],
   language: ['Language', '语言'],
-  textSize: ['Text size', '字号'], sizeStd: ['Standard', '标准'], sizeLg: ['Large', '大'],
+  textSize: ['Text size', '字号'], sizeStd: ['Standard', '标准'], sizeLg: ['Large', '大'], sizeXl: ['Extra large', '特大'],
   theme: ['Appearance', '外观'], themeAuto: ['Auto', '自动'], themeLight: ['Light', '浅色'], themeDark: ['Dark', '深色'],
   demoAlert: ['Simulate a warning', '模拟一条预警'],
   demoAlertSub: ['See how DEWS checks in with you', '看看 DEWS 会怎样询问你'],

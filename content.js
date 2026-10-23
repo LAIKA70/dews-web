@@ -3,7 +3,7 @@
  * listed in SOURCES. Do not add guidance without a source. Checked 2026-10-23.
  * Each text is [English, 中文].
  */
-var DEWS_VERSION = '2.1.0';
+var DEWS_VERSION = '2.2.0';
 var CONTENT_CHECKED = '2026-10-23';
 
 var SOURCES = {
@@ -356,7 +356,7 @@ var STR = {
   obNote: ['DEWS works without signal once it has loaded. It is a guide — it does not replace 000.', 'DEWS 加载一次后，没有信号也能用。它是一个指南，不能替代 000。'],
   obStart: ['Start', '开始'],
   /* home next steps */
-  nsCard: ['Fill in your emergency card', '填写你的应急卡'],
+  nsCard: ['Fill in your profile', '填写你的个人档案'],
   nsPlan: ['Add your household plan', '填写家庭 / 合租计划'],
   nsKit: ['Pack your emergency kit', '准备应急包'],
   nsQuiz: ['Try a 2-minute scenario practice', '做一次 2 分钟的情景练习'],
@@ -411,3 +411,26 @@ var STR21 = {
   glass: ['Glass effect', '玻璃效果'], glassOn: ['On', '开'], glassOff: ['Off (more solid)', '关（更清晰）']
 };
 for (var k21 in STR21) STR[k21] = STR21[k21];
+
+/* v2.2 — personal profile */
+var NEEDS = [
+  { group: 'mobility', items: [['wheelchair', 'Uses a wheelchair', '使用轮椅'], ['walkingAid', 'Uses crutches, a cane or a walker', '使用拐杖或助行器'], ['noStairs', 'Cannot use stairs', '无法走楼梯'], ['slow', 'Cannot walk far or fast', '无法走远或走快']] },
+  { group: 'senses', items: [['vision', 'Blind or low vision', '视障 / 视力弱'], ['hearing', 'Deaf or hard of hearing', '听障 / 听力弱']] },
+  { group: 'support', items: [['power', 'Needs powered medical equipment (e.g. oxygen, CPAP)', '需要用电的医疗设备（如制氧机、呼吸机）'], ['animal', 'Has an assistance animal', '有辅助犬 / 服务动物'], ['cognitive', 'Needs simple, step-by-step instructions', '需要简单、逐步的说明']] },
+  { group: 'health', items: [['epipen', 'Carries an adrenaline auto-injector (EpiPen)', '随身带肾上腺素笔（EpiPen）'], ['pregnant', 'Pregnant', '怀孕']] }
+];
+var STR22 = {
+  profileTitle: ['My profile', '个人档案'],
+  profileSub: ['What responders and helpers should know about you. Shown in English on your emergency card.', '救援人员和帮助你的人需要知道的信息。会以英文显示在应急卡上。'],
+  secBasic: ['About you', '基本信息'], secNeeds: ['Access and mobility', '行动与身体需要'], secHealth: ['Health', '健康'], secContact: ['Emergency contact', '紧急联系人'],
+  needsHint: ['Tick all that apply. This helps responders bring the right help.', '勾选所有适用的项目，救援人员能带来合适的帮助。'],
+  gMobility: ['Moving around', '行动'], gSenses: ['Seeing and hearing', '视力和听力'], gSupport: ['Support', '辅助'], gHealth: ['Health', '健康'],
+  fDisability: ['Disability or condition (optional)', '残障或身体状况（可选）'],
+  fDisabilityPh: ['e.g. Spinal cord injury, uses manual wheelchair', '例如：脊髓损伤，使用手动轮椅'],
+  fAllergiesPh: ['e.g. Penicillin, peanuts — say if severe', '例如：青霉素、花生，严重的请注明'],
+  profileShared: ['Your profile is included:', '会一并附上你的档案：'],
+  stepsNote: ['Walking routes may include steps or steep paths. Check before you go.', '步行路线可能有台阶或陡坡，出发前请留意。']
+};
+for (var k22 in STR22) STR[k22] = STR22[k22];
+STR.palette = ['Colour palette (trial)', '配色方案（试用）'];
+STR.palA = ['Eucalypt', '桉叶']; STR.palB = ['Harbour', '港湾']; STR.palC = ['Clear', '通用']; STR.palInk = ['v2.0', '原版'];

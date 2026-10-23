@@ -2,6 +2,13 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.2.0 — 2026-10-23 · Personal profile and colour trial
+
+- **Personal profile** (Me → My profile), in sections: About you, Access and mobility, Health, Emergency contact. New: uses a wheelchair, uses crutches/cane/walker, cannot use stairs, cannot walk far or fast, blind/low vision, deaf/hard of hearing, needs powered medical equipment, assistance animal, needs simple instructions, carries an EpiPen, pregnant, plus a free-text disability field.
+- The profile appears in English on the emergency card and the "Show to others" card. It's included in help requests and in the text you send to contacts.
+- If you use a wheelchair or walking aid, or can't use stairs, the directions screen warns that walking routes may include steps.
+- **Colour palette trial** (Me → Colour palette): A Eucalypt (now the default), B Harbour, C Clear (colour-blind safe, based on Okabe–Ito), and the v2.0 original. All pass WCAG AA contrast in light and dark. This setting is temporary until a palette is chosen.
+
 ## 2.1.0 — 2026-10-23 · Directions to safety
 
 - **First-time guide**: choose your language first, then one short screen for each part of the app (Emergency, Today, Prepare, Nearby, Me), then permission for location and compass. Everything after the first screen is in the language you chose.

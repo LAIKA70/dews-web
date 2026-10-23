@@ -55,6 +55,19 @@
   color-scheme:dark;
 }
 body.em{ --bg:#0A0B0C; }
+/* ===== trial palettes (A Eucalypt, B Harbour, C Okabe–Ito) ===== */
+:root[data-palette="a"]{--bg:#F5F3EE; --surface:#FFFFFF; --surface-2:#EAE7E0; --line:#D9D4CA; --ink:#1F2A27; --ink-2:#4A5652; --ink-3:#5D6763; --primary:#2E5E4E; --on-primary:#FFFFFF; --red:#B4432F; --red-text:#9E3826; --red-soft:#F6E3DE; --orange:#E58A3A; --orange-text:#94501A; --yellow:#F2CB57; --green:#2F7A55; --green-text:#276848; --green-soft:#DFEEE5; --blue:#2F6690; --focus:#2F6690;}
+@media (prefers-color-scheme: dark){:root[data-palette="a"]:not([data-theme="light"]){--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}}
+:root[data-palette="a"][data-theme="dark"]{--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}
+:root[data-palette="a"] body.em{--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4; --bg:#0C100E;}
+:root[data-palette="b"]{--bg:#F3F5F7; --surface:#FFFFFF; --surface-2:#E6EAEE; --line:#D3D9DF; --ink:#17212B; --ink-2:#45515D; --ink-3:#5D6975; --primary:#1F4E79; --on-primary:#FFFFFF; --red:#BC463C; --red-text:#A23A31; --red-soft:#F7E2DF; --orange:#EC8B3B; --orange-text:#985017; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#186A5F; --green-soft:#DCEFEC; --blue:#1F5FAD; --focus:#1F5FAD;}
+@media (prefers-color-scheme: dark){:root[data-palette="b"]:not([data-theme="light"]){--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}}
+:root[data-palette="b"][data-theme="dark"]{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}
+:root[data-palette="b"] body.em{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0; --bg:#0A0F14;}
+:root[data-palette="c"]{--bg:#F7F7F5; --surface:#FFFFFF; --surface-2:#ECECE8; --line:#D8D8D2; --ink:#1A1A1A; --ink-2:#4A4A4A; --ink-3:#646464; --primary:#0068A3; --on-primary:#FFFFFF; --red:#B34A00; --red-text:#A04200; --red-soft:#F8E5D8; --orange:#E69F00; --orange-text:#8A5F00; --yellow:#F0E442; --green:#007A5E; --green-text:#006B52; --green-soft:#D9F0E8; --blue:#0068A3; --focus:#0068A3;}
+@media (prefers-color-scheme: dark){:root[data-palette="c"]:not([data-theme="light"]){--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}}
+:root[data-palette="c"][data-theme="dark"]{--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}
+:root[data-palette="c"] body.em{--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9; --bg:#0B0B0B;}
 :root[data-size="lg"]{ font-size:118.75%; }
 :root[data-size="xl"]{ font-size:137.5%; }
 
@@ -473,10 +486,10 @@ body.em .guide{border-color:var(--green);border-width:2px}
 /* ---------- state ---------- */
 var KEY = 'dews2';
 var DEFAULTS = {
-  lang: null, size: 'std', theme: 'auto', glass: 'on',
+  lang: null, size: 'std', theme: 'auto', glass: 'on', palette: 'a',
   kit: { people: 1, baby: false, pet: false, have: {} },
   plan: { people: [{ name: '', phone: '' }], near: '', far: '', contact: '', trigger: '' },
-  card: { name: '', lang: '', blood: '', allergies: '', meds: '', conditions: '', contactName: '', contactPhone: '', address: '' },
+  card: { name: '', lang: '', blood: '', allergies: '', meds: '', conditions: '', contactName: '', contactPhone: '', address: '', disability: '', needs: {} },
   quiz: { best: null },
   demo: { alert: false, answered: false }
 };
@@ -576,11 +589,13 @@ function planDone(){
   if (p.near) n++; if (p.far) n++; if (p.contact) n++; if (p.trigger) n++;
   return { n: n, total: 5 };
 }
-function cardDone(){ var c = S.card; return !!(c.name && (c.contactPhone || c.allergies || c.meds || c.blood)); }
+function cardDone(){ var c = S.card; return !!(c.name && (c.contactPhone || c.allergies || c.meds || c.blood || needList(0).length)); }
+function needList(lang){ var n = (S.card.needs || {}), out = []; NEEDS.forEach(function(g){ g.items.forEach(function(i){ if (n[i[0]]) out.push(lang ? i[2] : i[1]); }); }); return out; }
+function hasNeed(k){ return !!(S.card.needs && S.card.needs[k]); }
 function readiness(){
   var k = kitDone(), p = planDone();
   return [
-    { id: 'card', on: cardDone(), label: ['Card', '应急卡'], ns: 'nsCard', href: '#/me/card' },
+    { id: 'card', on: cardDone(), label: ['Profile', '档案'], ns: 'nsCard', href: '#/me/card' },
     { id: 'plan', on: p.n >= 3, label: ['Plan', '计划'], ns: 'nsPlan', href: '#/prepare/plan' },
     { id: 'kit', on: k.n / k.total >= 0.8, label: ['Kit', '应急包'], ns: 'nsKit', href: '#/prepare/kit' },
     { id: 'quiz', on: S.quiz.best != null, label: ['Practice', '练习'], ns: 'nsQuiz', href: '#/prepare/quiz' }
@@ -595,6 +610,7 @@ function render(){
   document.documentElement.setAttribute('data-size', S.size);
   if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', S.theme);
   document.documentElement.setAttribute('data-glass', S.glass || 'on');
+  if (S.palette && S.palette !== 'ink') document.documentElement.setAttribute('data-palette', S.palette); else document.documentElement.removeAttribute('data-palette');
   document.body.classList.toggle('em', em);
   document.title = em ? 'DEWS — ' + t('sos') : 'DEWS';
   if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em); renderLayer(); after(p); return; }
@@ -781,7 +797,8 @@ function vHelp(){
         return '<button class="pick" data-a="hrNeed" data-v="' + n[0] + '" aria-pressed="' + !!HR.needs[n[0]] + '">' + (HR.needs[n[0]] ? ic('check') : ic(n[1])) + t(n[2]) + '</button>'; }).join('') + '</div></div>' +
       '<label class="field"><span>' + t('hrNote') + '</span><textarea class="input" data-hr="note" placeholder="' + esc(t('hrNotePh')) + '">' + esc(HR.note) + '</textarea></label>' +
       '<div class="field"><button class="toggle" data-a="hrToggle" data-v="loc" aria-pressed="' + HR.loc + '"><span class="grow">' + t('hrShareLoc') + '</span><span class="sw"></span></button>' +
-      '<button class="toggle" data-a="hrToggle" data-v="card" aria-pressed="' + HR.card + '"><span class="grow">' + t('hrIncludeCard') + '</span><span class="sw"></span></button></div>',
+      '<button class="toggle" data-a="hrToggle" data-v="card" aria-pressed="' + HR.card + '"><span class="grow">' + t('hrIncludeCard') + '</span><span class="sw"></span></button>' +
+      (HR.card && needList(0).length ? '<div class="callout" style="margin-top:8px">' + ic('user') + '<span>' + t('profileShared') + ' ' + esc(needList(li()).join(li() ? '、' : '; ')) + '</span></div>' : '') + '</div>',
     dock: '<div class="dock"><div class="dock-in"><button class="btn btn-primary" data-a="hrSend">' + t('hrSend') + '</button></div></div>'
   };
 }
@@ -797,7 +814,7 @@ function vSent(){
       '<div class="eta"><span class="eyebrow">' + t('hrEta') + '</span><div class="eta-v">' + t('hrEtaVal') + '</div>' +
       '<span class="chip sample">' + t('sample') + '</span><p class="small" style="margin-top:8px">' + t('hrEtaNote') + '</p></div>' +
       '<dl class="kv card" style="margin-top:12px"><dt>' + t('hrInjured') + '</dt><dd>' + injLabel + '</dd><dt>' + t('hrPeople') + '</dt><dd>' + HR.people + '</dd>' +
-      '<dt>' + t('hrNeed') + '</dt><dd>' + esc(needs) + '</dd>' + (HR.coords ? '<dt>' + t('safeWhere') + '</dt><dd>' + HR.coords + '</dd>' : '') + '</dl>' +
+      '<dt>' + t('hrNeed') + '</dt><dd>' + esc(needs) + '</dd>' + (HR.card && needList(0).length ? '<dt>' + t('profileTitle') + '</dt><dd>' + esc(needList(li()).join(li() ? '、' : '; ')) + '</dd>' : '') + (HR.coords ? '<dt>' + t('safeWhere') + '</dt><dd>' + HR.coords + '</dd>' : '') + '</dl>' +
       '<h2 class="label">' + t('hrWhile') + '</h2><ul class="bullets"><li>' + t('hrWhile1') + '</li><li>' + t('hrWhile2') + '</li><li>' + linkify(t('hrWhile3')) + '</li></ul>' +
       '<button class="btn btn-line" style="margin-top:16px" data-a="hrSms">' + ic('msg') + t('hrAlsoSms') + '</button>',
     dock: dockCall()
@@ -957,6 +974,7 @@ function vGo(em){
     (safe.length > 1 ? '<div class="chips">' + safe.map(function(x){
       return '<button class="pick" data-a="pickPlace" data-id="' + x.p.id + '" aria-pressed="' + !!(tg && tg.p.id === x.p.id) + '">' + ic(PLACE_TYPES[x.p.type].icon) + esc(placeName(x.p)) + ' · ' + fmtDist(x.d) + '</button>'; }).join('') + '</div>' : '') +
     '<p class="warnline">' + ic('alert') + '<span>' + t('hazardWarn') + '</span></p>' +
+    (hasNeed('wheelchair') || hasNeed('noStairs') || hasNeed('walkingAid') ? '<p class="warnline">' + ic('alert') + '<span>' + t('stepsNote') + '</span></p>' : '') +
     '<p class="small" style="margin-top:4px;font-size:.75rem">' + srcNote() + '</p></section></main>';
 }
 function isDark(){ return S.theme === 'dark' || (S.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
@@ -964,7 +982,7 @@ function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')
 
 /* ---------- ME ---------- */
 function cardKV(){
-  var c = S.card, rows = [['Language', c.lang], ['Blood type', c.blood], ['Allergies', c.allergies], ['Medications', c.meds], ['Medical notes', c.conditions],
+  var c = S.card, nl = needList(0), rows = [['Language', c.lang], ['Needs', nl.join('; ')], ['Disability', c.disability], ['Blood type', c.blood], ['Allergies', c.allergies], ['Medications', c.meds], ['Medical notes', c.conditions],
     ['Emergency contact', [c.contactName, c.contactPhone].filter(Boolean).join(' · ')], ['Address', c.address]].filter(function(r){ return r[1]; });
   return rows.map(function(r){ return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
 }
@@ -972,13 +990,14 @@ function vMe(){
   var c = S.card, kv = cardKV();
   function segc(key, opts){ return '<div class="seg-ctl">' + opts.map(function(o){ return '<button data-a="set" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (S[key] === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>'; }
   return '<div class="page-head"><h1>' + t('meTitle') + '</h1></div>' +
-    '<a class="idcard" href="#/me/card" style="display:block"><div class="idcard-h">' + ic('card') + 'EMERGENCY CARD<span class="sp" style="flex:1"></span>' + t('cardEdit') + '</div>' +
+    '<h2 class="label" style="margin-top:0">' + t('profileTitle') + '</h2><a class="idcard" href="#/me/card" style="display:block"><div class="idcard-h">' + ic('card') + 'EMERGENCY CARD<span class="sp" style="flex:1"></span>' + t('cardEdit') + '</div>' +
     '<div class="idcard-b">' + (c.name || kv ? '<div class="nm">' + esc(c.name || '—') + '</div><dl class="kv">' + kv + '</dl>' : '<p class="small">' + t('cardEmpty') + '</p>') + '</div></a>' +
     '<p class="small" style="margin-top:8px">' + t('cardSub') + ' ' + t('cardPrivacy') + '</p>' +
     '<h2 class="label">' + t('settings') + '</h2><section class="card">' +
     '<div class="set" style="margin-top:0"><span>' + t('language') + '</span>' + segc('lang', [['en', 'English'], ['zh', '中文']]) + '</div>' +
     '<div class="set"><span>' + t('textSize') + '</span>' + segc('size', [['std', t('sizeStd')], ['lg', t('sizeLg')], ['xl', t('sizeXl')]]) + '</div>' +
     '<div class="set"><span>' + t('theme') + '</span>' + segc('theme', [['auto', t('themeAuto')], ['light', t('themeLight')], ['dark', t('themeDark')]]) + '</div>' +
+    '<div class="set"><span>' + t('palette') + '</span>' + segc('palette', [['a', 'A ' + t('palA')], ['b', 'B ' + t('palB')], ['c', 'C ' + t('palC')], ['ink', t('palInk')]]) + '</div>' +
     '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['on', t('glassOn')], ['off', t('glassOff')]]) + '</div>' +
     '<div class="set"><button class="toggle" data-a="demoToggle" aria-pressed="' + S.demo.alert + '"><span class="grow">' + t('demoAlert') + '<br><span class="small">' + t('demoAlertSub') + '</span></span><span class="sw"></span></button></div></section>' +
     '<h2 class="label">' + t('about') + '</h2>' +
@@ -987,14 +1006,25 @@ function vMe(){
     '<button class="btn btn-ghost" data-a="reset" style="color:var(--red-text)">' + (resetArmed ? t('resetConfirm') : t('reset')) + '</button></div>';
 }
 function vCardEdit(){
-  var c = S.card;
-  function f(k, label, ph, type){ return '<label class="field"><span>' + label + '</span><input class="input" ' + (type ? 'type="' + type + '" ' : '') + 'data-bind="card.' + k + '" value="' + esc(c[k]) + '" placeholder="' + esc(ph || '') + '"></label>'; }
-  return backTo('#/me') + '<div class="page-head"><h1>' + t('cardTitle') + '</h1><p class="sub">' + t('cardSub') + '</p></div>' +
+  var c = S.card; if (!c.needs) c.needs = {};
+  function f(k, label, ph, type){ return '<label class="field"><span>' + label + '</span><input class="input" ' + (type ? 'type="' + type + '" ' : '') + 'data-bind="card.' + k + '" value="' + esc(c[k] || '') + '" placeholder="' + esc(ph || '') + '"></label>'; }
+  var gname = { mobility: 'gMobility', senses: 'gSenses', support: 'gSupport', health: 'gHealth' };
+  return backTo('#/me') + '<div class="page-head"><h1>' + t('profileTitle') + '</h1><p class="sub">' + t('profileSub') + '</p></div>' +
     '<div class="callout">' + ic('shield') + '<span>' + t('cardPrivacy') + '</span></div>' +
-    f('name', t('fName'), 'Wei Zhang') + f('lang', t('fLang'), 'Mandarin Chinese') + f('blood', t('fBlood'), 'O+') +
-    f('allergies', t('fAllergies'), 'Penicillin') + f('meds', t('fMeds')) + f('conditions', t('fConditions')) +
-    f('contactName', t('fContact') + ' — ' + t('planName')) + f('contactPhone', t('fContact') + ' — ' + t('planPhone'), '04xx xxx xxx', 'tel') +
-    f('address', t('fAddress')) +
+    '<h2 class="label">' + t('secBasic') + '</h2><section class="card" style="padding-top:0">' +
+    f('name', t('fName'), 'Wei Zhang') + f('lang', t('fLang'), 'Mandarin Chinese') + f('address', t('fAddress')) + '</section>' +
+    '<h2 class="label">' + t('secNeeds') + '</h2><section class="card"><p class="small">' + t('needsHint') + '</p>' +
+    NEEDS.filter(function(g){ return g.group !== 'health'; }).map(function(g){
+      return '<div class="field"><span>' + t(gname[g.group]) + '</span>' + g.items.map(function(it){
+        return '<button class="check" data-a="needToggle" data-v="' + it[0] + '" aria-pressed="' + !!c.needs[it[0]] + '"><span class="bx">' + ic('check') + '</span><span class="tx">' + esc(li() ? it[2] : it[1]) + '</span></button>'; }).join('') + '</div>';
+    }).join('') + f('disability', t('fDisability'), t('fDisabilityPh')) + '</section>' +
+    '<h2 class="label">' + t('secHealth') + '</h2><section class="card" style="padding-top:0">' +
+    f('allergies', t('fAllergies'), t('fAllergiesPh')) +
+    NEEDS.filter(function(g){ return g.group === 'health'; })[0].items.map(function(it){
+      return '<button class="check" style="margin-top:8px" data-a="needToggle" data-v="' + it[0] + '" aria-pressed="' + !!c.needs[it[0]] + '"><span class="bx">' + ic('check') + '</span><span class="tx">' + esc(li() ? it[2] : it[1]) + '</span></button>'; }).join('') +
+    f('meds', t('fMeds')) + f('blood', t('fBlood'), 'O+') + f('conditions', t('fConditions')) + '</section>' +
+    '<h2 class="label">' + t('secContact') + '</h2><section class="card" style="padding-top:0">' +
+    f('contactName', t('planName')) + f('contactPhone', t('planPhone'), '04xx xxx xxx', 'tel') + '</section>' +
     '<p class="small" style="margin-top:12px">English is easiest for Australian responders to read. / 用英文填写，方便澳洲救援人员阅读。</p>' +
     '<a class="btn btn-primary" style="margin-top:16px" href="#/me">' + t('done') + '</a>';
 }
@@ -1122,6 +1152,7 @@ var A = {
   recenter: function(){ NAV.recenter(); },
   follow: function(){ NAV.setFollow(!NAV.state.follow); },
   pickPlace: function(el){ NAV.setTarget(el.dataset.id); },
+  needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ S.demo.alert = true; S.demo.answered = false; CI = null; save(); location.hash = '#/'; render(); },
   demoToggle: function(){ S.demo.alert = !S.demo.alert; S.demo.answered = false; save(); render(); },
   checkin: function(){ CI = 'affected'; renderLayer(); },
@@ -1144,7 +1175,8 @@ var A = {
   hrSms: function(){
     var nmap = { water: 'needWater', food: 'needFood', meds: 'needMeds', shelter: 'needShelter', transport: 'needTransport', power: 'needPower' };
     var needs = Object.keys(HR.needs).filter(function(k){ return HR.needs[k]; }).map(function(k){ return t(nmap[k]); }).join(', ');
-    var body = t('needHelp') + '. ' + t('hrPeople') + ' ' + HR.people + '. ' + (needs ? t('hrNeed') + ' ' + needs + '. ' : '') + (HR.note ? HR.note + ' ' : '') +
+    var prof = HR.card ? needList(0).concat(S.card.allergies ? ['Allergies: ' + S.card.allergies] : []).join('; ') : '';
+    var body = t('needHelp') + '. ' + t('hrPeople') + ' ' + HR.people + '. ' + (needs ? t('hrNeed') + ' ' + needs + '. ' : '') + (prof ? '[' + prof + '] ' : '') + (HR.note ? HR.note + ' ' : '') +
       (HR.coords ? '\nhttps://maps.google.com/?q=' + HR.coords.replace(/\s/g, '') : '');
     sendSms(body);
   },

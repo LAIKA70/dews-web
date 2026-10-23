@@ -12,7 +12,7 @@ international students. It is survival-first and offline-first.
 - **Check-in**: when a warning covers your area, DEWS asks whether you're affected and whether you need help.
 - **Prepare**: an emergency kit calculator, a household / share-house plan, and scenario practice.
 - **Nearby**: shelters, hospitals, water and charging points, with distance and direction.
-- **Me**: an emergency card in English for responders, plus language, text size and theme settings.
+- **Profile**: an emergency card in English for responders, plus language, text size and theme settings.
 
 Warnings, places and the help-request agency are **sample data** in this version.
 

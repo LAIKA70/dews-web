@@ -56,7 +56,8 @@ body.em::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;backgr
 
 /* ===== base ===== */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{background:var(--bg);-webkit-text-size-adjust:100%}
+html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
+body{overflow-x:clip}
 body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:1.0625rem;line-height:1.5;
   min-height:100vh;min-height:100dvh;font-variant-numeric:tabular-nums}
 a{color:inherit;text-decoration:none}
@@ -82,6 +83,11 @@ body.em .wrap{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
 .chip.ok{background:var(--green-soft);color:var(--green-text)}
 .chip.sample{background:transparent;border:1.5px dashed currentColor;padding:4px 8px}
 .top .sp{flex:1}
+.top .brand,.top .sosbtn,.top .iconbtn{flex-shrink:0}
+.top .chip{min-width:0;flex-shrink:1;overflow:hidden}
+.chip .ell{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){ .top{gap:6px;padding-left:12px;padding-right:12px} .top .brand{letter-spacing:.02em} .top .chip{padding:6px 7px} .top .sosbtn{padding:0 12px 0 8px;gap:4px} }
+.sosbtn{white-space:nowrap}
 .sosbtn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 10px;border-radius:var(--r-pill);
   background:var(--red);color:var(--on-red);font-weight:700;font-size:.9375rem}
 .sosbtn .ic{width:20px;height:20px}
@@ -241,7 +247,9 @@ h2{font-size:1.1875rem;line-height:1.35;font-weight:700}
 textarea.input{min-height:96px;resize:vertical}
 .input::placeholder{color:var(--ink-3)}
 .seg-ctl{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:var(--r-md);background:var(--surface-2)}
-.seg-ctl button{min-height:48px;border-radius:12px;font-weight:650;color:var(--ink-2);padding:0 var(--s2)}
+.seg-ctl{grid-auto-columns:minmax(0,1fr)}
+.seg-ctl button{min-height:48px;border-radius:12px;font-weight:650;color:var(--ink-2);padding:6px var(--s2);line-height:1.2}
+.seg-ctl.seg-2x2{grid-auto-flow:row;grid-template-columns:1fr 1fr}
 .seg-ctl button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .seg-ctl.danger button.sel-serious[aria-pressed="true"]{background:var(--red);color:var(--on-red)}
 .chips{display:flex;flex-wrap:wrap;gap:var(--s2)}
@@ -354,7 +362,13 @@ textarea.input{min-height:96px;resize:vertical}
 .src-list b{display:block;font-weight:650}
 .src-list span{font-size:.8125rem;color:var(--ink-3);word-break:break-all}
 /* onboarding */
-.ob{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto}
+.ob{position:fixed;inset:0;z-index:100;background:var(--bg);overflow-x:hidden;overflow-y:auto;touch-action:pan-y}
+.ob h1:focus{outline:none}
+.ob-in.in-next{animation:obNext .28s ease-out}
+.ob-in.in-prev{animation:obPrev .28s ease-out}
+@keyframes obNext{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes obPrev{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.ob-in.in-next,.ob-in.in-prev{animation:none}}
 .ob-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(var(--s7) + env(safe-area-inset-top)) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom))}
 .mark{width:64px;height:64px}
 .ob h1{margin-top:var(--s6)}

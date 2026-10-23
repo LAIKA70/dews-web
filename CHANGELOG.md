@@ -2,6 +2,14 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.4.1 — 2026-10-23 · Fits small phones, swipeable guide, clearer words
+
+- **Fits small phones.** On phones about 360 px wide (many Android phones) the top bar was a little too wide, so the browser zoomed the whole page out. It now fits, and nothing on any page sticks out past the screen edge.
+- **Swipe through the first-run guide.** Swipe left or right to move between cards, or use the arrow keys on a keyboard. The Next and Back buttons still work. Screen readers hear "Step 2 of 7" and the new card's title.
+- **Language picked for you.** The language screen now preselects 中文 if your phone is set to Chinese.
+- **"Me" is now "Profile" / 个人档案**, in the tabs, the page title and the guide. The language screen says where to change it later: Profile → Settings.
+- **Clearer words in both languages.** "Works without signal" / "没有信号也能用" now says "works with no internet connection" / "没有网络也能用". The English and Chinese now say the same thing everywhere, for example the Emergency card in the guide, Kit / 应急包, Charging / 充电, Drinking water / 饮用水, and the palette names.
+
 ## 2.4.0 — 2026-10-23 · Desktop version and a start page
 
 - **Start page** at `laika70.github.io/dews-web/`: choose **手机版 Mobile** or **电脑版 Desktop**. It recommends the one that fits your device.

@@ -183,7 +183,7 @@ function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t(
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
 function offChip(){
   if (!('serviceWorker' in navigator)) return '';
-  return swReady ? '<span class="chip ok">' + ic('check') + t('offlineReady') + '</span>' : '<span class="chip">' + t('offlineNot') + '</span>';
+  return swReady ? '<span class="chip ok">' + ic('check') + '<span class="ell">' + t('offlineReady') + '</span></span>' : '<span class="chip"><span class="ell">' + t('offlineNot') + '</span></span>';
 }
 function offlineBar(){ return navigator.onLine === false ? '<div class="offbar">' + ic('wifi') + t('youreOffline') + '</div>' : ''; }
 function normalTop(){
@@ -567,9 +567,9 @@ function cardKV(){
 }
 function vMe(){
   var c = S.card, kv = cardKV();
-  function segc(key, opts){ return '<div class="seg-ctl">' + opts.map(function(o){ return '<button data-a="set" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (S[key] === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>'; }
+  function segc(key, opts){ return '<div class="seg-ctl' + (opts.length > 3 ? ' seg-2x2' : '') + '">' + opts.map(function(o){ return '<button data-a="set" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (S[key] === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div>'; }
   return '<div class="page-head"><h1>' + t('meTitle') + '</h1></div>' + (DESKTOP ? '<div class="dgrid"><div>' : '') +
-    '<h2 class="label" style="margin-top:0">' + t('profileTitle') + '</h2><a class="idcard" href="#/me/card" style="display:block"><div class="idcard-h">' + ic('card') + 'EMERGENCY CARD<span class="sp" style="flex:1"></span>' + t('cardEdit') + '</div>' +
+    '<h2 class="label" style="margin-top:0">' + t('cardTitle') + '</h2><a class="idcard" href="#/me/card" style="display:block"><div class="idcard-h">' + ic('card') + 'EMERGENCY CARD<span class="sp" style="flex:1"></span>' + t('cardEdit') + '</div>' +
     '<div class="idcard-b">' + (c.name || kv ? '<div class="nm">' + esc(c.name || '—') + '</div><dl class="kv">' + kv + '</dl>' : '<p class="small">' + t('cardEmpty') + '</p>') + '</div></a>' +
     '<p class="small" style="margin-top:8px">' + t('cardSub') + ' ' + t('cardPrivacy') + '</p>' +
     '<p class="small" style="margin-top:4px">' + t('emCardWho') + '</p>' +
@@ -627,14 +627,17 @@ function renderLayer(){
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
   L.innerHTML = h;
 }
-var OB = 0;
+var OB = 0, OB_DIR = 0;
+function deviceLang(){ var l = ((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase(); return l.indexOf('zh') === 0 ? 'zh' : 'en'; }
+function obGo(d){ if (S.lang) return; if (d > 0 && OB < OB_SLIDES.length) A.obNext(); else if (d < 0 && OB > 0) A.obBack(); }
 var OB_SLIDES = [{ k: 'ob1', art: 'mark' }, { k: 'ob2', art: 'sos' }, { k: 'ob3', tab: 0, icon: 'sun' }, { k: 'ob4', tab: 1, icon: 'shield' }, { k: 'ob5', tab: 2, icon: 'pin' }, { k: 'ob6', tab: 3, icon: 'user' }, { k: 'obPerm', art: 'perm' }];
 function onboarding(){
-  var pick = S.pre || 'en', zh = pick === 'zh';
+  var pick = S.pre || deviceLang(), zh = pick === 'zh';
+  var anim = OB_DIR > 0 ? ' in-next' : OB_DIR < 0 ? ' in-prev' : '';
   function T(k){ return STR[k][zh ? 1 : 0]; }
   if (OB === 0) {
-    return '<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h"><div class="ob-in">' + MARK +
-      '<h1 id="ob-h">' + T('obTitle') + '</h1><p class="sub">' + T('obSub') + '</p>' +
+    return '<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h" lang="' + (zh ? 'zh-Hans' : 'en') + '"><div class="ob-in' + anim + '">' + MARK +
+      '<h1 id="ob-h" tabindex="-1">' + T('obTitle') + '</h1><p class="sub">' + T('obSub') + '</p>' +
       '<div class="lang-pick"><button data-a="obLang" data-v="en" aria-pressed="' + !zh + '">English' + ic('check') + '</button>' +
       '<button data-a="obLang" data-v="zh" aria-pressed="' + zh + '">中文' + ic('check') + '</button></div>' +
       '<div class="sp"></div><button class="btn btn-lg btn-primary" data-a="obNext">' + T('obContinue') + '</button></div></div>';
@@ -646,11 +649,11 @@ function onboarding(){
   else if (sl.art === 'perm') art = '<div class="dial" style="width:140px;height:140px"><div class="dial-ring">' + (function(){ var x = ''; for (var i = 0; i < 12; i++) x += '<i style="transform:rotate(' + (i * 30) + 'deg);transform-origin:1px 66px"></i>'; return x; })() + '<b>N</b></div><div class="needle" style="transform:rotate(38deg);inset:24px"><svg viewBox="0 0 24 24" style="width:84px;height:84px"><path d="M12 2l7 19-7-4-7 4z"/></svg></div></div>';
   else art = '<div class="big-ic" style="margin-bottom:64px">' + ic(sl.icon) + '</div><div class="mini-tabs">' + tabs.map(function(x, i){ return '<span class="' + (i === sl.tab ? 'on' : '') + '">' + ic(x[0]) + T(x[1]) + '</span>'; }).join('') + '</div>';
   var title = T(sl.k + 'T'), desc = T(sl.k + 'D'), last = OB === OB_SLIDES.length;
-  return '<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h"><div class="ob-in">' +
+  return '<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h" lang="' + (zh ? 'zh-Hans' : 'en') + '"><div class="ob-in' + anim + '">' +
     '<div class="ob-top"><button class="iconbtn" data-a="obBack">' + ic('chevL') + T('obBack') + '</button>' + (last ? '' : '<button class="iconbtn" data-a="obSkip" style="color:var(--ink-2)">' + T('obSkip') + '</button>') + '</div>' +
     '<div class="ob-art" aria-hidden="true">' + art + '</div>' +
-    '<div class="ob-dots" aria-hidden="true">' + OB_SLIDES.map(function(_, i){ return '<i class="' + (i === OB - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div>' +
-    '<h1 id="ob-h" style="margin-top:0">' + title + '</h1><p class="sub">' + desc + '</p><div class="sp"></div>' +
+    '<div class="ob-dots"><span class="sr">' + T('obStep').replace('{n}', OB).replace('{total}', OB_SLIDES.length) + '</span>' + OB_SLIDES.map(function(_, i){ return '<i aria-hidden="true" class="' + (i === OB - 1 ? 'on' : '') + '"></i>'; }).join('') + '</div>' +
+    '<h1 id="ob-h" tabindex="-1" style="margin-top:0">' + title + '</h1><p class="sub">' + desc + '</p><div class="sp"></div>' +
     (last ? '<button class="btn btn-lg btn-green" data-a="obAllow">' + ic('locate') + T('obAllow') + '</button><button class="btn btn-ghost" style="margin-top:8px" data-a="obFinish">' + T('obLater') + '</button>'
           : '<button class="btn btn-lg btn-primary" data-a="obNext">' + T('obNext') + '</button>') + '</div></div>';
 }
@@ -723,10 +726,10 @@ function sendSafe(){
   });
 }
 var A = {
-  obLang: function(el){ S.pre = el.dataset.v; renderLayer(); },
-  obNext: function(){ if (!S.pre) S.pre = 'en'; OB = Math.min(OB + 1, OB_SLIDES.length); renderLayer(); },
-  obBack: function(){ OB = Math.max(0, OB - 1); renderLayer(); },
-  obSkip: function(){ OB = OB_SLIDES.length; renderLayer(); },
+  obLang: function(el){ S.pre = el.dataset.v; OB_DIR = 0; renderLayer(); var b = document.querySelector('[data-a="obLang"][data-v="' + S.pre + '"]'); if (b) b.focus(); },
+  obNext: function(){ if (!S.pre) S.pre = deviceLang(); OB_DIR = 1; OB = Math.min(OB + 1, OB_SLIDES.length); renderLayer(); obFocus(); },
+  obBack: function(){ OB_DIR = -1; OB = Math.max(0, OB - 1); renderLayer(); obFocus(); },
+  obSkip: function(){ OB_DIR = 1; OB = OB_SLIDES.length; renderLayer(); obFocus(); },
   obAllow: function(){ NAV.enable(); A.obFinish(); },
   obFinish: function(){ S.lang = S.pre || 'en'; delete S.pre; OB = 0; save(); render(); },
   navEnable: function(){ NAV.enable().then(function(){ render(); }); render(); },
@@ -804,6 +807,22 @@ document.addEventListener('input', function(e){
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
 });
 document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
+/* onboarding: swipe left/right (touch) and arrow keys; Next/Back buttons stay as the main way */
+function obFocus(){ var h = document.getElementById('ob-h'); if (h) try { h.focus({ preventScroll: true }); } catch (e) {} }
+var obTouch = null;
+document.addEventListener('touchstart', function(e){
+  obTouch = (!S.lang && e.touches.length === 1 && e.target.closest && e.target.closest('.ob')) ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+}, { passive: true });
+document.addEventListener('touchend', function(e){
+  if (!obTouch) return;
+  var c = e.changedTouches[0], dx = c.clientX - obTouch.x, dy = c.clientY - obTouch.y; obTouch = null;
+  if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  obGo(dx < 0 ? 1 : -1);
+}, { passive: true });
+document.addEventListener('keydown', function(e){
+  if (S.lang || !document.querySelector('.ob')) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); obGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); obGo(-1); }
+});
 window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){

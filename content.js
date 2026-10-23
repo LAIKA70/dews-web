@@ -139,7 +139,7 @@ var HAZARDS = [
 /* Response archetypes — what the step list is asking you to do */
 var KINDS = {
   evacuate: ['Leave', '撤离'],
-  shelter:  ['Shelter', '就地避险'],
+  shelter:  ['Shelter', '避险'],
   contain:  ['Get help', '求助']
 };
 
@@ -216,14 +216,14 @@ var PLACE_TYPES = {
   shelter:  { icon: 'home', name: ['Shelter', '避难所'] },
   hospital: { icon: 'cross', name: ['Hospital', '医院'] },
   rescue:   { icon: 'shield', name: ['Fire / police', '消防 / 警察'] },
-  water:    { icon: 'drop', name: ['Water', '饮水'] },
-  power:    { icon: 'bolt', name: ['Power', '充电'] }
+  water:    { icon: 'drop', name: ['Drinking water', '饮用水'] },
+  power:    { icon: 'bolt', name: ['Charging', '充电'] }
 };
 
 /* Interface text */
 var STR = {
   appSub: ['Disaster readiness, in your language', '用你的语言，为灾害做好准备'],
-  tabHome: ['Today', '今天'], tabPrep: ['Prepare', '准备'], tabMap: ['Nearby', '附近'], tabMe: ['Me', '我的'],
+  tabHome: ['Today', '今天'], tabPrep: ['Prepare', '准备'], tabMap: ['Nearby', '附近'], tabMe: ['Profile', '个人档案'],
   sos: ['Emergency', '紧急'],
   offlineReady: ['Works offline', '离线可用'], offlineNot: ['Saving for offline…', '正在保存离线版…'],
   youreOffline: ['You’re offline — everything here still works.', '你已离线，这里的功能照常可用。'],
@@ -259,7 +259,7 @@ var STR = {
   whistleNote: ['Three blasts at a time', '三声一组'],
   flashNote: ['Flashes S-O-S slowly', '缓慢闪烁 S-O-S'],
   helpCardTitle: ['I need help', '我需要帮助'],
-  helpCardLang: ['I speak', '我说'],
+  helpCardLang: ['I speak', '我会说'],
   helpCardCall: ['Please call 000 for me.', '请帮我拨打 000。'],
   /* help request */
   hrTitle: ['Request help', '请求救援'],
@@ -300,15 +300,15 @@ var STR = {
   planTitle: ['Household plan', '家庭 / 合租计划'],
   planSub: ['Who to call, where to meet, when to leave', '打给谁、在哪集合、什么时候走'],
   planPeople: ['People in your home', '住在一起的人'],
-  planAdd: ['Add person', '添加'],
+  planAdd: ['Add person', '添加人员'],
   planName: ['Name', '名字'], planPhone: ['Phone', '电话'],
   planMeetNear: ['Meeting point near home', '家附近的集合点'],
   planMeetNearPh: ['e.g. Front gate of the park on King St', '例如：King St 公园正门'],
   planMeetFar: ['Meeting point outside your suburb', '区外的集合点'],
   planMeetFarPh: ['e.g. A friend’s place in another suburb', '例如：另一个区的朋友家'],
   planContact: ['Contact outside the area', '外地联系人'],
-  planContactPh: ['Someone far away everyone can call', '大家都能联系上的远方的人'],
-  planTrigger: ['We leave when…', '我们什么情况下离开'],
+  planContactPh: ['Someone far away everyone can call', '住在外地、大家都能联系到的人'],
+  planTrigger: ['We leave when…', '出现以下情况时，我们就离开：'],
   planTriggerPh: ['e.g. Watch and Act for our area, or a Catastrophic fire danger day', '例如：本区出现“注意并行动”，或火险等级为“灾难级”'],
   planShare: ['Share plan', '分享计划'],
   quizTitle: ['Scenario practice', '情景练习'],
@@ -323,17 +323,17 @@ var STR = {
   mapLocate: ['Use my location', '使用我的位置'],
   mapLocating: ['Finding you…', '正在定位…'],
   mapNoLoc: ['Showing a sample position', '显示的是示例位置'],
-  mapCompass: ['Turn on compass', '打开指南针'],
+  mapCompass: ['Turn on compass', '开启指南针'],
   mapOpen: ['Directions', '导航'],
   mapOnlineOnly: ['needs internet', '需要网络'],
   /* me */
-  meTitle: ['Me', '我的'],
+  meTitle: ['Profile', '个人档案'],
   cardTitle: ['Emergency card', '应急卡'],
   cardSub: ['For first responders. Shown in English.', '给救援人员看，以英文显示。'],
   cardEdit: ['Edit', '编辑'],
   cardEmpty: ['Add your details so responders can help you faster.', '填写你的信息，救援人员能更快帮到你。'],
   fName: ['Full name', '全名'], fLang: ['Language I speak', '我说的语言'], fBlood: ['Blood type', '血型'],
-  fAllergies: ['Allergies', '过敏'], fMeds: ['Medications', '正在用的药'], fConditions: ['Medical notes', '医疗备注'],
+  fAllergies: ['Allergies', '过敏'], fMeds: ['Medications', '正在服用的药物'], fConditions: ['Medical notes', '医疗备注'],
   fContact: ['Emergency contact', '紧急联系人'], fAddress: ['Address', '地址'],
   cardPrivacy: ['Saved only on this phone. Never uploaded.', '只保存在这台手机上，不会上传。'],
   settings: ['Settings', '设置'],
@@ -352,8 +352,8 @@ var STR = {
   resetConfirm: ['Tap again to delete everything', '再点一次确认删除'],
   /* onboarding */
   obTitle: ['Choose your language', '选择你的语言'],
-  obSub: ['You can change this any time in Me.', '之后可以随时在“我的”里修改。'],
-  obNote: ['DEWS works without signal once it has loaded. It is a guide — it does not replace 000.', 'DEWS 加载一次后，没有信号也能用。它是一个指南，不能替代 000。'],
+  obSub: ['You can change this later in Profile → Settings.', '之后可以在“个人档案 → 设置”里随时修改。'],
+  obNote: ['Once loaded, DEWS works with no internet connection. It is a guide — it does not replace 000.', 'DEWS 加载一次后，没有网络也能用。它是一个指南，不能替代 000。'],
   obStart: ['Start', '开始'],
   /* home next steps */
   nsCard: ['Fill in your profile', '填写你的个人档案'],
@@ -398,17 +398,17 @@ var STR21 = {
   /* onboarding */
   obContinue: ['Continue', '继续'], obNext: ['Next', '下一步'], obSkip: ['Skip', '跳过'], obBack: ['Back', '上一步'],
   ob1T: ['Welcome to DEWS', '欢迎使用 DEWS'],
-  ob1D: ['Get ready before a disaster, and know what to do during one. Once loaded, it works without signal.', '灾害前做好准备，灾害中知道该做什么。加载一次后，没有信号也能用。'],
+  ob1D: ['Get ready before a disaster, and know what to do during one. Once loaded, it works with no internet connection.', '灾害前做好准备，灾害中知道该做什么。加载一次后，没有网络也能用。'],
   ob2T: ['Emergency', '紧急'],
-  ob2D: ['On any screen, tap the red button: call 000, tell family you’re safe, get step-by-step help and directions to safety.', '任何页面点右上角红色按钮：拨打 000、给家人报平安、看分步指引，并指向安全点。'],
+  ob2D: ['On any screen, tap the red Emergency button to call 000, tell family you’re safe, get step-by-step help and directions to a safe place.', '在任何页面点红色的“紧急”按钮，可以拨打 000、给家人报平安、查看分步指引，并获得前往安全点的指路。'],
   ob3T: ['Today', '今天'], ob3D: ['Warnings for your area, and how prepared you are.', '你所在区域的预警，和你的准备进度。'],
   ob4T: ['Prepare', '准备'], ob4D: ['Work out your emergency kit, make a household plan and practise scenarios.', '算出应急包、写好家庭计划、做情景练习。'],
   ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, assembly points and drinking water.', '实时地图，找到最近的医院、集合点和饮水点。'],
-  ob6T: ['Me', '我的'], ob6D: ['Your emergency card for responders, plus text size and appearance.', '给救援人员看的应急卡，以及字号和外观设置。'],
+  ob6T: ['Profile', '个人档案'], ob6D: ['Your emergency card for responders, plus language, text size and appearance settings.', '给救援人员看的应急卡，以及语言、字号和外观设置。'],
   obPermT: ['Let DEWS guide you', '让 DEWS 为你指路'],
   obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。'],
   obAllow: ['Allow location & compass', '允许定位和指南针'], obLater: ['Not now', '以后再说'],
-  glass: ['Glass effect', '玻璃效果'], glassOn: ['On', '开'], glassOff: ['Off (more solid)', '关（更清晰）']
+  glass: ['Glass effect', '玻璃效果'], glassOn: ['On', '开'], glassOff: ['Off (solid, easier to read)', '关（不透明，更易读）']
 };
 for (var k21 in STR21) STR[k21] = STR21[k21];
 
@@ -422,7 +422,7 @@ var NEEDS = [
 var STR22 = {
   profileTitle: ['My profile', '个人档案'],
   profileSub: ['What responders and helpers should know about you. Shown in English on your emergency card.', '救援人员和帮助你的人需要知道的信息。会以英文显示在应急卡上。'],
-  secBasic: ['About you', '基本信息'], secNeeds: ['Access and mobility', '行动与身体需要'], secHealth: ['Health', '健康'], secContact: ['Emergency contact', '紧急联系人'],
+  secBasic: ['About you', '基本信息'], secNeeds: ['Access and mobility', '无障碍与行动需要'], secHealth: ['Health', '健康'], secContact: ['Emergency contact', '紧急联系人'],
   needsHint: ['Tick all that apply. This helps responders bring the right help.', '勾选所有适用的项目，救援人员能带来合适的帮助。'],
   gMobility: ['Moving around', '行动'], gSenses: ['Seeing and hearing', '视力和听力'], gSupport: ['Support', '辅助'], gHealth: ['Health', '健康'],
   fDisability: ['Disability or condition (optional)', '残障或身体状况（可选）'],
@@ -433,7 +433,7 @@ var STR22 = {
 };
 for (var k22 in STR22) STR[k22] = STR22[k22];
 STR.palette = ['Colour palette (trial)', '配色方案（试用）'];
-STR.palA = ['Eucalypt', '桉叶']; STR.palB = ['Harbour', '港湾']; STR.palC = ['Clear', '通用']; STR.palInk = ['v2.0', '原版'];
+STR.palA = ['Eucalypt', '桉叶']; STR.palB = ['Harbour', '港湾']; STR.palC = ['Colour-blind safe', '色盲友好']; STR.palInk = ['Original', '原版'];
 
 /* v2.3 — learn about each hazard (MVP 2). Every item is from the source named in `src`. Checked 2026-10-23. */
 SOURCES.fireWear = { t: 'NSW RFS — What to wear', u: 'https://www.rfs.nsw.gov.au/plan-and-prepare/prepare-your-family/what-to-wear' };
@@ -529,8 +529,8 @@ var STR23 = {
   learnAddAll: ['Add all to my kit', '全部加入我的应急包'], learnAdded: ['In your kit', '已在应急包里'],
   learnDuring: ['What to do when it happens', '发生时怎么做'],
   kitExtra: ['Added from Learn', '从“了解灾害”加入的'],
-  tabLearn: ['Learn', '学习'], tabKit: ['Kit', '物资'], tabGo: ['Directions', '指路'], tabProfile: ['Profile', '档案'],
-  mvp: ['MVP mode', 'MVP 模式'], mvpSub: ['Show only the 4 core features: kit, learn, directions, profile.', '只显示 4 个核心功能：物资、学习、指路、档案。'],
+  tabLearn: ['Learn', '学习'], tabKit: ['Kit', '应急包'], tabGo: ['Directions', '指路'], tabProfile: ['Profile', '个人档案'],
+  mvp: ['MVP mode', 'MVP 模式'], mvpSub: ['Show only the 4 core features: kit, learn, directions, profile.', '只显示 4 个核心功能：应急包、学习、指路、个人档案。'],
   emCardNote: ['Also fill in your phone’s own Medical ID — responders can open it from the lock screen.', '也请填写手机自带的“医疗急救卡”（Medical ID），救援人员在锁屏上就能打开。'],
   emCardWho: ['Your emergency card is for paramedics and helpers when you can’t speak for yourself — injured, in shock, or facing a language barrier.', '应急卡给救护人员和帮忙的人看：在你受伤、惊慌或语言不通、无法亲自说明时使用。']
 };
@@ -539,3 +539,7 @@ DEWS_VERSION = '2.3.0';
 STR.desktopLabel = ['Desktop', '电脑版']; STR.mobileLabel = ['Mobile', '手机版'];
 STR.mobileLink = ['Mobile version', '手机版']; STR.desktopLink = ['Desktop version', '电脑版'];
 DEWS_VERSION = '2.4.0';
+
+/* v2.4.1 — onboarding swipe + step announcement */
+STR.obStep = ['Step {n} of {total}', '第 {n} 步，共 {total} 步'];
+DEWS_VERSION = '2.4.1';

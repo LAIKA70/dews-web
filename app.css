@@ -516,3 +516,132 @@ body.em .guide{border-color:var(--green);border-width:2px}
 [data-layout="desktop"] .filters{margin:0;padding:0;flex-wrap:wrap;overflow:visible}
 @media (max-width:1000px){ .dgrid,.dgrid.map-grid{grid-template-columns:1fr} .dgrid .sticky{position:static} [data-layout="desktop"] .tools{grid-template-columns:1fr 1fr} }
 @media (max-width:760px){ [data-layout="desktop"] .side{position:static;width:auto;margin:12px} [data-layout="desktop"] .dmain{margin-left:0} [data-layout="desktop"] .dock{left:0} }
+
+/* =====================================================================
+   v2.5 — glass styles (Frosted · Liquid · Tinted · Solid)
+   Glass goes on buttons AND the containers that hold them, on phone,
+   tablet and desktop alike. Primary, Emergency and Call 000 buttons stay
+   solid so they can always be seen at a glance.
+   ===================================================================== */
+:root[data-glass="frost"]{
+  --gl-bg:rgba(255,255,255,.52); --gl-blur:22px; --gl-sat:175%; --gl-border:rgba(255,255,255,.75);
+  --gl-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(22,25,28,.06),0 8px 24px rgba(22,25,28,.08);
+  --gl-btn:rgba(255,255,255,.58); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 3px rgba(22,25,28,.08);
+  --gl-thumb:rgba(255,255,255,.92); --gl-thumb-shadow:inset 0 1px 0 #fff,0 2px 8px rgba(22,25,28,.14);
+}
+:root[data-glass="liquid"]{
+  --gl-bg:linear-gradient(160deg,rgba(255,255,255,.50) 0%,rgba(255,255,255,.22) 45%,rgba(255,255,255,.34) 100%);
+  --gl-blur:14px; --gl-sat:210%; --gl-border:rgba(255,255,255,.95);
+  --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.35),inset 0 -14px 24px -18px rgba(255,255,255,.9),inset 0 10px 20px -16px rgba(22,25,28,.12),0 12px 32px rgba(22,25,28,.12);
+  --gl-btn:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.28));
+  --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.5),0 4px 12px rgba(22,25,28,.10);
+  --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.70));
+  --gl-thumb-shadow:inset 0 1.5px 1px #fff,inset 0 -2px 3px rgba(22,25,28,.06),0 4px 14px rgba(22,25,28,.16);
+}
+:root[data-glass="tint"]{
+  --gl-bg:color-mix(in srgb,var(--primary) 10%,rgba(255,255,255,.55)); --gl-blur:20px; --gl-sat:160%;
+  --gl-border:color-mix(in srgb,var(--primary) 22%,rgba(255,255,255,.7));
+  --gl-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 24px color-mix(in srgb,var(--primary) 14%,transparent);
+  --gl-btn:color-mix(in srgb,var(--primary) 8%,rgba(255,255,255,.62)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 3px rgba(22,25,28,.08);
+  --gl-thumb:color-mix(in srgb,var(--primary) 16%,rgba(255,255,255,.95)); --gl-thumb-shadow:inset 0 1px 0 #fff,0 2px 8px color-mix(in srgb,var(--primary) 24%,transparent);
+}
+@media (prefers-color-scheme: dark){
+  :root[data-glass="frost"]:not([data-theme="light"]){ --gl-bg:rgba(32,36,40,.52); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,.08); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
+  :root[data-glass="liquid"]:not([data-theme="light"]){ --gl-bg:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 50%,rgba(255,255,255,.09)); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05)); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
+  :root[data-glass="tint"]:not([data-theme="light"]){ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,.6)); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,.06)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
+}
+:root[data-theme="dark"][data-glass="frost"]{ --gl-bg:rgba(32,36,40,.52); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,.08); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
+:root[data-theme="dark"][data-glass="liquid"]{ --gl-bg:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 50%,rgba(255,255,255,.09)); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05)); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
+:root[data-theme="dark"][data-glass="tint"]{ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,.6)); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,.06)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
+
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  /* a background with enough variation for glass to be visible */
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) body::after{
+    background:radial-gradient(40% 32% at 10% 6%,color-mix(in srgb,var(--green) 30%,transparent),transparent 70%),
+      radial-gradient(44% 36% at 94% 24%,color-mix(in srgb,var(--blue) 24%,transparent),transparent 70%),
+      radial-gradient(52% 38% at 28% 96%,color-mix(in srgb,var(--yellow) 26%,transparent),transparent 70%),
+      radial-gradient(36% 28% at 78% 78%,color-mix(in srgb,var(--green) 16%,transparent),transparent 70%)}
+  /* containers */
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) :is(.card,.prep-card,.link-row,.num,.alert.none,.guide,.hz,.tool,.idcard,.fork-o,.eta,.ob-art,.seg-ctl,.tabs,.side,.sheet,.glass,.fab,.go-top,.go-panel,.callout:not(.red),.choice){
+    background:var(--gl-bg);-webkit-backdrop-filter:blur(var(--gl-blur)) saturate(var(--gl-sat));backdrop-filter:blur(var(--gl-blur)) saturate(var(--gl-sat));
+    border:1px solid var(--gl-border);box-shadow:var(--gl-shadow)}
+  /* buttons */
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) :is(.btn-line,.pick:not([aria-pressed="true"]),.lang-pick button,.qa,.map-hint,.glass-chip){
+    background:var(--gl-btn);-webkit-backdrop-filter:blur(12px) saturate(var(--gl-sat));backdrop-filter:blur(12px) saturate(var(--gl-sat));
+    border:1px solid var(--gl-border);box-shadow:var(--gl-btn-shadow)}
+  /* the selected piece inside a glass container */
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) :is(.seg-ctl button[aria-pressed="true"],.tabs a.on,[data-layout="desktop"] .side-nav a.on,.pl.on){
+    background:var(--gl-thumb);color:var(--ink);box-shadow:var(--gl-thumb-shadow)}
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) .side-nav a.on .ic{stroke-width:2.5}
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) .lang-pick button[aria-pressed="true"]{border:2px solid var(--ink)}
+  /* over the map, glass stays thick enough to read */
+  :root:is([data-glass="frost"],[data-glass="liquid"],[data-glass="tint"]) :is(.go-top,.go-panel,.map-chip .chip,.map-hint){background:color-mix(in srgb,var(--surface) 80%,transparent)}
+}
+:root[data-glass="off"] body::after{display:none}
+:root[data-glass="off"] body{background:var(--bg)}
+/* solid things stay solid in every style */
+.btn-primary,.btn-red,.btn-green,.sosbtn,.pick[aria-pressed="true"]{-webkit-backdrop-filter:none;backdrop-filter:none}
+@media (prefers-reduced-transparency: reduce){
+  :root :is(.seg-ctl,.choice,.fab,.go-top,.go-panel,.callout,.btn-line,.pick,.qa,.map-hint,.glass-chip){background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+}
+
+/* =====================================================================
+   v2.5 — Nearby: map first
+   ===================================================================== */
+.map-hero{position:relative;height:min(58vh,520px);min-height:320px;margin-top:var(--s3);padding:0;overflow:hidden}
+.map-slot{position:absolute;inset:0}
+.map-slot .map-host{position:absolute;inset:0}
+.map-chip{position:absolute;left:12px;top:12px;z-index:3;max-width:calc(100% - 88px)}
+.map-chip .chip{font-size:.8125rem;padding:8px 12px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.map-chip .chip.warn{color:var(--red-text)}
+.map-fabs{position:absolute;right:12px;top:12px;z-index:3;display:flex;flex-direction:column;gap:10px}
+.map-fabs .fab{width:48px;height:48px}
+.map-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;padding:10px 16px;border-radius:var(--r-pill);font-weight:700;white-space:nowrap;background:var(--surface);border:1px solid var(--line)}
+.btn-row{display:flex;gap:var(--s2);margin-top:var(--s3);flex-wrap:wrap}
+.btn-row .btn{flex:1 1 180px;width:auto}
+.place-card .pc-name{font-size:1.25rem;line-height:1.25;font-weight:800;margin:2px 0}
+.place-card .mk{position:static;margin:0;border:0;flex:none}
+.route-line{display:flex;align-items:center;gap:8px;margin-top:var(--s3);font-weight:650;color:var(--ink-2)}
+.route-line.ok{color:var(--green-text)}
+.route-line .ic{width:20px;height:20px;flex:none}
+.place-list{padding:4px var(--s3)}
+.place-list .pl{width:100%;text-align:left;border-radius:12px;padding-left:8px;padding-right:8px}
+.place-list .pl:first-child{border-top:0}
+.place-list .pl.on{background:var(--surface-2)}
+.place-list .mk{position:static;margin:0;border:0;width:40px;height:40px;flex:none}
+[data-layout="desktop"] .map-grid .map-hero{height:calc(100vh - 160px);min-height:460px;margin-top:0}
+[data-layout="desktop"] .map-grid .place-card:first-child,[data-layout="desktop"] .map-grid .callout:first-child{margin-top:0}
+
+/* =====================================================================
+   v2.5 — tablet (iPad and Android tablets): bigger type and targets,
+   sidebar in landscape, compact rail in portrait.
+   ===================================================================== */
+[data-device="tablet"]{font-size:112.5%}
+[data-device="tablet"] .side{width:264px}
+[data-device="tablet"] .side-nav a{min-height:56px;font-size:1.0625rem}
+[data-device="tablet"] .dmain{margin-left:296px}
+[data-device="tablet"] .dock{left:296px}
+[data-device="tablet"] .wrap{max-width:1200px;padding:20px 28px 120px}
+[data-device="tablet"] .top{max-width:1200px;padding:14px 28px}
+[data-device="tablet"] h1{font-size:2.25rem}
+[data-device="tablet"] .btn,[data-device="tablet"] .pick,[data-device="tablet"] .seg-ctl button{min-height:56px}
+[data-device="tablet"] .dgrid{gap:24px}
+@media (max-width:1100px){
+  [data-device="tablet"] .side{width:112px;padding:16px 8px;align-items:center}
+  [data-device="tablet"] .side-brand .chip,[data-device="tablet"] .side>.chip{display:none}
+  [data-device="tablet"] .side-brand{justify-content:center;padding:0}
+  [data-device="tablet"] .side-sos{flex-direction:column;height:auto;padding:10px 4px;gap:2px;font-size:.8125rem;border-radius:20px}
+  [data-device="tablet"] .side-nav{width:100%}
+  [data-device="tablet"] .side-nav a{flex-direction:column;gap:4px;min-height:68px;padding:8px 4px;justify-content:center;font-size:.8125rem;text-align:center;line-height:1.2}
+  [data-device="tablet"] .side-foot{align-items:center;font-size:.75rem}
+  [data-device="tablet"] .side-foot .iconbtn{flex-direction:column;height:auto;padding:6px 4px;gap:2px;font-size:.75rem;text-align:center}
+  [data-device="tablet"] .dmain{margin-left:136px}
+  [data-device="tablet"] .dock{left:136px}
+}
+@media (max-width:1100px) and (min-width:761px){
+  [data-device="tablet"] .dgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  [data-device="tablet"] .dgrid.map-grid{grid-template-columns:1fr}
+  [data-device="tablet"] .dgrid .sticky{position:static}
+  [data-device="tablet"] .map-grid .map-hero{height:min(56vh,560px)}
+}
+.map-host.picking .mk{pointer-events:none;opacity:.55}

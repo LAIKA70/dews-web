@@ -2,12 +2,13 @@
 (function(){
 'use strict';
 var BASE = window.DEWS_BASE || '';
-var DESKTOP = window.DEWS_LAYOUT === 'desktop';
+var TABLET = window.DEWS_LAYOUT === 'tablet';
+var DESKTOP = window.DEWS_LAYOUT === 'desktop' || TABLET;
 
 /* ---------- state ---------- */
 var KEY = 'dews2';
 var DEFAULTS = {
-  lang: null, size: 'std', theme: 'auto', glass: 'on', palette: 'a',
+  lang: null, size: 'std', theme: 'auto', glass: 'frost', palette: 'a',
   kit: { people: 1, baby: false, pet: false, have: {} },
   plan: { people: [{ name: '', phone: '' }], near: '', far: '', contact: '', trigger: '' },
   card: { name: '', lang: '', blood: '', allergies: '', meds: '', conditions: '', contactName: '', contactPhone: '', address: '', disability: '', needs: {} },
@@ -135,10 +136,12 @@ function render(){
   document.documentElement.lang = li() ? 'zh-CN' : 'en';
   document.documentElement.setAttribute('data-size', S.size);
   if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', S.theme);
-  document.documentElement.setAttribute('data-glass', S.glass || 'on');
+  if (!S.glass || S.glass === 'on') S.glass = 'frost';
+  document.documentElement.setAttribute('data-glass', S.glass);
   if (S.palette && S.palette !== 'ink') document.documentElement.setAttribute('data-palette', S.palette); else document.documentElement.removeAttribute('data-palette');
   document.body.classList.toggle('em', em);
   document.documentElement.setAttribute('data-layout', DESKTOP ? 'desktop' : 'mobile');
+  document.documentElement.setAttribute('data-device', TABLET ? 'tablet' : DESKTOP ? 'desktop' : 'phone');
   document.title = em ? 'DEWS — ' + t('sos') : 'DEWS';
   if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em); renderLayer(); after(p); return; }
 
@@ -173,11 +176,11 @@ function sidebar(p, em){
   var cur = em ? 'sos' : p[0] === 'learn' ? 'learn' : p[0] === 'prepare' ? (S.mvp ? 'kit' : 'prepare') : p[0] === 'map' ? 'map' : p[0] === 'me' ? 'me' : (S.mvp ? 'kit' : 'home');
   var items = S.mvp ? [['kit', '#/prepare/kit', 'bag', 'tabKit'], ['learn', '#/learn', 'quiz', 'tabLearn'], ['map', '#/map', 'arrow', 'tabGo'], ['me', '#/me', 'user', 'tabProfile']]
     : [['home', '#/', 'sun', 'tabHome'], ['prepare', '#/prepare', 'shield', 'tabPrep'], ['learn', '#/learn', 'quiz', 'tabLearn'], ['map', '#/map', 'pin', 'tabMap'], ['me', '#/me', 'user', 'tabMe']];
-  return '<aside class="side glass"><div class="side-brand"><a class="brand" href="#/">DEWS</a><span class="chip">' + t('desktopLabel') + '</span></div>' + offChip() +
+  return '<aside class="side glass"><div class="side-brand"><a class="brand" href="#/">DEWS</a><span class="chip">' + t(TABLET ? 'tabletLabel' : 'desktopLabel') + '</span></div>' + offChip() +
     '<a class="sosbtn side-sos" href="#/sos"' + (cur === 'sos' ? ' aria-current="page"' : '') + '>' + ic('alert') + t('sos') + '</a>' +
     '<nav class="side-nav" aria-label="Main">' + items.map(function(x){ return '<a href="' + x[1] + '"' + (cur === x[0] ? ' class="on" aria-current="page"' : '') + '>' + ic(x[2]) + '<span>' + t(x[3]) + '</span></a>'; }).join('') + '</nav>' +
     '<div class="side-foot"><button class="iconbtn" data-a="set" data-k="lang" data-v="' + (li() ? 'en' : 'zh') + '">' + ic('globe') + (li() ? 'English' : '中文') + '</button>' +
-    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('phone') + t('mobileLink') + '</a></div></aside>';
+    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('phone') + t('mobileLink') + '</a>' + '<a class="iconbtn" href="' + BASE + (TABLET ? 'desktop/' : 'tablet/') + '">' + ic(TABLET ? 'card' : 'phone') + t(TABLET ? 'desktopLink' : 'tabletLink') + '</a></div></aside>';
 }
 function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : ''; }
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
@@ -479,7 +482,8 @@ function dialHTML(){
 }
 function srcNote(){
   var s = NAV.state.src;
-  return (s === 'osm' ? t('srcOsm') : s === 'cache' ? t('srcCache') : t('srcSample')) + ' ' + t('officialNote');
+  var k = NAV.packInfo && NAV.packInfo();
+  return (s === 'pack' ? t('srcPack') + (k && k.osmBase ? ' ' + t('updated') + ' ' + k.osmBase.slice(0, 10) + '.' : '') : s === 'osm' ? t('srcOsm') : s === 'cache' ? t('srcCache') : t('srcSample')) + ' ' + t('officialNote');
 }
 function guideBody(){
   var st = NAV.state, g = NAV.guide();
@@ -519,28 +523,67 @@ function vMap(){
   all.forEach(function(x){ if (types.indexOf(x.p.type) < 0) types.push(x.p.type); });
   if (types.indexOf(filter) < 0) filter = 'all';
   var list = all.filter(function(x){ return filter === 'all' || x.p.type === filter; }).slice(0, 30), tg = NAV.target();
+  var mapEl = '<div class="mapbox map-hero" id="mapWrap"><div id="mapSlot" class="map-slot">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
+    '<div class="map-chip">' + locChip() + '</div>' +
+    '<div class="map-fabs"><button class="fab glass" data-a="locRetry" aria-label="' + t('locMe') + '">' + ic('locate') + '</button>' +
+    '<button class="fab glass" data-a="pickMe" aria-pressed="' + !!st.picking + '" aria-label="' + t('locPick') + '">' + ic('pin') + '</button></div>' +
+    (st.picking ? '<div class="map-hint glass">' + t('locPickHint') + '</div>' : '') + '</div>';
+  var side = locHelp() + placeCard(tg) +
+    '<div class="filters" style="margin-top:16px">' + types.map(function(k){
+      return '<button class="pick" data-a="filter" data-v="' + k + '" aria-pressed="' + (filter === k) + '">' + (k === 'all' ? t('mapAll') : ic(PLACE_TYPES[k].icon) + tx(PLACE_TYPES[k].name)) + '</button>'; }).join('') + '</div>' +
+    '<section class="card place-list" style="margin-top:12px">' + list.map(function(x){
+      var on = tg && tg.p.id === x.p.id;
+      return '<button class="pl' + (on ? ' on' : '') + '" data-a="pickPlace" data-id="' + x.p.id + '" aria-pressed="' + !!on + '">' +
+        '<span class="mk t-' + x.p.type + '">' + ic(PLACE_TYPES[x.p.type].icon) + '</span>' +
+        '<div class="grow"><div class="nm">' + esc(placeName(x.p)) + '</div><div class="nt">' + esc(tx(PLACE_TYPES[x.p.type].name)) + (x.p.ed ? ' · ' + t('hasED') : '') + (x.p.note ? ' · ' + esc(typeof x.p.note === 'string' ? x.p.note : tx(x.p.note)) : '') + '</div></div>' +
+        '<div><div class="dist">' + fmtDist(x.d) + '</div>' + (x.b != null ? '<div class="dir"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" data-live-b="' + Math.round(x.b) + '">' + P.arrow + '</svg>' + dirName(x.b) + '</div>' : '') + '</div></button>';
+    }).join('') + '</section>' +
+    '<p class="small" style="margin-top:8px">' + srcNote() + '</p>';
   return '<div class="page-head"><h1>' + t('mapTitle') + '</h1></div>' +
-    (!st.pos && st.loc !== 'asking' && st.loc !== 'denied' ? '<div class="callout">' + ic('locate') + '<div class="grow">' + t('guideEnableSub') + '<button class="btn btn-primary" style="margin-top:12px" data-a="navEnable">' + t('guideEnable') + '</button></div></div>' : '') +
-    (st.loc === 'denied' ? '<div class="callout">' + ic('locate') + '<span>' + t('guideDenied') + '</span></div>' : '') +
-    (DESKTOP ? '<div class="dgrid map-grid"><div class="sticky">' + '<div class="mapbox" id="mapSlot">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
-    '<p class="small" style="margin-top:8px">' + srcNote() + '</p>' + '</div><div>' + '<div class="filters" style="margin-top:12px">' + types.map(function(k){
-      return '<button class="pick" data-a="filter" data-v="' + k + '" aria-pressed="' + (filter === k) + '">' + (k === 'all' ? t('mapAll') : ic(PLACE_TYPES[k].icon) + tx(PLACE_TYPES[k].name)) + '</button>'; }).join('') + '</div>' + (tg && st.pos ? '<a class="btn btn-primary" style="margin-top:12px" href="#/map/go">' + ic('arrow') + t('startGuide') + ' · ' + esc(placeName(tg.p)) + '</a>' : '') + '<section style="margin-top:12px">' + list.map(function(x){
-      var on = tg && tg.p.id === x.p.id;
-      return '<button class="pl" style="width:100%;text-align:left' + (on ? ';background:var(--surface-2);border-radius:12px;padding-left:8px;padding-right:8px' : '') + '" data-a="pickPlace" data-id="' + x.p.id + '">' +
-        '<span class="mk t-' + x.p.type + '" style="position:static;margin:0;border:0;width:40px;height:40px">' + ic(PLACE_TYPES[x.p.type].icon) + '</span>' +
-        '<div class="grow"><div class="nm">' + esc(placeName(x.p)) + '</div><div class="nt">' + esc(tx(PLACE_TYPES[x.p.type].name)) + (x.p.note ? ' · ' + esc(typeof x.p.note === 'string' ? x.p.note : tx(x.p.note)) : '') + '</div></div>' +
-        '<div><div class="dist">' + fmtDist(x.d) + '</div>' + (x.b != null ? '<div class="dir"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" data-live-b="' + Math.round(x.b) + '">' + P.arrow + '</svg>' + dirName(x.b) + '</div>' : '') + '</div></button>';
-    }).join('') + '</section>' + '</div></div>'
-      : '<div class="filters" style="margin-top:12px">' + types.map(function(k){
-      return '<button class="pick" data-a="filter" data-v="' + k + '" aria-pressed="' + (filter === k) + '">' + (k === 'all' ? t('mapAll') : ic(PLACE_TYPES[k].icon) + tx(PLACE_TYPES[k].name)) + '</button>'; }).join('') + '</div>' + '<div class="mapbox" id="mapSlot">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
-    '<p class="small" style="margin-top:8px">' + srcNote() + '</p>' + (tg && st.pos ? '<a class="btn btn-primary" style="margin-top:12px" href="#/map/go">' + ic('arrow') + t('startGuide') + ' · ' + esc(placeName(tg.p)) + '</a>' : '') + '<section style="margin-top:12px">' + list.map(function(x){
-      var on = tg && tg.p.id === x.p.id;
-      return '<button class="pl" style="width:100%;text-align:left' + (on ? ';background:var(--surface-2);border-radius:12px;padding-left:8px;padding-right:8px' : '') + '" data-a="pickPlace" data-id="' + x.p.id + '">' +
-        '<span class="mk t-' + x.p.type + '" style="position:static;margin:0;border:0;width:40px;height:40px">' + ic(PLACE_TYPES[x.p.type].icon) + '</span>' +
-        '<div class="grow"><div class="nm">' + esc(placeName(x.p)) + '</div><div class="nt">' + esc(tx(PLACE_TYPES[x.p.type].name)) + (x.p.note ? ' · ' + esc(typeof x.p.note === 'string' ? x.p.note : tx(x.p.note)) : '') + '</div></div>' +
-        '<div><div class="dist">' + fmtDist(x.d) + '</div>' + (x.b != null ? '<div class="dir"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" data-live-b="' + Math.round(x.b) + '">' + P.arrow + '</svg>' + dirName(x.b) + '</div>' : '') + '</div></button>';
-    }).join('') + '</section>');
+    (DESKTOP ? '<div class="dgrid map-grid"><div class="sticky">' + mapEl + '</div><div>' + side + '</div></div>' : mapEl + side);
 }
+function locChip(){
+  var st = NAV.state;
+  if (st.loc === 'on') return '<span class="chip ok glass-chip">' + ic('locate') + t('locOn') + (st.acc ? ' ±' + Math.round(st.acc) + ' m' : '') + '</span>';
+  if (st.loc === 'manual') return '<span class="chip glass-chip">' + ic('pin') + t('locManual') + '</span>';
+  if (st.loc === 'asking') return '<span class="chip glass-chip">' + ic('locate') + (st.locTry ? t('locTryWifi') : t('guideLocating')) + '</span>';
+  if (st.loc === 'denied') return '<span class="chip glass-chip warn">' + ic('alert') + t('locOff') + '</span>';
+  if (st.loc === 'unavailable') return '<span class="chip glass-chip warn">' + ic('alert') + t('locFail') + '</span>';
+  return '<span class="chip glass-chip">' + ic('locate') + t('locNotYet') + '</span>';
+}
+function locHelp(){
+  var st = NAV.state;
+  if (st.loc === 'on' || st.loc === 'manual' || st.loc === 'asking') return '';
+  var msg = st.loc === 'denied' ? t('guideDenied') : st.loc === 'unavailable' ? t('locFailWhy') : t('guideEnableSub');
+  return '<div class="callout" style="margin-top:16px">' + ic('locate') + '<div class="grow">' + msg +
+    '<div class="btn-row"><button class="btn btn-primary" data-a="' + (st.loc === 'off' ? 'navEnable' : 'locRetry') + '">' + ic('locate') + (st.loc === 'off' ? t('guideEnable') : t('locRetry')) + '</button>' +
+    '<button class="btn btn-line" data-a="pickMe">' + ic('pin') + t('locPick') + '</button></div></div></div>';
+}
+function routeLine(){
+  var st = NAV.state, g = NAV.guide(); if (!g) return '';
+  var r = st.routeState, viaRoute = g.viaRoute;
+  var how = viaRoute ? t('routeOk') : r === 'loading' ? t('routeLoading') : r === 'offline' ? t('routeOffline') : r === 'failed' ? t('routeFailed') : t('straight');
+  return '<p class="route-line' + (viaRoute ? ' ok' : '') + '">' + ic(viaRoute ? 'check' : 'arrow') + '<span>' + fmtDist(g.d) + ' · ' + g.mins + ' ' + t('minWalk') + ' · ' + how + '</span></p>';
+}
+function extMapUrl(p){
+  var apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  return apple ? 'https://maps.apple.com/?daddr=' + p.lat + ',' + p.lng + '&dirflg=w'
+               : 'https://www.google.com/maps/dir/?api=1&destination=' + p.lat + ',' + p.lng + '&travelmode=walking';
+}
+function placeCard(tg){
+  var st = NAV.state; if (!tg) return '';
+  var p = tg.p, apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  return '<section class="card place-card" style="margin-top:16px" aria-live="polite"><div class="row" style="align-items:center;gap:12px">' +
+    '<span class="mk t-' + p.type + '" style="width:48px;height:48px">' + ic(PLACE_TYPES[p.type].icon) + '</span>' +
+    '<div class="grow"><span class="eyebrow">' + (SAFE_TYPES.indexOf(p.type) >= 0 ? t('nearestSafe') : t('selected')) + '</span>' +
+    '<h2 class="pc-name">' + esc(placeName(p)) + (p.sample ? ' <span class="chip sample">' + t('sample') + '</span>' : '') + '</h2>' +
+    '<p class="small">' + esc(tx(PLACE_TYPES[p.type].name)) + (p.ed ? ' · ' + t('hasED') : '') + '</p></div></div>' +
+    (st.pos ? routeLine() : '<p class="small" style="margin-top:8px">' + t('needLocForRoute') + '</p>') +
+    (p.type === 'nsp' ? '<p class="warnline">' + ic('alert') + '<span>' + t('nspNote') + '</span></p>' : '') +
+    '<div class="btn-row">' + (st.pos ? '<a class="btn btn-primary" href="#/map/go">' + ic('arrow') + t('startGuide') + '</a>' : '') +
+    '<a class="btn btn-line" href="' + extMapUrl(p) + '" target="_blank" rel="noopener">' + ic('pin') + (apple ? t('openApple') : t('openGoogle')) + '</a></div></section>';
+}
+var SAFE_TYPES = ['assembly', 'shelter', 'nsp', 'rescue', 'hospital'];
 function vGo(em){
   var back = em ? '#/sos' : '#/map', tg = NAV.target();
   var safe = NAV.list().filter(function(x){ return ['assembly', 'shelter', 'rescue', 'hospital'].indexOf(x.p.type) >= 0; }).slice(0, 6);
@@ -578,8 +621,8 @@ function vMe(){
     '<div class="set" style="margin-top:0"><span>' + t('language') + '</span>' + segc('lang', [['en', 'English'], ['zh', '中文']]) + '</div>' +
     '<div class="set"><span>' + t('textSize') + '</span>' + segc('size', [['std', t('sizeStd')], ['lg', t('sizeLg')], ['xl', t('sizeXl')]]) + '</div>' +
     '<div class="set"><span>' + t('theme') + '</span>' + segc('theme', [['auto', t('themeAuto')], ['light', t('themeLight')], ['dark', t('themeDark')]]) + '</div>' +
-    '<div class="set"><span>' + t('palette') + '</span>' + segc('palette', [['a', 'A ' + t('palA')], ['b', 'B ' + t('palB')], ['c', 'C ' + t('palC')], ['ink', t('palInk')]]) + '</div>' +
-    '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['on', t('glassOn')], ['off', t('glassOff')]]) + '</div>' +
+    '<div class="set"><span>' + t('palette') + '</span>' + segc('palette', [['a', 'A ' + t('palA')], ['b', 'B ' + t('palB')], ['c', 'C ' + t('palC')], ['ink', t('palInk')]]) + '<p class="small" style="margin-top:6px">' + t('paletteNote') + '</p></div>' +
+    '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['frost', t('glassFrost')], ['liquid', t('glassLiquid')], ['tint', t('glassTint')], ['off', t('glassSolid')]]) + '<p class="small" style="margin-top:6px">' + t('glassNote') + '</p></div>' +
     '<div class="set"><button class="toggle" data-a="demoToggle" aria-pressed="' + S.demo.alert + '"><span class="grow">' + t('demoAlert') + '<br><span class="small">' + t('demoAlertSub') + '</span></span><span class="sw"></span></button></div></section>' +
     '<h2 class="label">' + t('about') + '</h2>' +
     '<div class="stack"><a class="link-row" href="#/me/sources"><span class="badge">' + ic('shield') + '</span><span class="grow"><span class="t">' + t('sourcesTitle') + '</span><br><span class="d">' + t('sourcesSub') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
@@ -733,6 +776,8 @@ var A = {
   obAllow: function(){ NAV.enable(); A.obFinish(); },
   obFinish: function(){ S.lang = S.pre || 'en'; delete S.pre; OB = 0; save(); render(); },
   navEnable: function(){ NAV.enable().then(function(){ render(); }); render(); },
+  locRetry: function(){ if (NAV.state.loc === 'off') return A.navEnable(); NAV.retry(); },
+  pickMe: function(){ NAV.setPicking(!NAV.state.picking); var w = document.getElementById('mapWrap'); if (w && NAV.state.picking) w.scrollIntoView({ block: 'center', behavior: 'smooth' }); },
   openGo: function(){ location.hash = parts()[0] === 'sos' ? '#/sos/go' : '#/map/go'; },
   recenter: function(){ NAV.recenter(); },
   follow: function(){ NAV.setFollow(!NAV.state.follow); },

@@ -5,6 +5,10 @@ A record of who decided what, and why. Newest first.
 
 | # | Date | Decision | Proposed by | Why / evidence |
 |---|---|---|---|---|
+| 19 | 2026-10-26 | Glass styles as a trial setting (Frosted / Liquid / Tinted / Solid) on buttons and their containers; primary and emergency buttons stay solid | LAIKA | Choose by looking on real devices; emergency actions must stay high-contrast |
+| 18 | 2026-10-26 | Tablet version (bigger type and targets, sidebar / icon rail), same shared code | LAIKA | The desktop layout on a tablet was too small to tap and read |
+| 17 | 2026-10-26 | Safe places bundled in the app (Greater Sydney, OpenStreetMap, rebuilt weekly by GitHub Actions); manual "set my location on the map"; Wi-Fi location fallback | LAIKA reported "can't locate, can't route"; Claude diagnosed | Public Overpass took 37–45 s and often returned 429/502; offline-first means the data must already be on the phone |
+| 16 | 2026-10-26 | Place names follow official Australian terms: evacuation centre, Neighbourhood Safer Place (last resort), emergency assembly area; no generic "safe point" | LAIKA asked; Claude checked NSW sources | "Assembly point" is a workplace term; calling a place "safe" when no authority says so could mislead |
 | 15 | 2026-10-23 | "Me" renamed "Profile" / 个人档案; English and Chinese must say the same thing; "network" not "signal"; first-run guide is swipeable, with buttons kept | LAIKA | "Me" was unclear and didn't match 我的; "signal" is inaccurate (the app needs no internet, GPS still works); swipe is expected on phones, buttons keep it accessible |
 | 14 | 2026-10-23 | Emergency mode follows the normal theme (no forced dark screen); a red line marks the mode | LAIKA (spotted the inconsistent backgrounds) | Switching light/dark felt jarring. Calm comes from consistency and clarity more than hue |
 | 13 | 2026-10-23 | Frosted glass on cards and floating layers, over a soft low-saturation background; can be turned off | LAIKA | Aesthetics. Glass kept at ≥72% opacity so text stays ≥4.5:1; off when "reduce transparency" is on |
@@ -24,4 +28,6 @@ A record of who decided what, and why. Newest first.
 ## Open questions (to answer with research)
 - Which of the international-student gap hypotheses are real? (language, unfamiliar hazards, 000 vs 132 500, renting without a car, family overseas)
 - Final palette: A, B, C or a mix?
+- Final glass style: Frosted, Liquid, Tinted or Solid?
+- Offline walking routes: which approach (see the 2026-10-26 notes)?
 - Do people trust the straight-line arrow offline, or do they need the map?

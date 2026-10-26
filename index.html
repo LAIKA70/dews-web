@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DEWS — 选择版本 · Choose a version</title>
-<meta name="description" content="DEWS — disaster readiness in English and 中文. Mobile and desktop versions.">
+<meta name="description" content="DEWS — disaster readiness in English and 中文. Mobile, tablet and desktop versions.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="app.css">
 <style>
-  .land{max-width:880px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top)) 20px 48px;min-height:100vh;display:flex;flex-direction:column}
+  .land{max-width:1080px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top)) 20px 48px;min-height:100vh;display:flex;flex-direction:column}
   .land-head{display:flex;align-items:center;gap:16px}
   .land-head .mark{width:56px;height:56px}
   .land h1{font-size:clamp(2.25rem,6vw,3.25rem);letter-spacing:-.01em}
   .land .tag{font-size:1.125rem;color:var(--ink-2);margin-top:12px;max-width:40ch}
-  .choices{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px}
+  .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:40px}
   .choice{position:relative;display:flex;flex-direction:column;gap:12px;padding:24px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);min-height:240px;transition:transform .15s}
   .choice:hover{transform:translateY(-2px)}
   .choice .big{width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:var(--surface-2)}
@@ -30,7 +30,7 @@
   .land-foot{margin-top:auto;padding-top:40px;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:.9375rem;color:var(--ink-2)}
   .land-foot a{text-decoration:underline;text-underline-offset:3px}
   .land-foot .em{color:var(--red-text);font-weight:700}
-  @media (max-width:640px){ .choices{grid-template-columns:1fr} .choice{min-height:0} }
+  @media (max-width:860px){ .choices{grid-template-columns:1fr} .choice{min-height:0} }
   @supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
     :root:not([data-glass="off"]) .choice{background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-color:var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 0 0 1px var(--glass-edge),0 4px 18px rgba(0,0,0,.06)}
     :root:not([data-glass="off"]) .choice.rec{border:2px solid var(--primary)}
@@ -52,6 +52,12 @@
       <p>实时指南针和定位指路，没有网络也能用。<br>Live compass and directions. Works with no internet connection.</p>
       <span class="go-link">打开手机版 · Open <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span>
     </a>
+    <a class="choice" id="c-tablet" href="tablet/">
+      <span class="big"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>
+      <h2>平板版<small>Tablet</small></h2>
+      <p>大字、大按钮，地图和清单并排显示，适合 iPad 和安卓平板。<br>Bigger text and buttons, map and list side by side.</p>
+      <span class="go-link">打开平板版 · Open <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span>
+    </a>
     <a class="choice" id="c-desktop" href="desktop/">
       <span class="big"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 17v3.5"/></svg></span>
       <h2>电脑版<small>Desktop</small></h2>
@@ -68,8 +74,10 @@
 </main>
 <script>
 (function(){
-  var phone = (window.matchMedia && matchMedia('(pointer: coarse)').matches) || window.innerWidth < 760;
-  var rec = document.getElementById(phone ? 'c-mobile' : 'c-desktop');
+  var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches, w = Math.min(screen.width, screen.height);
+  var ipad = /iPad/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  var kind = ipad || (coarse && w >= 600) ? 'tablet' : coarse || window.innerWidth < 760 ? 'mobile' : 'desktop';
+  var rec = document.getElementById('c-' + kind);
   rec.classList.add('rec');
   var b = document.createElement('span'); b.className = 'rec-badge'; b.textContent = '推荐 · For this device'; rec.appendChild(b);
   try { var s = JSON.parse(localStorage.getItem('dews2') || 'null'); if (s && s.palette && s.palette !== 'ink') document.documentElement.setAttribute('data-palette', s.palette); } catch (e) {}

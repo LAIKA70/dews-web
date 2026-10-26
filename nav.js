@@ -6,7 +6,8 @@ var NAV = (function () {
   'use strict';
   var st = {
     pos: null, acc: null, heading: null,
-    loc: 'off',        /* off | asking | on | denied | unavailable */
+    loc: 'off',        /* off | asking | on | manual | denied | unavailable */
+    locTry: 0, picking: false, routeState: 'none', /* none | loading | ok | failed | offline */
     compass: 'off',    /* off | on | needs-tap | unavailable */
     places: [], src: null, loadedAt: null, loadedFrom: null,
     targetId: null, route: null, routeFor: null,
@@ -14,7 +15,7 @@ var NAV = (function () {
   };
   var subs = [], liveSubs = [];
   var CACHE_KEY = 'dews-places';
-  var SAFE = { assembly: 1, rescue: 2, hospital: 3, shelter: 1 };
+  var SAFE = { assembly: 1, shelter: 1, nsp: 2, rescue: 2, hospital: 3 };
 
   function emit() { subs.forEach(function (f) { try { f(); } catch (e) {} }); }
   function emitLive() { liveSubs.forEach(function (f) { try { f(); } catch (e) {} }); }
@@ -37,25 +38,42 @@ var NAV = (function () {
 
   /* ---------- location ---------- */
   var watchId = null;
-  function startLocation() {
+  /* Try precise GPS first. If it times out (indoors, Wi-Fi-only tablets, desktops),
+     retry once with network/Wi-Fi positioning, then let the person place themselves on the map. */
+  function onPos(p) {
+    var np = { lat: p.coords.latitude, lng: p.coords.longitude }, first = !st.pos || st.loc === 'manual';
+    var moved = st.pos ? dist(st.pos, np) : 0;
+    st.pos = np; st.acc = p.coords.accuracy; st.loc = 'on'; st.picking = false;
+    try { localStorage.setItem('dews-nav-ok', '1'); } catch (e) {}
+    if (first || !st.loadedFrom || dist(st.loadedFrom, np) > 1200) loadPlaces();
+    else if (moved > 25) { maybeRoute(); emit(); }
+    else emitLive();
+  }
+  function startLocation(force) {
     if (!navigator.geolocation) { st.loc = 'unavailable'; emit(); return; }
-    if (watchId != null) return;
-    st.loc = 'asking'; emit();
-    watchId = navigator.geolocation.watchPosition(function (p) {
-      var np = { lat: p.coords.latitude, lng: p.coords.longitude }, first = !st.pos;
-      var moved = st.pos ? dist(st.pos, np) : 0;
-      st.pos = np; st.acc = p.coords.accuracy; st.loc = 'on';
-      try { localStorage.setItem('dews-nav-ok', '1'); } catch (e) {}
-      if (first || !st.loadedFrom || dist(st.loadedFrom, np) > 1200) loadPlaces();
-      else if (moved > 25) { maybeRoute(); emit(); }
-      else emitLive();
-    }, function (err) {
-      st.loc = err && err.code === 1 ? 'denied' : 'unavailable';
+    if (watchId != null && !force) return;
+    if (watchId != null) { try { navigator.geolocation.clearWatch(watchId); } catch (e) {} watchId = null; }
+    if (st.loc !== 'manual') { st.loc = 'asking'; }
+    st.locTry = 0; emit();
+    watchOnce(true);
+  }
+  function watchOnce(precise) {
+    watchId = navigator.geolocation.watchPosition(onPos, function (err) {
+      try { navigator.geolocation.clearWatch(watchId); } catch (e) {}
       watchId = null;
+      if (err && err.code === 1) { st.loc = 'denied'; }
+      else if (precise) { st.locTry = 1; emit(); watchOnce(false); return; }
+      else if (st.loc !== 'manual') st.loc = 'unavailable';
       if (!st.places.length) useSamples();
       emit();
-    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    }, precise ? { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 } : { enableHighAccuracy: false, maximumAge: 120000, timeout: 30000 });
   }
+  /* The person taps the map to say where they are. */
+  function setManual(lat, lng) {
+    st.pos = { lat: lat, lng: lng }; st.acc = null; st.loc = 'manual'; st.picking = false;
+    loadPlaces();
+  }
+  function setPicking(on) { st.picking = !!on; emit(); }
 
   /* ---------- compass ---------- */
   var hx = null, hy = null, lastLive = 0, gotEvent = false;
@@ -108,6 +126,28 @@ var NAV = (function () {
   }
 
   /* ---------- places ---------- */
+  /* ---------- bundled places (data/places-sydney.json, built weekly from OpenStreetMap) ---------- */
+  var pack = null, packP = null;
+  function loadPack() {
+    if (packP) return packP;
+    packP = fetch((window.DEWS_BASE || '') + 'data/places-sydney.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { pack = j; return j; }).catch(function () { pack = null; return null; });
+    return packP;
+  }
+  function inPack(p) { return pack && p.lat >= pack.bbox[0] && p.lat <= pack.bbox[2] && p.lng >= pack.bbox[1] && p.lng <= pack.bbox[3]; }
+  function fromPack(p) {
+    var R = { assembly: 4000, nsp: 8000, hospital: 12000, rescue: 6000, water: 1500 }, out = [];
+    pack.rows.forEach(function (r, i) {
+      var q = { lat: r[1], lng: r[2] }, d = dist(p, q); if (d > (R[r[0]] || 3000)) return;
+      out.push({ id: 'k' + i, type: r[0], lat: r[1], lng: r[2], name: r[3] || '', nameZh: r[4] || '', note: '', ed: r[5] === 1, osm: true, d: d });
+    });
+    out.sort(function (a, b) { return a.d - b.d; });
+    var per = {}, keep = [];
+    out.forEach(function (x) { per[x.type] = (per[x.type] || 0) + 1; if (per[x.type] <= (x.type === 'water' ? 15 : 25)) keep.push(x); });
+    st.places = keep; st.src = 'pack'; st.loadedAt = Date.parse(pack.built) || Date.now(); st.loadedFrom = p;
+    return keep.length > 0;
+  }
+
   function typeOf(t) {
     if (t.emergency === 'assembly_point') return 'assembly';
     if (t.amenity === 'hospital') return 'hospital';
@@ -146,6 +186,15 @@ var NAV = (function () {
   var loading = false;
   function loadPlaces() {
     if (!st.pos) return;
+    var at = st.pos;
+    loadPack().then(function () {
+      if (st.pos !== at) return;
+      if (inPack(at) && fromPack(at)) { afterPlaces(); return; }
+      loadOnline();
+    });
+  }
+  function loadOnline() {
+    if (!st.pos) return;
     if (navigator.onLine === false) { if (!fromCache()) useSamples(); afterPlaces(); return; }
     if (loading) return; loading = true;
     var p = st.pos, q = '[out:json][timeout:20];(' +
@@ -155,9 +204,9 @@ var NAV = (function () {
       'node["amenity"="drinking_water"](around:1500,' + p.lat + ',' + p.lng + ');' +
       ');out center 150;';
     var ctl = window.AbortController ? new AbortController() : null;
-    var to = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
-    fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {})
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    var to = setTimeout(function () { if (ctl) ctl.abort(); }, 45000);
+    function ask(u) { return fetch(u + '?data=' + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {}).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+    ask('https://overpass-api.de/api/interpreter').catch(function (e) { if (ctl && ctl.signal.aborted) throw e; return ask('https://overpass.private.coffee/api/interpreter'); })
       .then(function (j) {
         var items = parse(j.elements || []);
         if (!items.length) throw new Error('empty');
@@ -184,7 +233,7 @@ var NAV = (function () {
     var safe = list.filter(function (x) { return SAFE[x.p.type]; });
     return safe[0] || list[0] || null;
   }
-  function setTarget(id) { st.targetId = id; st.route = null; maybeRoute(); emit(); if (map && mapState === 'ready') fit(); }
+  function setTarget(id) { st.targetId = id; st.route = null; st.routeState = 'none'; maybeRoute(); emit(); if (map && mapState === 'ready') fit(); }
   function cycleTarget() {
     var safe = withDist().filter(function (x) { return SAFE[x.p.type]; }).slice(0, 5);
     if (!safe.length) return;
@@ -196,16 +245,17 @@ var NAV = (function () {
   /* walking route (online only). Falls back to straight line. */
   var routing = false;
   function maybeRoute() {
-    var t = target(); if (!t || !st.pos || navigator.onLine === false || routing) return;
+    var t = target(); if (!t || !st.pos || routing) return;
+    if (navigator.onLine === false) { if (!(st.route && st.routeFor === t.p.id)) st.routeState = 'offline'; return; }
     if (st.route && st.routeFor === t.p.id && offRoute() < 40) return;
-    routing = true;
+    routing = true; st.routeState = 'loading';
     var u = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot/' + st.pos.lng + ',' + st.pos.lat + ';' + t.p.lng + ',' + t.p.lat + '?overview=full&geometries=geojson&steps=false';
     var ctl = window.AbortController ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 10000);
     fetch(u, ctl ? { signal: ctl.signal } : {}).then(function (r) { return r.json(); }).then(function (j) {
       var rt = j.routes && j.routes[0]; if (!rt) throw 0;
       st.route = { coords: rt.geometry.coordinates.map(function (c) { return { lng: c[0], lat: c[1] }; }), distance: rt.distance, duration: rt.duration };
-      st.routeFor = t.p.id;
-    }).catch(function () { st.route = null; }).then(function () { clearTimeout(to); routing = false; emit(); });
+      st.routeFor = t.p.id; st.routeState = 'ok';
+    }).catch(function () { st.route = null; st.routeState = 'failed'; }).then(function () { clearTimeout(to); routing = false; emit(); });
   }
   function nearestIdx() {
     var best = 0, bd = Infinity, c = st.route.coords;
@@ -262,6 +312,7 @@ var NAV = (function () {
       map = new maplibregl.Map({ container: host, style: style, center: [c.lng, c.lat], zoom: 15, attributionControl: { compact: true }, pitchWithRotate: false, dragRotate: true });
       map.on('load', function () { mapState = 'ready'; addRouteLayer(); sync(true); emit(); });
       map.on('dragstart', function () { if (st.follow) { st.follow = false; emit(); } });
+      map.on('click', function (e) { if (st.picking) setManual(e.lngLat.lat, e.lngLat.lng); });
       map.on('error', function () {});
     }).catch(function () { mapState = 'failed'; emit(); });
   }
@@ -315,8 +366,11 @@ var NAV = (function () {
       var hgt = map.getContainer().clientHeight, big = hgt > 600;
       map.fitBounds(b, { padding: big ? { top: 140, bottom: 340, left: 60, right: 90 } : { top: 40, bottom: 40, left: 40, right: 40 }, maxZoom: 17, duration: 0 });
     } else if (st.pos) map.jumpTo({ center: [st.pos.lng, st.pos.lat], zoom: 15 });
+    else map.jumpTo({ center: [151.2061, -33.8732], zoom: 11 });
   }
   function live() {
+    if (map) map.getCanvas().style.cursor = st.picking ? 'crosshair' : '';
+    if (host) host.classList.toggle('picking', !!st.picking);
     if (!map || !meMk) return;
     var cone = meMk.getElement().querySelector('.cone');
     if (st.heading == null) cone.style.display = 'none';
@@ -332,7 +386,8 @@ var NAV = (function () {
 
   return {
     state: st, onChange: function (f) { subs.push(f); }, onLive: function (f) { liveSubs.push(f); },
-    enable: enable, auto: auto, startLocation: startLocation, loadPlaces: loadPlaces,
+    enable: enable, auto: auto, startLocation: startLocation, loadPlaces: loadPlaces, setManual: setManual, setPicking: setPicking,
+    retry: function () { startLocation(true); }, packInfo: function () { return pack ? { built: pack.built, osmBase: pack.osmBase, area: pack.area } : null; },
     list: withDist, target: target, setTarget: setTarget, cycleTarget: cycleTarget, guide: guide,
     mount: mount, mapState: function () { return mapState; }, setFollow: setFollow, recenter: recenter,
     dist: dist, bearing: bearing

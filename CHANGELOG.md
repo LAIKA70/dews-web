@@ -2,6 +2,16 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.5.0 — 2026-10-26 · Tablet version, a new Nearby screen, more glass
+
+- **Tablet version** at `/tablet/` for iPad and Android tablets: bigger text and buttons, a sidebar in landscape and a compact icon rail in portrait, with the map and the list side by side. The start page now offers 手机版 · 平板版 · 电脑版 and recommends the one that fits your device.
+- **Nearby, redesigned.** The map comes first. A chip on the map says whether your location is on (and how accurate it is). A card shows the nearest help point, how far it is, the walking time and whether that's a real walking route or a straight line, with "Start directions" and "Open in Apple Maps / Google Maps".
+- **Location that doesn't give up.** If precise GPS times out (indoors, Wi-Fi-only tablets, computers), DEWS tries Wi-Fi location, then explains why it failed, offers "Try again", and lets you **tap the map to set your location** yourself.
+- **Places work offline from the first visit.** Hospitals with an emergency department, fire and police stations, emergency assembly areas, Neighbourhood Safer Places and drinking water across Greater Sydney are now saved inside the app (from OpenStreetMap, refreshed every week). Before, the app waited for a public map server that often took 40 seconds or more, gave up after 15, and showed sample places instead.
+- **Clearer place names.** "Assembly point" is now "Emergency assembly area / 紧急集合区". Fire and police stations, evacuation centres and Neighbourhood Safer Places are named as such, and a Neighbourhood Safer Place says it's a last resort in a bushfire.
+- **Glass you can see**, on buttons and the panels that hold them, on phone, tablet and desktop: choose Frosted, Liquid, Tinted or Solid in Profile → Settings. Emergency, Call 000 and main buttons always stay solid.
+- **Colour palette C** is now called "Colour-vision friendly / 色觉友好", with a line explaining it's for people with colour blindness.
+
 ## 2.4.1 — 2026-10-23 · Fits small phones, swipeable guide, clearer words
 
 - **Fits small phones.** On phones about 360 px wide (many Android phones) the top bar was a little too wide, so the browser zoomed the whole page out. It now fits, and nothing on any page sticks out past the screen edge.

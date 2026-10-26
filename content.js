@@ -212,10 +212,11 @@ var SAMPLE_PLACES = [
 ];
 
 var PLACE_TYPES = {
-  assembly: { icon: 'users', name: ['Assembly point', '集合点'] },
-  shelter:  { icon: 'home', name: ['Shelter', '避难所'] },
+  assembly: { icon: 'users', name: ['Emergency assembly area', '紧急集合区'] },
+  shelter:  { icon: 'home', name: ['Evacuation centre', '疏散中心'] },
+  nsp:      { icon: 'home', name: ['Neighbourhood Safer Place', '邻里避险点'] },
   hospital: { icon: 'cross', name: ['Hospital', '医院'] },
-  rescue:   { icon: 'shield', name: ['Fire / police', '消防 / 警察'] },
+  rescue:   { icon: 'shield', name: ['Fire or police station', '消防站或警察局'] },
   water:    { icon: 'drop', name: ['Drinking water', '饮用水'] },
   power:    { icon: 'bolt', name: ['Charging', '充电'] }
 };
@@ -403,7 +404,7 @@ var STR21 = {
   ob2D: ['On any screen, tap the red Emergency button to call 000, tell family you’re safe, get step-by-step help and directions to a safe place.', '在任何页面点红色的“紧急”按钮，可以拨打 000、给家人报平安、查看分步指引，并获得前往安全点的指路。'],
   ob3T: ['Today', '今天'], ob3D: ['Warnings for your area, and how prepared you are.', '你所在区域的预警，和你的准备进度。'],
   ob4T: ['Prepare', '准备'], ob4D: ['Work out your emergency kit, make a household plan and practise scenarios.', '算出应急包、写好家庭计划、做情景练习。'],
-  ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, assembly points and drinking water.', '实时地图，找到最近的医院、集合点和饮水点。'],
+  ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, fire and police stations, assembly areas and drinking water.', '实时地图，找到最近的医院、消防站和警察局、集合区和饮水点。'],
   ob6T: ['Profile', '个人档案'], ob6D: ['Your emergency card for responders, plus language, text size and appearance settings.', '给救援人员看的应急卡，以及语言、字号和外观设置。'],
   obPermT: ['Let DEWS guide you', '让 DEWS 为你指路'],
   obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。'],
@@ -542,4 +543,38 @@ DEWS_VERSION = '2.4.0';
 
 /* v2.4.1 — onboarding swipe + step announcement */
 STR.obStep = ['Step {n} of {total}', '第 {n} 步，共 {total} 步'];
-DEWS_VERSION = '2.4.1';
+
+/* v2.5 — Nearby redesign, location fallbacks, bundled places */
+var STR25 = {
+  locMe: ['Find my location', '定位我的位置'],
+  locPick: ['Set my location on the map', '在地图上标出我的位置'],
+  locPickHint: ['Tap the map where you are', '在地图上点你所在的位置'],
+  locOn: ['Location on', '已定位'],
+  locManual: ['Location set by you', '位置由你手动标出'],
+  locTryWifi: ['Trying Wi-Fi location…', '正在尝试用 Wi-Fi 定位…'],
+  locOff: ['Location is off', '定位已关闭'],
+  locFail: ['Can’t find your location', '无法获取你的位置'],
+  locNotYet: ['Location not on yet', '还没有开启定位'],
+  locFailWhy: ['Your device couldn’t find its location. Go outside or near a window and try again. A Wi-Fi-only tablet or a computer has no GPS, so it needs Wi-Fi turned on — or set your location on the map.', '设备没能找到位置。请到室外或靠近窗户后重试。只有 Wi-Fi 的平板和电脑没有 GPS，需要打开 Wi-Fi；也可以直接在地图上标出你的位置。'],
+  locRetry: ['Try again', '重试'],
+  nearestSafe: ['Nearest help point', '最近的求助地点'],
+  selected: ['Selected', '已选择'],
+  hasED: ['emergency department', '有急诊'],
+  needLocForRoute: ['Turn on location, or set it on the map, to get directions.', '开启定位或在地图上标出位置后，才能为你指路。'],
+  routeOk: ['walking route', '步行路线'],
+  routeLoading: ['finding a walking route…', '正在规划步行路线…'],
+  routeOffline: ['offline — straight-line direction', '离线：显示直线方向'],
+  routeFailed: ['route service didn’t answer — straight-line direction', '路线服务没有响应：显示直线方向'],
+  openApple: ['Open in Apple Maps', '在 Apple 地图中打开'],
+  openGoogle: ['Open in Google Maps', '在 Google 地图中打开'],
+  nspNote: ['A Neighbourhood Safer Place is a last resort in a bushfire, when your plan has failed. It may not have food, shelter or staff.', '邻里避险点是山火时计划失败后的最后选择，那里可能没有食物、住宿或工作人员。'],
+  srcPack: ['Places saved in the app from OpenStreetMap (community data), so they work offline.', '地点来自 OpenStreetMap（社区数据），已存进应用，离线也能用。'],
+  updated: ['Updated', '更新于'],
+  glassFrost: ['Frosted', '磨砂'], glassLiquid: ['Liquid', '液态'], glassTint: ['Tinted', '着色'], glassSolid: ['Solid', '不透明'],
+  glassNote: ['Emergency and Call 000 buttons always stay solid, so they are easy to see.', '“紧急”和“拨打 000”按钮始终保持不透明，确保一眼能看到。'],
+  tabletLabel: ['Tablet', '平板版'], tabletLink: ['Tablet version', '平板版']
+};
+for (var k25 in STR25) STR[k25] = STR25[k25];
+STR.palC = ['Colour-vision friendly', '色觉友好'];
+STR.paletteNote = ['C is designed so people with colour blindness (difficulty telling some colours apart, about 1 in 12 men) can still tell every colour apart.', 'C 方案专为色盲、色弱的人设计（分不清某些颜色，约每 12 名男性中有 1 人），所有颜色仍能区分开。'];
+DEWS_VERSION = '2.5.0';

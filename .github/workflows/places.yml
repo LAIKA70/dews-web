@@ -1,0 +1,26 @@
+name: Update Sydney places
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'   # every Monday
+  push:
+    branches: [main]
+    paths: ['tools/build-places.mjs', '.github/workflows/places.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node tools/build-places.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name "dews-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/places-sydney.json
+          git diff --cached --quiet || (git commit -m "Update Sydney places from OpenStreetMap" && git push)

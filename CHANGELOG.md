@@ -2,6 +2,11 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.7.0 — 2026-10-26 · Feedback
+
+- **Feedback** (Profile → Feedback): "Report a problem" and "Suggest an idea" open a ready-made bilingual form on GitHub with your app version and device type filled in — never your profile, location or health details.
+- When location fails, "Error details" now has a "Report this problem" link that includes the error code.
+
 ## 2.6.1 — 2026-10-26 · Updates show straight away
 
 - After a new version is published, the app now checks for changed files every time it opens, instead of using the browser's copy for up to 10 minutes.

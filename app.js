@@ -200,6 +200,16 @@ function emTop(back){
     '<span class="sp"></span><span class="em-label">' + t('sos') + '</span></header>';
 }
 
+/* ---------- feedback: opens a GitHub issue with version and device filled in ---------- */
+function deviceInfo(extra){
+  var ua = navigator.userAgent, os = (ua.match(/Android [\d.]+|iPhone OS [\d_]+|iPad|Mac OS X [\d_]+|Windows NT [\d.]+/) || ['?'])[0].replace(/_/g, '.');
+  var br = (ua.match(/HeyTapBrowser|OppoBrowser|MicroMessenger|SamsungBrowser|EdgA?|CriOS|Chrome|Firefox|FxiOS|Safari/) || ['?'])[0];
+  return 'DEWS ' + DEWS_VERSION + ' · ' + (window.DEWS_LAYOUT || '') + ' · ' + (li() ? 'zh' : 'en') + '\n' + os + ' · ' + br + ' · ' + innerWidth + '×' + innerHeight + (extra ? '\n' + extra : '');
+}
+function fbUrl(kind, extra){
+  return 'https://github.com/LAIKA70/dews-web/issues/new?template=' + kind + '.yml&device=' + encodeURIComponent(deviceInfo(extra));
+}
+
 /* ---------- sample warnings ---------- */
 var SAMPLE_ALERT = SAMPLE_ALERTS[2];
 function curAlert(){ var w = S.demo.which; return SAMPLE_ALERTS[w == null ? 2 : w] || SAMPLE_ALERTS[2]; }
@@ -644,7 +654,7 @@ function locHelp(){
   var st = NAV.state;
   if (st.loc === 'on' || st.loc === 'manual' || st.loc === 'asking') return '';
   var msg = st.loc === 'denied' ? t('locDeniedHelp') : st.loc === 'unavailable' ? t('locFailWhy') : t('guideEnableSub');
-  if (st.locErr) msg += '<details class="small" style="margin-top:6px"><summary>' + t('locErrCode') + '</summary>code ' + st.locErr.code + ' · ' + esc(st.locErr.msg) + ' · ' + esc(navigator.userAgent.replace(/\s*\(.*?\)\s*/, ' ').slice(0, 120)) + '</details>';
+  if (st.locErr) msg += '<details class="small" style="margin-top:6px"><summary>' + t('locErrCode') + '</summary>code ' + st.locErr.code + ' · ' + esc(st.locErr.msg) + ' · ' + esc(navigator.userAgent.replace(/\s*\(.*?\)\s*/, ' ').slice(0, 120)) + '<br><a target="_blank" rel="noopener" style="text-decoration:underline" href="' + fbUrl('problem', 'Location error code ' + st.locErr.code + ': ' + st.locErr.msg) + '">' + t('fbReportThis') + '</a></details>';
   return '<div class="callout" style="margin-top:16px">' + ic('locate') + '<div class="grow">' + msg +
     '<div class="btn-row"><button class="btn btn-primary" data-a="' + (st.loc === 'off' ? 'navEnable' : 'locRetry') + '">' + ic('locate') + (st.loc === 'off' ? t('guideEnable') : t('locRetry')) + '</button>' +
     '<button class="btn btn-line" data-a="pickMe">' + ic('pin') + t('locPick') + '</button></div></div></div>';
@@ -714,6 +724,9 @@ function vMe(){
     '<div class="set"><span>' + t('palette') + '</span>' + segc('palette', [['a', 'A ' + t('palA')], ['b', 'B ' + t('palB')], ['c', 'C ' + t('palC')], ['ink', t('palInk')]]) + '<p class="small" style="margin-top:6px">' + t('paletteNote') + '</p></div>' +
     '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['frost', t('glassFrost')], ['liquid', t('glassLiquid')], ['tint', t('glassTint')], ['off', t('glassSolid')]]) + (S.glass !== 'off' ? '<label class="small" style="display:block;margin-top:10px;font-weight:700;color:var(--ink)" for="glassA">' + t('glassAmount') + '</label><input class="range" id="glassA" type="range" min="20" max="130" step="5" data-glassa="1" value="' + (S.glassA == null ? 70 : S.glassA) + '" aria-valuetext="' + (S.glassA == null ? 70 : S.glassA) + '%"><div class="row small" style="justify-content:space-between;color:var(--ink-3)"><span>' + t('glassClear') + '</span><span>' + t('glassThick') + '</span></div>' : '') + '<p class="small" style="margin-top:6px">' + t('glassNote') + '</p></div>' +
     '<div class="set"><button class="toggle" data-a="demoToggle" aria-pressed="' + S.demo.alert + '"><span class="grow">' + t('demoAlert') + '<br><span class="small">' + t('demoAlertSub') + '</span></span><span class="sw"></span></button></div></section>' +
+    '<h2 class="label">' + t('fbTitle') + '</h2><section class="card"><p class="small">' + t('fbSub') + '</p><div class="btn-row">' +
+    '<a class="btn btn-line" target="_blank" rel="noopener" href="' + fbUrl('problem') + '">' + ic('alert') + t('fbProblem') + '</a>' +
+    '<a class="btn btn-line" target="_blank" rel="noopener" href="' + fbUrl('idea') + '">' + ic('msg') + t('fbIdea') + '</a></div><p class="small" style="margin-top:8px">' + t('fbPrivacy') + '</p></section>' +
     '<h2 class="label">' + t('about') + '</h2>' +
     '<div class="stack"><a class="link-row" href="#/me/sources"><span class="badge">' + ic('shield') + '</span><span class="grow"><span class="t">' + t('sourcesTitle') + '</span><br><span class="d">' + t('sourcesSub') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
     '<div class="card"><p class="small">' + linkify(t('aboutText')) + '</p><p class="small" style="margin-top:8px">' + t('version') + ' ' + DEWS_VERSION + ' · <a href="' + BASE + 'v1/" style="text-decoration:underline">' + t('oldVersion') + '</a> · <a href="' + BASE + (DESKTOP ? 'mobile/' : 'desktop/') + '" style="text-decoration:underline">' + (DESKTOP ? t('mobileLink') : t('desktopLink')) + '</a></p></div>' +

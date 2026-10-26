@@ -1,0 +1,23 @@
+name: 报告问题 · Report a problem
+description: Something doesn't work or looks wrong. 有功能不能用，或显示不对。
+labels: ["problem"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么？ What happened?
+      description: 你在做什么，看到了什么。What were you doing and what did you see?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你期望看到什么？ What did you expect?
+  - type: textarea
+    id: device
+    attributes:
+      label: 设备信息 Device info
+      description: 从 app 里点"报告问题"会自动填好。Filled in automatically when you report from the app.
+  - type: markdown
+    attributes:
+      value: "请不要填写个人健康信息、地址或电话。Please don't include health details, your address or phone number."

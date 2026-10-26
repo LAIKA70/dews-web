@@ -1,0 +1,18 @@
+name: 提建议 · Suggest an idea
+description: An idea to make DEWS better. 让 DEWS 更好用的想法。
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你的建议 Your idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 它能帮到谁、在什么情况下？ Who would it help, and when?
+  - type: textarea
+    id: device
+    attributes:
+      label: 设备信息 Device info

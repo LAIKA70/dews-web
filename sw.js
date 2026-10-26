@@ -1,7 +1,7 @@
 /* DEWS service worker — keeps the app working with no internet connection.
  * App files: network first (so updates show at once), cache when offline.
  * Map tiles: cache first, so places you've viewed work offline. */
-var CACHE = 'dews-v2.6.0';
+var CACHE = 'dews-v2.6.1';
 var TILES = 'dews-tiles';
 var TILE_MAX = 600;
 var FILES = ['./', './index.html', './app.css', './app.js', './content.js', './nav.js', './mobile/', './mobile/index.html', './desktop/', './desktop/index.html', './tablet/', './tablet/index.html', './data/places-sydney.json',
@@ -34,7 +34,7 @@ self.addEventListener('fetch', function (e) {
   }
   if (url.origin !== self.location.origin) return;
   e.respondWith(caches.open(CACHE).then(function (cache) {
-    var net = fetch(req).then(function (res) { if (res && res.ok) cache.put(req, res.clone()); return res; });
+    var net = fetch(req, { cache: 'no-cache' }).then(function (res) { if (res && res.ok) cache.put(req, res.clone()); return res; });
     return Promise.race([net, timeout(4000)]).catch(function () {
       return cache.match(req, { ignoreSearch: true }).then(function (hit) {
         if (hit) return hit;

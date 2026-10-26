@@ -2,6 +2,10 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.6.1 — 2026-10-26 · Updates show straight away
+
+- After a new version is published, the app now checks for changed files every time it opens, instead of using the browser's copy for up to 10 minutes.
+
 ## 2.6.0 — 2026-10-26 · New warning flow, Learn tutorial, real places only
 
 - **New warning flow** (LAIKA's design), built on the Australian Warning System: **what's happening → how far from you → do you need to act → what to take → where to go**. Advice is a reminder only. Watch and Act shows your kit to pack and your way out. Emergency Warning shows the official instruction in big type: "Leave now" lists just three things to take and starts directions **away from the warning area** (the map shows the area in red); "Shelter indoors now" shows the shelter steps instead of a route. Call 000 and Tell family I'm safe are always at the top.

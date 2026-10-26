@@ -649,4 +649,4 @@ STR26.seeWhatToDo = ['See what to do', '看看该怎么做'];
 STR26.hazardZone = ['Warning area', '预警区域'];
 for (var k26 in STR26) STR[k26] = STR26[k26];
 STR.paletteNote = ['C is designed so people with colour blindness (difficulty telling some colours apart, about 1 in 12 men) can still tell every colour apart.', 'C 方案专为色盲、色弱的人设计（分不清某些颜色，约每 12 名男性中有 1 人），所有颜色仍能区分开。'];
-DEWS_VERSION = '2.6.0';
+DEWS_VERSION = '2.6.1';

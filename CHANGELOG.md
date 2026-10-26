@@ -2,6 +2,16 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.6.0 — 2026-10-26 · New warning flow, Learn tutorial, real places only
+
+- **New warning flow** (LAIKA's design), built on the Australian Warning System: **what's happening → how far from you → do you need to act → what to take → where to go**. Advice is a reminder only. Watch and Act shows your kit to pack and your way out. Emergency Warning shows the official instruction in big type: "Leave now" lists just three things to take and starts directions **away from the warning area** (the map shows the area in red); "Shelter indoors now" shows the shelter steps instead of a route. Call 000 and Tell family I'm safe are always at the top.
+- **Simulate a warning** now lets you pick one of four samples (Advice, Watch and Act, Leave now, Shelter now) to test each path.
+- **Learn tutorial**: the first time you open Learn, the screen dims and lights up one part at a time, with a line on what it does. Tap anywhere to continue; "Show me how this works" replays it.
+- **Only real places.** The map no longer shows invented sample places, even without your location; it shows real places around the map centre instead. New: police and fire stations shown separately, clinics and GPs, EV charging stations and phone charging points, all from OpenStreetMap. Evacuation centres are opened by emergency services during an event, so DEWS points you to Hazards Near Me and ABC Radio for those.
+- **"You are here"** is now violet (a colour no place uses), pulses, and carries a "You are here" label.
+- **Location help** says exactly what to check when location is blocked (device switch, the browser's app permission, the website permission), and shows the error details so problems can be reported.
+- **Glass is more see-through**, with a new **Glass transparency** slider in Profile → Settings.
+
 ## 2.5.0 — 2026-10-26 · Tablet version, a new Nearby screen, more glass
 
 - **Tablet version** at `/tablet/` for iPad and Android tablets: bigger text and buttons, a sidebar in landscape and a compact icon rail in portrait, with the map and the list side by side. The start page now offers 手机版 · 平板版 · 电脑版 and recommends the one that fits your device.

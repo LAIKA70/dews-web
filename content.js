@@ -216,6 +216,12 @@ var PLACE_TYPES = {
   shelter:  { icon: 'home', name: ['Evacuation centre', '疏散中心'] },
   nsp:      { icon: 'home', name: ['Neighbourhood Safer Place', '邻里避险点'] },
   hospital: { icon: 'cross', name: ['Hospital', '医院'] },
+  clinic:   { icon: 'cross', name: ['Clinic or GP', '诊所'] },
+  police:   { icon: 'shield', name: ['Police station', '警察局'] },
+  fire:     { icon: 'fire', name: ['Fire station', '消防站'] },
+  ses:      { icon: 'storm', name: ['SES unit', 'SES 救援站'] },
+  ev:       { icon: 'bolt', name: ['EV charging', '电动车充电站'] },
+  phone:    { icon: 'phone', name: ['Phone charging', '手机充电点'] },
   rescue:   { icon: 'shield', name: ['Fire or police station', '消防站或警察局'] },
   water:    { icon: 'drop', name: ['Drinking water', '饮用水'] },
   power:    { icon: 'bolt', name: ['Charging', '充电'] }
@@ -368,18 +374,18 @@ var STR = {
 
 /* v2.1 — guidance, map, onboarding */
 var STR21 = {
-  guideTitle: ['Nearest safe place', '最近的安全点'],
+  guideTitle: ['Nearest help point', '最近的求助地点'],
   guideEnable: ['Turn on location and compass', '开启定位和指南针'],
-  guideEnableSub: ['DEWS will point you to the nearest safe place.', 'DEWS 会直接指向最近的安全点。'],
+  guideEnableSub: ['DEWS will point you to the nearest place to get help.', 'DEWS 会直接指向最近的求助地点。'],
   guideLocating: ['Finding your location…', '正在定位…'],
-  guideDenied: ['Location is off. Turn it on in your phone settings to get directions.', '定位已关闭。请在手机设置里打开，才能指路。'],
+  guideDenied: ['Location is off. Turn it on in your device settings to get directions, or set your location on the map.', '定位已关闭。请在设备设置里打开，或在地图上标出你的位置，才能指路。'],
   compassTap: ['Turn on compass', '开启指南针'],
   compassNone: ['No compass on this device — the arrow points north-up.', '这台设备没有指南针，箭头以正北为上。'],
   viaRoute: ['along the walking route', '沿步行路线'],
   straight: ['straight line — follow roads and paths', '直线方向，请沿道路走'],
   minWalk: ['min walk', '分钟步行'],
   openMap: ['Open map', '打开地图'],
-  goTitle: ['Get to safety', '前往安全点'],
+  goTitle: ['Directions', '指路'],
   nextPlace: ['Next nearest', '换一个'],
   recenter: ['Show me and the target', '显示我和目的地'],
   followHeading: ['Rotate map with me', '地图跟随朝向'],
@@ -401,7 +407,7 @@ var STR21 = {
   ob1T: ['Welcome to DEWS', '欢迎使用 DEWS'],
   ob1D: ['Get ready before a disaster, and know what to do during one. Once loaded, it works with no internet connection.', '灾害前做好准备，灾害中知道该做什么。加载一次后，没有网络也能用。'],
   ob2T: ['Emergency', '紧急'],
-  ob2D: ['On any screen, tap the red Emergency button to call 000, tell family you’re safe, get step-by-step help and directions to a safe place.', '在任何页面点红色的“紧急”按钮，可以拨打 000、给家人报平安、查看分步指引，并获得前往安全点的指路。'],
+  ob2D: ['On any screen, tap the red Emergency button to call 000, tell family you’re safe, get step-by-step help and directions to the nearest place to get help.', '在任何页面点红色的“紧急”按钮，可以拨打 000、给家人报平安、查看分步指引，并获得前往最近求助地点的指路。'],
   ob3T: ['Today', '今天'], ob3D: ['Warnings for your area, and how prepared you are.', '你所在区域的预警，和你的准备进度。'],
   ob4T: ['Prepare', '准备'], ob4D: ['Work out your emergency kit, make a household plan and practise scenarios.', '算出应急包、写好家庭计划、做情景练习。'],
   ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, fire and police stations, assembly areas and drinking water.', '实时地图，找到最近的医院、消防站和警察局、集合区和饮水点。'],
@@ -576,5 +582,71 @@ var STR25 = {
 };
 for (var k25 in STR25) STR[k25] = STR25[k25];
 STR.palC = ['Colour-vision friendly', '色觉友好'];
+/* v2.6 */
+var STR26 = {
+  youAreHere: ['You are here', '你在这里'],
+  glassAmount: ['Glass transparency', '玻璃透明度'], glassClear: ['More see-through', '更透明'], glassThick: ['More solid', '更实'],
+  locDeniedHelp: ['Location was blocked. Check three things: 1) the device’s Location switch is on; 2) Settings → Apps → your browser → Permissions → Location is allowed; 3) this website is allowed to use location in the browser. Still not working? Open DEWS in Chrome, or set your location on the map.', '定位被阻止了。请检查三处：① 设备的“位置信息”总开关已打开；② 系统设置 → 应用 → 你的浏览器 → 权限 → 位置信息：允许；③ 浏览器里允许本网站使用位置。仍然不行，可以换 Chrome 打开 DEWS，或直接在地图上标出你的位置。'],
+  locErrCode: ['Error details', '错误详情'],
+  evacNote: ['Evacuation centres are opened by emergency services during an event. Check Hazards Near Me or listen to ABC Radio for where they are.', '疏散中心由应急部门在灾害发生时开放。请查看 Hazards Near Me 或收听 ABC 电台了解位置。'],
+  browseNote: ['Showing real places near the map centre. Turn on location to see distances.', '显示的是地图中心附近的真实地点。开启定位后才能显示距离。']
+};
+STR26.tutReplay = ['Show me how this works', '看看怎么用'];
+STR26.tut1 = ['Pick a disaster to learn about. Each one shows what it is, how to prepare and what to add to your kit.', '选一种灾害来了解。每种都会告诉你：它是什么、怎么提前准备、应急包里要加什么。'];
+STR26.tut2 = ['Start here: what this disaster is, in plain words.', '先看这里：用简单的话说明这种灾害是什么。'];
+STR26.tut3 = ['Things to do now, before it happens. Every step comes from an official Australian source.', '灾害来之前，现在就能做的事。每一条都来自澳洲官方来源。'];
+STR26.tut4 = ['Supplies this disaster needs. Tick what you already have.', '这种灾害需要的物资。已经有的就打勾。'];
+STR26.tut5 = ['Add everything to your emergency kit with one tap, then pack it in the kit checklist.', '一键全部加入你的应急包，再到应急包清单里逐项备好。'];
+STR26.tut6 = ['If it is happening now, tap here for step-by-step help.', '如果灾害正在发生，点这里看分步指引。'];
+STR26.tutTap = ['Tap anywhere to continue', '点击屏幕任意处继续'];
+STR26.tutDone = ['Tap anywhere to finish', '点击屏幕任意处结束'];
+STR26.tutSkip = ['Skip', '跳过'];
+/* Sample warnings — one per kind of response. Wording follows the Australian Warning System
+   calls to action (source: aws). Positions are placed relative to the person, for testing. */
+var SAMPLE_ALERTS = [
+  { hazard: 'storm', level: 'advice', kind: 'none', dx: -2600, dy: -1800, r: 1500,
+    what: ['Severe thunderstorms are possible later today.', '今天稍晚可能有强雷暴。'],
+    action: ['Stay informed', '随时关注最新消息'], area: ['Sample area (demo)', '示例区域（演示）'], issued: '14:20' },
+  { hazard: 'flood', level: 'watch', kind: 'prepare', dx: 1400, dy: 900, r: 900,
+    what: ['The creek is rising. Low-lying streets may flood tonight.', '河水正在上涨，低洼街道今晚可能被淹。'],
+    action: ['Prepare to leave', '做好撤离准备'], area: ['Sample creek (demo)', '示例河道（演示）'], issued: '15:40' },
+  { hazard: 'fire', level: 'emergency', kind: 'evacuate', dx: -1200, dy: -1500, r: 800,
+    what: ['A bushfire is spreading towards homes.', '山火正在向住宅区蔓延。'],
+    action: ['Leave now', '立即撤离'], area: ['Sample Ridge (demo)', '示例山区（演示）'], issued: '16:05' },
+  { hazard: 'storm', level: 'emergency', kind: 'shelter', dx: 300, dy: -400, r: 2500,
+    what: ['A destructive storm is about to hit your area.', '破坏性风暴即将到达你所在的区域。'],
+    action: ['Shelter indoors now', '立即在室内避险'], area: ['Your area (demo)', '你所在的区域（演示）'], issued: '16:30' }
+];
+STR26.simTitle = ['Simulate a warning', '模拟一条预警'];
+STR26.simSub = ['Pick a sample to test the flow. Nothing real is happening.', '选一条示例预警来测试流程。不是真实事件。'];
+STR26.kindNone = ['Reminder only', '只是提醒'];
+STR26.kindPrepare = ['Get ready to leave', '准备撤离'];
+STR26.kindEvacuate = ['Leave now', '立即撤离'];
+STR26.kindShelter = ['Shelter where you are', '就地避险'];
+STR26.qWhat = ['What’s happening', '发生了什么'];
+STR26.qFar = ['How far from you', '离你多远'];
+STR26.qDo = ['What you need to do', '你需要做什么'];
+STR26.qBring = ['Take these', '带上这些'];
+STR26.qGo = ['Where to go', '去哪里'];
+STR26.farIn = ['You are inside the warning area', '你就在预警区域内'];
+STR26.farAway = ['to the edge of the warning area · it is to your', '到预警区域边缘的距离 · 位于你的'];
+STR26.farDirSuffix = ['', '方'];
+STR26.farNeedLoc = ['Turn on location to see how far it is.', '开启定位后，才能算出离你多远。'];
+STR26.noAction = ['You don’t need to act now. Keep an eye on updates.', '现在不需要行动，留意后续更新即可。'];
+STR26.gotIt = ['Got it', '知道了'];
+STR26.prepareNow = ['Pack now so you can leave quickly if this gets worse.', '现在就收拾好，情况变坏时可以马上离开。'];
+STR26.bringNow = ['Don’t stop to pack. Take only:', '不要停下来收拾，只带：'];
+STR26.bring1 = ['Your emergency kit, if it’s by the door', '应急包（如果就在门口）'];
+STR26.bring2 = ['Medication', '药品'];
+STR26.bring3 = ['Important documents, phone and charger', '重要证件、手机和充电器'];
+STR26.openKit = ['Open my emergency kit', '打开我的应急包'];
+STR26.navGo = ['Start directions away from danger', '开始导航，远离危险区域'];
+STR26.navPreview = ['Check your way out now', '先看好撤离路线'];
+STR26.awayNote = ['The route leads away from the warning area.', '路线会避开预警区域的方向。'];
+STR26.shelterSteps = ['How to shelter', '怎么避险'];
+STR26.receivedWarning = ['A warning for your area', '你所在区域有一条预警'];
+STR26.seeWhatToDo = ['See what to do', '看看该怎么做'];
+STR26.hazardZone = ['Warning area', '预警区域'];
+for (var k26 in STR26) STR[k26] = STR26[k26];
 STR.paletteNote = ['C is designed so people with colour blindness (difficulty telling some colours apart, about 1 in 12 men) can still tell every colour apart.', 'C 方案专为色盲、色弱的人设计（分不清某些颜色，约每 12 名男性中有 1 人），所有颜色仍能区分开。'];
-DEWS_VERSION = '2.5.0';
+DEWS_VERSION = '2.6.0';

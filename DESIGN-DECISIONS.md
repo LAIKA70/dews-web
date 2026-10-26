@@ -5,6 +5,9 @@ A record of who decided what, and why. Newest first.
 
 | # | Date | Decision | Proposed by | Why / evidence |
 |---|---|---|---|---|
+| 22 | 2026-10-26 | No invented places on the map, ever; only real OpenStreetMap places, with evacuation centres left to official channels | LAIKA | People act on what the map shows; a fake place could send someone the wrong way |
+| 21 | 2026-10-26 | Warning flow: what → how far → act? → what to take → where to go; whether to act comes from the official warning level, not from DEWS | LAIKA (flow), Claude (official level decides, leave vs shelter) | Matches the Australian Warning System; the app must not invent safety decisions |
+| 20 | 2026-10-26 | "You are here" uses a colour reserved for it (violet) plus pulse and label | LAIKA | Blue was also the drinking-water colour |
 | 19 | 2026-10-26 | Glass styles as a trial setting (Frosted / Liquid / Tinted / Solid) on buttons and their containers; primary and emergency buttons stay solid | LAIKA | Choose by looking on real devices; emergency actions must stay high-contrast |
 | 18 | 2026-10-26 | Tablet version (bigger type and targets, sidebar / icon rail), same shared code | LAIKA | The desktop layout on a tablet was too small to tap and read |
 | 17 | 2026-10-26 | Safe places bundled in the app (Greater Sydney, OpenStreetMap, rebuilt weekly by GitHub Actions); manual "set my location on the map"; Wi-Fi location fallback | LAIKA reported "can't locate, can't route"; Claude diagnosed | Public Overpass took 37–45 s and often returned 429/502; offline-first means the data must already be on the phone |

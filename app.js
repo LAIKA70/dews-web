@@ -138,6 +138,7 @@ function render(){
   if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', S.theme);
   if (!S.glass || S.glass === 'on') S.glass = 'frost';
   document.documentElement.setAttribute('data-glass', S.glass);
+  document.documentElement.style.setProperty('--ga', ((S.glassA == null ? 70 : +S.glassA) / 100).toFixed(2));
   if (S.palette && S.palette !== 'ink') document.documentElement.setAttribute('data-palette', S.palette); else document.documentElement.removeAttribute('data-palette');
   document.body.classList.toggle('em', em);
   document.documentElement.setAttribute('data-layout', DESKTOP ? 'desktop' : 'mobile');
@@ -199,13 +200,33 @@ function emTop(back){
     '<span class="sp"></span><span class="em-label">' + t('sos') + '</span></header>';
 }
 
+/* ---------- sample warnings ---------- */
+var SAMPLE_ALERT = SAMPLE_ALERTS[2];
+function curAlert(){ var w = S.demo.which; return SAMPLE_ALERTS[w == null ? 2 : w] || SAMPLE_ALERTS[2]; }
+function alertZone(){
+  if (!S.demo.alert || !S.demo.at) return null;
+  var a = curAlert(), c = NAV.offset(S.demo.at, a.dx, a.dy);
+  return { lat: c.lat, lng: c.lng, r: a.r };
+}
+function alertFar(){
+  var z = alertZone(), st = NAV.state; if (!z || !st.pos) return null;
+  var d = NAV.dist(st.pos, z), edge = Math.max(0, d - z.r);
+  return { inside: d <= z.r, edge: edge, dir: dirName(NAV.bearing(st.pos, z)) };
+}
+function syncAlertZone(){
+  if (S.demo.alert && !S.demo.anchored && NAV.state.pos) { S.demo.at = { lat: NAV.state.pos.lat, lng: NAV.state.pos.lng }; S.demo.anchored = true; save(); }
+  var z = alertZone(), cur = NAV.state.avoid;
+  if (!z && cur) NAV.setAvoid(null);
+  else if (z && (!cur || Math.abs(cur.lat - z.lat) > 1e-6 || Math.abs(cur.lng - z.lng) > 1e-6)) NAV.setAvoid(z);
+}
+
 /* ---------- HOME ---------- */
 function dateLine(){
   try { return new Date().toLocaleDateString(li() ? 'zh-CN' : 'en-AU', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return ''; }
 }
 function alertCard(){
   if (S.demo.alert) {
-    var a = SAMPLE_ALERT, L = LEVELS[a.level], h = hz(a.hazard);
+    var a = curAlert(), L = LEVELS[a.level], h = hz(a.hazard);
     return '<a class="alert lv-' + a.level + '" href="#/alert">' +
       '<div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
       '<div class="alert-body"><div class="alert-act">' + esc(tx(a.action)) + '</div>' +
@@ -240,38 +261,58 @@ function numbers(){
     '<a class="num" href="tel:132500"><span class="num-n">132 500</span><span class="grow">' + t('n132') + '</span>' + ic('phone') + '</a>';
 }
 
-/* ---------- ALERT DETAIL ---------- */
+/* ---------- WARNING FLOW: what · how far · do I act · what to take · where to go ---------- */
+function farLine(){
+  var f = alertFar();
+  if (!f) return '<p class="small">' + t('farNeedLoc') + '</p><button class="btn btn-line" style="margin-top:8px" data-a="navEnable">' + ic('locate') + t('guideEnable') + '</button>';
+  if (f.inside) return '<p class="wf-big" style="color:var(--red-text)">' + ic('alert') + t('farIn') + '</p>';
+  return '<p class="wf-big">' + fmtDist(f.edge) + '</p><p class="small">' + t('farAway') + (li() ? '' : ' ') + f.dir + t('farDirSuffix') + '</p>';
+}
 function vAlert(){
   if (!S.demo.alert) return vHome();
-  var a = SAMPLE_ALERT, L = LEVELS[a.level], h = hz(a.hazard);
+  var a = curAlert(), L = LEVELS[a.level], h = hz(a.hazard), k = a.kind;
+  var steps = k === 'shelter' ? (h.fork.options.filter(function(o){ return o.kind === 'shelter'; })[0] || {}).steps || [] : [];
+  var bring = k === 'evacuate'
+    ? '<p class="wf-lead">' + t('bringNow') + '</p><ol class="wf-list"><li>' + t('bring1') + '</li><li>' + t('bring2') + '</li><li>' + t('bring3') + '</li></ol>' + srcLine('fire')
+    : k === 'prepare' ? '<p class="wf-lead">' + t('prepareNow') + '</p><ul class="wf-list">' + kitItems().slice(0, 6).map(function(i){ return '<li>' + (S.kit.have[i[0]] ? '✓ ' : '') + esc(li() ? i[2] : i[1]) + '</li>'; }).join('') + '</ul><a class="btn btn-line" href="#/prepare/kit">' + ic('bag') + t('openKit') + '</a>' : '';
+  var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var n = 0;
   return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
-    '<h1 class="sr">' + esc(tx(L.name)) + ' — ' + esc(tx(h.name)) + '</h1>' +
     '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
-    '<div class="alert-body"><div class="alert-act">' + esc(tx(a.action)) + '</div>' +
-    '<div class="alert-meta">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</div>' + meter(a.level) +
-    '<p style="margin-top:16px">' + esc(tx(L.desc)) + '</p></div></div>' +
-    '<div class="stack" style="margin-top:16px">' +
-    '<a class="btn btn-lg btn-red" href="#/sos/h/' + h.id + '">' + t('whatToDo') + ic('chevR') + '</a>' +
-    '<button class="btn btn-line" data-a="checkin">' + t('affectedQ') + '</button></div>' +
+    '<div class="alert-body"><h1 class="alert-act">' + esc(tx(a.action)) + '</h1>' + meter(a.level) + '</div></div>' +
+    '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + (S.mvp ? '' : '<button class="emb" data-a="safe">' + ic('msg') + t('emSafe') + '</button>') + '</div>' +
+    sec(++n, t('qWhat'), '<p class="wf-big2">' + esc(tx(a.what)) + '</p><p class="small">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</p>') +
+    sec(++n, t('qFar'), farLine()) +
+    sec(++n, t('qDo'), k === 'none'
+      ? '<p class="wf-big2">' + t('noAction') + '</p><p class="small" style="margin-top:6px">' + esc(tx(L.desc)) + '</p><a class="btn btn-primary" style="margin-top:12px" href="#/" data-a="ciClose">' + t('gotIt') + '</a>'
+      : '<p class="wf-act lv-' + a.level + '">' + esc(tx(a.action)) + '</p><p class="small" style="margin-top:6px">' + esc(tx(L.desc)) + '</p>' +
+        (k === 'shelter' ? '<h3 class="label" style="margin-top:12px">' + t('shelterSteps') + '</h3><ol class="wf-list">' + steps.map(function(x){ return '<li>' + esc(tx(x)) + '</li>'; }).join('') + '</ol>' + srcLine(h.src) : ''), k === 'none' ? '' : 'wf-strong') +
+    (k === 'prepare' || k === 'evacuate' ? sec(++n, t('qBring'), bring) : '') +
+    (k === 'prepare' || k === 'evacuate' ? sec(++n, t('qGo'), guideCard() + '<p class="small" style="margin-top:8px">' + t('awayNote') + '</p>' +
+      '<a class="btn btn-lg ' + (k === 'evacuate' ? 'btn-red' : 'btn-primary') + '" style="margin-top:12px" href="#/sos/go">' + ic('arrow') + (k === 'evacuate' ? t('navGo') : t('navPreview')) + '</a>' +
+      '<p class="warnline">' + ic('alert') + '<span>' + t('hazardWarn') + '</span></p>') : '') +
     srcLine('aws');
 }
 
-/* ---------- CHECK-IN SHEET (the app asks you) ---------- */
+/* ---------- WARNING SHEETS: pick a sample · a warning arrives ---------- */
 function checkinSheet(){
-  var a = SAMPLE_ALERT, h = hz(a.hazard), L = LEVELS[a.level];
-  if (CI === 'help') {
+  if (CI === 'pick') {
     return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
-      '<span class="chip sample">' + t('sample') + '</span><h2 id="ci-h">' + t('needHelpQ') + '</h2>' +
-      '<a class="btn btn-lg btn-red" href="#/sos/help" data-a="ciClose">' + ic('users') + t('needHelp') + '</a>' +
-      '<button class="btn btn-lg btn-green" data-a="ciSafe">' + ic('msg') + t('imSafe') + '</button>' +
-      '<button class="btn btn-ghost" data-a="ciClose">' + t('close') + '</button></div></div>';
+      '<h2 id="ci-h">' + t('simTitle') + '</h2><p class="small">' + t('simSub') + '</p><div class="stack" style="margin-top:12px">' +
+      SAMPLE_ALERTS.map(function(a, i){ var h = hz(a.hazard), L = LEVELS[a.level];
+        return '<button class="sim-opt lv-' + a.level + '" data-a="simPick" data-i="' + i + '"><span class="sim-band"></span>' + ic(h.icon) + '<span class="grow"><b>' + esc(tx(L.name)) + ' · ' + esc(tx(h.name)) + '</b><br><span class="small">' + esc(tx(a.action)) + ' — ' + t({ none: 'kindNone', prepare: 'kindPrepare', evacuate: 'kindEvacuate', shelter: 'kindShelter' }[a.kind]) + '</span></span></button>'; }).join('') +
+      '</div><button class="btn btn-ghost" data-a="ciCancel">' + t('close') + '</button></div></div>';
   }
+  var a = curAlert(), h = hz(a.hazard), L = LEVELS[a.level], f = alertFar();
   return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
-    '<span class="chip sample">' + t('sample') + '</span>' +
-    '<p class="small" style="margin-top:12px">' + esc(tx(L.name)) + ' · ' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + '</p>' +
-    '<h2 id="ci-h">' + t('affectedQ') + '</h2>' +
-    '<button class="btn btn-lg btn-primary" data-a="ciYes">' + t('yes') + '</button>' +
-    '<button class="btn btn-lg btn-line" data-a="ciNo">' + t('no') + '</button></div></div>';
+    '<div class="alert lv-' + a.level + '" style="margin:0"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div></div>' +
+    '<p class="small" style="margin-top:12px">' + t('receivedWarning') + ' · ' + esc(tx(h.name)) + '</p>' +
+    '<h2 id="ci-h">' + esc(tx(a.what)) + '</h2>' +
+    (f ? '<p class="wf-big2" style="margin-top:4px">' + (f.inside ? t('farIn') : fmtDist(f.edge) + ' · ' + f.dir) + '</p>' : '') +
+    (a.kind === 'none'
+      ? '<p style="margin-top:8px">' + t('noAction') + '</p><button class="btn btn-lg btn-primary" data-a="ciClose">' + t('gotIt') + '</button><a class="btn btn-ghost" href="#/alert" data-a="ciClose">' + t('seeWhatToDo') + '</a>'
+      : '<p class="wf-act lv-' + a.level + '" style="margin-top:8px">' + esc(tx(a.action)) + '</p><a class="btn btn-lg ' + (a.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" href="#/alert" data-a="ciClose">' + t('seeWhatToDo') + ic('chevR') + '</a><button class="btn btn-ghost" data-a="ciClose">' + t('close') + '</button>') +
+    '</div></div>';
 }
 
 /* ---------- EMERGENCY MODE ---------- */
@@ -285,10 +326,10 @@ function sosRoute(p){
   return { main: vSos(), back: null };
 }
 function vSos(){
-  var ctx = S.demo.alert && !S.mvp ? hz(SAMPLE_ALERT.hazard) : null;
+  var ctx = S.demo.alert && !S.mvp ? hz(curAlert().hazard) : null;
   var list = HAZARDS.slice();
   if (ctx) list.sort(function(a, b){ return (b.id === ctx.id) - (a.id === ctx.id); });
-  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[SAMPLE_ALERT.level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(SAMPLE_ALERT.action)) + '</span><span class="chip sample">' + t('sample') + '</span></a>' : '') +
+  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('sample') + '</span></a>' : '') +
     '<div class="em-actions"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + guideCard() +
     (DESKTOP ? '</div><div class="mapbox" id="mapSlot">' + mapOvl() + '</div></div><div><div class="em-actions">' : '') +
     (S.mvp ? '' : '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
@@ -375,7 +416,7 @@ function vSent(){
 function learnCount(id){ var ex = S.kit.extra || {}, L = LEARN[id]; return L.supplies.filter(function(it){ return ex[it[0]]; }).length; }
 function learnDone(){ return HAZARDS.filter(function(h){ return learnCount(h.id) === LEARN[h.id].supplies.length; }).length; }
 function vLearnList(){
-  return '<div class="page-head"><h1>' + t('learnTitle') + '</h1><p class="sub">' + t('learnSub') + '</p></div><div class="stack">' +
+  return '<div class="page-head"><h1>' + t('learnTitle') + '</h1><p class="sub">' + t('learnSub') + '</p><button class="btn-ghost tut-replay" data-a="tutStart">' + ic('quiz') + t('tutReplay') + '</button></div><div class="stack" data-tut="list">' +
     HAZARDS.map(function(h){
       var n = learnCount(h.id), tot = LEARN[h.id].supplies.length;
       return '<a class="link-row" href="#/learn/' + h.id + '"><span class="badge">' + ic(h.icon) + '</span><span class="grow"><span class="t">' + esc(tx(h.name)) + '</span><br><span class="d">' + n + ' / ' + tot + ' ' + t('learnAdded') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>';
@@ -385,15 +426,62 @@ function vLearn(id){
   var h = hz(id), L = LEARN[id]; if (!h || !L) return vLearnList();
   var ex = S.kit.extra || {}, all = L.supplies.every(function(it){ return ex[it[0]]; });
   return backTo('#/learn') + '<div class="hz-head">' + ic(h.icon, 'xl') + '<h1>' + esc(tx(h.name)) + '</h1></div>' +
-    '<h2 class="label" style="margin-top:8px">' + t('learnWhat') + '</h2><div class="card"><p>' + esc(tx(L.what)) + '</p></div>' +
-    '<h2 class="label">' + t('learnPrep') + '</h2><div class="card"><ul class="bullets">' + L.prep.map(function(x){ return '<li>' + esc(tx(x)) + '</li>'; }).join('') + '</ul></div>' +
-    '<h2 class="label">' + t('learnSupplies') + '</h2><div class="card" style="padding-top:4px;padding-bottom:4px">' + L.supplies.map(function(it, i){
+    '<h2 class="label" style="margin-top:8px">' + t('learnWhat') + '</h2><div class="card" data-tut="what"><p>' + esc(tx(L.what)) + '</p></div>' +
+    '<h2 class="label">' + t('learnPrep') + '</h2><div class="card" data-tut="prep"><ul class="bullets">' + L.prep.map(function(x){ return '<li>' + esc(tx(x)) + '</li>'; }).join('') + '</ul></div>' +
+    '<h2 class="label">' + t('learnSupplies') + '</h2><div class="card" data-tut="supplies" style="padding-top:4px;padding-bottom:4px">' + L.supplies.map(function(it, i){
       return '<button class="check" style="' + (i === 0 ? 'border-top:0' : '') + '" data-a="learnItem" data-v="' + it[0] + '" aria-pressed="' + !!ex[it[0]] + '"><span class="bx">' + ic('check') + '</span><span class="tx" style="color:var(--ink)">' + esc(li() ? it[2] : it[1]) + '</span></button>';
     }).join('') + '</div>' +
-    '<button class="btn ' + (all ? 'btn-line' : 'btn-primary') + '" style="margin-top:12px" data-a="learnAll" data-v="' + id + '">' + ic(all ? 'check' : 'bag') + (all ? t('learnAdded') : t('learnAddAll')) + '</button>' +
-    '<a class="link-row" style="margin-top:12px" href="#/sos/h/' + id + '"><span class="badge" style="background:var(--red);color:var(--on-red)">' + ic('alert') + '</span><span class="grow"><span class="t">' + t('learnDuring') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
+    '<button class="btn ' + (all ? 'btn-line' : 'btn-primary') + '" style="margin-top:12px" data-tut="addall" data-a="learnAll" data-v="' + id + '">' + ic(all ? 'check' : 'bag') + (all ? t('learnAdded') : t('learnAddAll')) + '</button>' +
+    '<a class="link-row" style="margin-top:12px" data-tut="during" href="#/sos/h/' + id + '"><span class="badge" style="background:var(--red);color:var(--on-red)">' + ic('alert') + '</span><span class="grow"><span class="t">' + t('learnDuring') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
     L.src.map(srcLine).join('');
 }
+
+/* ---------- tutorial: dim the screen, light up one thing at a time ---------- */
+var TUT = null;
+var TUT_LEARN = [
+  { route: '#/learn', sel: '[data-tut="list"]', k: 'tut1' },
+  { route: '#/learn/fire', sel: '[data-tut="what"]', k: 'tut2' },
+  { route: '#/learn/fire', sel: '[data-tut="prep"]', k: 'tut3' },
+  { route: '#/learn/fire', sel: '[data-tut="supplies"]', k: 'tut4' },
+  { route: '#/learn/fire', sel: '[data-tut="addall"]', k: 'tut5' },
+  { route: '#/learn/fire', sel: '[data-tut="during"]', k: 'tut6' }
+];
+function tutStart(){ TUT = { steps: TUT_LEARN, i: 0 }; tutGo(); }
+function tutGo(){
+  var st = TUT.steps[TUT.i];
+  if (location.hash !== st.route) { location.hash = st.route; return; } /* hashchange → render → after → tutPlace */
+  tutPlace();
+}
+function tutEnd(){ TUT = null; S.tutLearn = 1; save(); var o = document.getElementById('tut'); if (o) o.remove(); }
+function tutNext(){ if (!TUT) return; TUT.i++; if (TUT.i >= TUT.steps.length) tutEnd(); else tutGo(); }
+function tutPlace(){
+  var o = document.getElementById('tut');
+  if (!TUT) { if (o) o.remove(); return; }
+  var st = TUT.steps[TUT.i], el = document.querySelector(st.sel);
+  if (!el) return;
+  el.scrollIntoView({ block: 'center' });
+  var r = el.getBoundingClientRect(), pad = 8, vh = window.innerHeight;
+  if (!o) { o = document.createElement('div'); o.id = 'tut'; o.className = 'tut'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); document.body.appendChild(o); }
+  var below = r.bottom + 180 < vh || r.top < 200;
+  var top = below ? Math.min(r.bottom + pad + 14, vh - 170) : Math.max(r.top - pad - 14, 170);
+  o.innerHTML = '<div class="tut-hole" style="left:' + (r.left - pad) + 'px;top:' + (r.top - pad) + 'px;width:' + (r.width + pad * 2) + 'px;height:' + (r.height + pad * 2) + 'px"></div>' +
+    '<div class="tut-tip ' + (below ? 'below' : 'above') + '" style="' + (below ? 'top:' + top + 'px' : 'bottom:' + (vh - top) + 'px') + '" tabindex="-1" aria-live="polite">' +
+    '<p class="tut-step">' + (TUT.i + 1) + ' / ' + TUT.steps.length + '</p><p class="tut-text">' + t(st.k) + '</p>' +
+    '<p class="tut-hint">' + (TUT.i + 1 === TUT.steps.length ? t('tutDone') : t('tutTap')) + '</p>' +
+    '<button class="tut-skip" data-tutskip="1">' + t('tutSkip') + '</button></div>';
+  var tip = o.querySelector('.tut-tip'); try { tip.focus({ preventScroll: true }); } catch (e) {}
+}
+document.addEventListener('click', function(e){
+  var o = document.getElementById('tut'); if (!o || !o.contains(e.target)) return;
+  e.stopPropagation(); e.preventDefault();
+  if (e.target.closest('[data-tutskip]')) tutEnd(); else tutNext();
+}, true);
+document.addEventListener('keydown', function(e){
+  if (!TUT) return;
+  if (e.key === 'Escape') { e.preventDefault(); tutEnd(); }
+  else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); tutNext(); }
+}, true);
+window.addEventListener('resize', function(){ if (TUT) tutPlace(); });
 
 /* ---------- PREPARE ---------- */
 function vPrepare(){
@@ -483,7 +571,7 @@ function dialHTML(){
 function srcNote(){
   var s = NAV.state.src;
   var k = NAV.packInfo && NAV.packInfo();
-  return (s === 'pack' ? t('srcPack') + (k && k.osmBase ? ' ' + t('updated') + ' ' + k.osmBase.slice(0, 10) + '.' : '') : s === 'osm' ? t('srcOsm') : s === 'cache' ? t('srcCache') : t('srcSample')) + ' ' + t('officialNote');
+  return (s === 'pack' ? t('srcPack') + (k && k.osmBase ? ' ' + t('updated') + ' ' + k.osmBase.slice(0, 10) + '.' : '') : s === 'osm' ? t('srcOsm') : s === 'cache' ? t('srcCache') : s === 'sample' ? t('srcSample') : '') + ' ' + t('officialNote');
 }
 function guideBody(){
   var st = NAV.state, g = NAV.guide();
@@ -507,6 +595,7 @@ function rot(el, deg){
 }
 function updateLive(){
   var st = NAV.state, g = NAV.guide(), h = st.heading;
+  document.querySelectorAll('.me-mk .me-label').forEach(function(el){ if (el.textContent !== t('youAreHere')) el.textContent = t('youAreHere'); });
   document.querySelectorAll('[data-live="ring"]').forEach(function(el){ rot(el, h == null ? 0 : -h); });
   document.querySelectorAll('[data-live="needle"]').forEach(function(el){
     if (!g) { el.classList.add('off'); return; }
@@ -538,7 +627,7 @@ function vMap(){
         '<div class="grow"><div class="nm">' + esc(placeName(x.p)) + '</div><div class="nt">' + esc(tx(PLACE_TYPES[x.p.type].name)) + (x.p.ed ? ' · ' + t('hasED') : '') + (x.p.note ? ' · ' + esc(typeof x.p.note === 'string' ? x.p.note : tx(x.p.note)) : '') + '</div></div>' +
         '<div><div class="dist">' + fmtDist(x.d) + '</div>' + (x.b != null ? '<div class="dir"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" data-live-b="' + Math.round(x.b) + '">' + P.arrow + '</svg>' + dirName(x.b) + '</div>' : '') + '</div></button>';
     }).join('') + '</section>' +
-    '<p class="small" style="margin-top:8px">' + srcNote() + '</p>';
+    '<p class="small" style="margin-top:8px">' + (!st.pos && all.length ? t('browseNote') + ' ' : '') + t('evacNote') + ' ' + srcNote() + '</p>';
   return '<div class="page-head"><h1>' + t('mapTitle') + '</h1></div>' +
     (DESKTOP ? '<div class="dgrid map-grid"><div class="sticky">' + mapEl + '</div><div>' + side + '</div></div>' : mapEl + side);
 }
@@ -554,7 +643,8 @@ function locChip(){
 function locHelp(){
   var st = NAV.state;
   if (st.loc === 'on' || st.loc === 'manual' || st.loc === 'asking') return '';
-  var msg = st.loc === 'denied' ? t('guideDenied') : st.loc === 'unavailable' ? t('locFailWhy') : t('guideEnableSub');
+  var msg = st.loc === 'denied' ? t('locDeniedHelp') : st.loc === 'unavailable' ? t('locFailWhy') : t('guideEnableSub');
+  if (st.locErr) msg += '<details class="small" style="margin-top:6px"><summary>' + t('locErrCode') + '</summary>code ' + st.locErr.code + ' · ' + esc(st.locErr.msg) + ' · ' + esc(navigator.userAgent.replace(/\s*\(.*?\)\s*/, ' ').slice(0, 120)) + '</details>';
   return '<div class="callout" style="margin-top:16px">' + ic('locate') + '<div class="grow">' + msg +
     '<div class="btn-row"><button class="btn btn-primary" data-a="' + (st.loc === 'off' ? 'navEnable' : 'locRetry') + '">' + ic('locate') + (st.loc === 'off' ? t('guideEnable') : t('locRetry')) + '</button>' +
     '<button class="btn btn-line" data-a="pickMe">' + ic('pin') + t('locPick') + '</button></div></div></div>';
@@ -583,7 +673,7 @@ function placeCard(tg){
     '<div class="btn-row">' + (st.pos ? '<a class="btn btn-primary" href="#/map/go">' + ic('arrow') + t('startGuide') + '</a>' : '') +
     '<a class="btn btn-line" href="' + extMapUrl(p) + '" target="_blank" rel="noopener">' + ic('pin') + (apple ? t('openApple') : t('openGoogle')) + '</a></div></section>';
 }
-var SAFE_TYPES = ['assembly', 'shelter', 'nsp', 'rescue', 'hospital'];
+var SAFE_TYPES = ['assembly', 'shelter', 'nsp', 'police', 'fire', 'ses', 'rescue', 'hospital'];
 function vGo(em){
   var back = em ? '#/sos' : '#/map', tg = NAV.target();
   var safe = NAV.list().filter(function(x){ return ['assembly', 'shelter', 'rescue', 'hospital'].indexOf(x.p.type) >= 0; }).slice(0, 6);
@@ -600,7 +690,7 @@ function vGo(em){
     '<p class="small" style="margin-top:4px;font-size:.75rem">' + srcNote() + '</p></section></main>';
 }
 function isDark(){ return S.theme === 'dark' || (S.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
-function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map'; }
+function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map' || (p[0] === 'alert' && S.demo.alert); }
 
 /* ---------- ME ---------- */
 function cardKV(){
@@ -622,7 +712,7 @@ function vMe(){
     '<div class="set"><span>' + t('textSize') + '</span>' + segc('size', [['std', t('sizeStd')], ['lg', t('sizeLg')], ['xl', t('sizeXl')]]) + '</div>' +
     '<div class="set"><span>' + t('theme') + '</span>' + segc('theme', [['auto', t('themeAuto')], ['light', t('themeLight')], ['dark', t('themeDark')]]) + '</div>' +
     '<div class="set"><span>' + t('palette') + '</span>' + segc('palette', [['a', 'A ' + t('palA')], ['b', 'B ' + t('palB')], ['c', 'C ' + t('palC')], ['ink', t('palInk')]]) + '<p class="small" style="margin-top:6px">' + t('paletteNote') + '</p></div>' +
-    '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['frost', t('glassFrost')], ['liquid', t('glassLiquid')], ['tint', t('glassTint')], ['off', t('glassSolid')]]) + '<p class="small" style="margin-top:6px">' + t('glassNote') + '</p></div>' +
+    '<div class="set"><span>' + t('glass') + '</span>' + segc('glass', [['frost', t('glassFrost')], ['liquid', t('glassLiquid')], ['tint', t('glassTint')], ['off', t('glassSolid')]]) + (S.glass !== 'off' ? '<label class="small" style="display:block;margin-top:10px;font-weight:700;color:var(--ink)" for="glassA">' + t('glassAmount') + '</label><input class="range" id="glassA" type="range" min="20" max="130" step="5" data-glassa="1" value="' + (S.glassA == null ? 70 : S.glassA) + '" aria-valuetext="' + (S.glassA == null ? 70 : S.glassA) + '%"><div class="row small" style="justify-content:space-between;color:var(--ink-3)"><span>' + t('glassClear') + '</span><span>' + t('glassThick') + '</span></div>' : '') + '<p class="small" style="margin-top:6px">' + t('glassNote') + '</p></div>' +
     '<div class="set"><button class="toggle" data-a="demoToggle" aria-pressed="' + S.demo.alert + '"><span class="grow">' + t('demoAlert') + '<br><span class="small">' + t('demoAlertSub') + '</span></span><span class="sw"></span></button></div></section>' +
     '<h2 class="label">' + t('about') + '</h2>' +
     '<div class="stack"><a class="link-row" href="#/me/sources"><span class="badge">' + ic('shield') + '</span><span class="grow"><span class="t">' + t('sourcesTitle') + '</span><br><span class="d">' + t('sourcesSub') + '</span></span><span class="chev">' + ic('chevR') + '</span></a>' +
@@ -664,6 +754,7 @@ var TOOL = null, toolTimer = null, audio = null, wake = null;
 function renderLayer(){
   var L = document.getElementById('layer'), h = '';
   var p = parts();
+  if (CI && CI !== 'pick' && parts()[0] && parts()[0] !== '') CI = null;
   if (!S.lang) h = onboarding();
   else if (TOOL) h = toolView();
   else if (CI) h = checkinSheet();
@@ -774,6 +865,7 @@ var A = {
   obBack: function(){ OB_DIR = -1; OB = Math.max(0, OB - 1); renderLayer(); obFocus(); },
   obSkip: function(){ OB_DIR = 1; OB = OB_SLIDES.length; renderLayer(); obFocus(); },
   obAllow: function(){ NAV.enable(); A.obFinish(); },
+  tutStart: function(){ tutStart(); },
   obFinish: function(){ S.lang = S.pre || 'en'; delete S.pre; OB = 0; save(); render(); },
   navEnable: function(){ NAV.enable().then(function(){ render(); }); render(); },
   locRetry: function(){ if (NAV.state.loc === 'off') return A.navEnable(); NAV.retry(); },
@@ -786,8 +878,15 @@ var A = {
   learnAll: function(el){ if (!S.kit.extra) S.kit.extra = {}; var L = LEARN[el.dataset.v], all = L.supplies.every(function(it){ return S.kit.extra[it[0]]; }); L.supplies.forEach(function(it){ S.kit.extra[it[0]] = !all; }); save(); var y = window.scrollY; render(); window.scrollTo(0, y); if (!all) toast(t('learnAdded')); },
   mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
-  demoAlert: function(){ S.demo.alert = true; S.demo.answered = false; CI = null; save(); location.hash = '#/'; render(); },
-  demoToggle: function(){ S.demo.alert = !S.demo.alert; S.demo.answered = false; save(); render(); },
+  demoAlert: function(){ CI = 'pick'; renderLayer(); },
+  ciCancel: function(){ CI = null; renderLayer(); },
+  simPick: function(el){
+    var pos = NAV.state.pos;
+    S.demo = { alert: true, answered: false, which: +el.dataset.i, at: pos ? { lat: pos.lat, lng: pos.lng } : { lat: -33.9262, lng: 151.1925 }, anchored: !!pos };
+    save(); CI = 'affected'; syncAlertZone();
+    if (location.hash !== '#/' && location.hash !== '') location.hash = '#/'; else { render(); }
+  },
+  demoToggle: function(){ if (S.demo.alert) { S.demo.alert = false; save(); syncAlertZone(); render(); } else { A.demoAlert(); } },
   checkin: function(){ CI = 'affected'; renderLayer(); },
   ciYes: function(){ CI = 'help'; renderLayer(); },
   ciNo: function(){ CI = null; S.demo.answered = true; save(); renderLayer(); },
@@ -850,6 +949,7 @@ document.addEventListener('input', function(e){
   var el = e.target;
   if (el.dataset.bind) { setPath(S, el.dataset.bind, el.value); save(); }
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
+  if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
 document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
 /* onboarding: swipe left/right (touch) and arrow keys; Next/Back buttons stay as the main way */
@@ -871,6 +971,10 @@ document.addEventListener('keydown', function(e){
 window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){
+  syncAlertZone();
+  if (TUT && location.hash !== TUT.steps[TUT.i].route) tutEnd();
+  if (TUT) setTimeout(tutPlace, 80);
+  else if (S.lang && !S.tutLearn && p[0] === 'learn' && !p[1] && !document.querySelector('.ob')) setTimeout(tutStart, 300);
   var m = document.getElementById('main'); if (m && p[0] === 'sos' && p[3]) { var n = m.querySelector('.now'); if (n) n.setAttribute('tabindex', '-1'); }
   if (S.lang && usesNav(p)) NAV.auto();
   var slot = document.getElementById('mapSlot');

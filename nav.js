@@ -1,6 +1,6 @@
 /* DEWS — live location, compass, nearby safe places, walking guidance and the map.
  * Works in layers: real map + OpenStreetMap places + walking route when online;
- * cached places + straight-line arrow when offline; sample places if nothing else.
+ * places bundled for Greater Sydney + straight-line arrow offline. Never shows invented places.
  */
 var NAV = (function () {
   'use strict';
@@ -11,11 +11,11 @@ var NAV = (function () {
     compass: 'off',    /* off | on | needs-tap | unavailable */
     places: [], src: null, loadedAt: null, loadedFrom: null,
     targetId: null, route: null, routeFor: null,
-    follow: false
+    follow: false, avoid: null /* {lat,lng,r}: a warning area to keep away from */
   };
   var subs = [], liveSubs = [];
   var CACHE_KEY = 'dews-places';
-  var SAFE = { assembly: 1, shelter: 1, nsp: 2, rescue: 2, hospital: 3 };
+  var SAFE = { assembly: 1, shelter: 1, nsp: 2, police: 2, fire: 2, ses: 2, rescue: 2, hospital: 3 };
 
   function emit() { subs.forEach(function (f) { try { f(); } catch (e) {} }); }
   function emitLive() { liveSubs.forEach(function (f) { try { f(); } catch (e) {} }); }
@@ -31,6 +31,10 @@ var NAV = (function () {
     var y = Math.sin((b.lng - a.lng) * rad) * Math.cos(b.lat * rad);
     var x = Math.cos(a.lat * rad) * Math.sin(b.lat * rad) - Math.sin(a.lat * rad) * Math.cos(b.lat * rad) * Math.cos((b.lng - a.lng) * rad);
     return (Math.atan2(y, x) / rad + 360) % 360;
+  }
+  function circle(z) {
+    var pts = []; for (var i = 0; i <= 48; i++) { var a = i / 48 * 2 * Math.PI, q = offset(z, Math.sin(a) * z.r, -Math.cos(a) * z.r); pts.push([q.lng, q.lat]); }
+    return pts;
   }
   function offset(p, dx, dy) { /* dx east metres, dy south metres */
     return { lat: p.lat - dy / 111320, lng: p.lng + dx / (111320 * Math.cos(p.lat * rad)) };
@@ -61,6 +65,7 @@ var NAV = (function () {
     watchId = navigator.geolocation.watchPosition(onPos, function (err) {
       try { navigator.geolocation.clearWatch(watchId); } catch (e) {}
       watchId = null;
+      st.locErr = err ? { code: err.code, msg: err.message || '' } : null;
       if (err && err.code === 1) { st.loc = 'denied'; }
       else if (precise) { st.locTry = 1; emit(); watchOnce(false); return; }
       else if (st.loc !== 'manual') st.loc = 'unavailable';
@@ -74,6 +79,7 @@ var NAV = (function () {
     loadPlaces();
   }
   function setPicking(on) { st.picking = !!on; emit(); }
+  function setAvoid(z) { st.avoid = z || null; st.targetId = null; st.route = null; st.routeState = 'none'; maybeRoute(); emit(); }
 
   /* ---------- compass ---------- */
   var hx = null, hy = null, lastLive = 0, gotEvent = false;
@@ -136,14 +142,14 @@ var NAV = (function () {
   }
   function inPack(p) { return pack && p.lat >= pack.bbox[0] && p.lat <= pack.bbox[2] && p.lng >= pack.bbox[1] && p.lng <= pack.bbox[3]; }
   function fromPack(p) {
-    var R = { assembly: 4000, nsp: 8000, hospital: 12000, rescue: 6000, water: 1500 }, out = [];
+    var R = { assembly: 4000, nsp: 8000, hospital: 12000, police: 6000, fire: 6000, ses: 12000, rescue: 6000, clinic: 3000, water: 1500, ev: 3000, phone: 3000 }, out = [];
     pack.rows.forEach(function (r, i) {
       var q = { lat: r[1], lng: r[2] }, d = dist(p, q); if (d > (R[r[0]] || 3000)) return;
-      out.push({ id: 'k' + i, type: r[0], lat: r[1], lng: r[2], name: r[3] || '', nameZh: r[4] || '', note: '', ed: r[5] === 1, osm: true, d: d });
+      out.push({ id: 'k' + i, type: r[0], lat: r[1], lng: r[2], name: r[3] || '', nameZh: r[4] || '', note: '', ed: r[5] === 1, osm: true, d: st.pos ? d : null });
     });
     out.sort(function (a, b) { return a.d - b.d; });
     var per = {}, keep = [];
-    out.forEach(function (x) { per[x.type] = (per[x.type] || 0) + 1; if (per[x.type] <= (x.type === 'water' ? 15 : 25)) keep.push(x); });
+    out.forEach(function (x) { per[x.type] = (per[x.type] || 0) + 1; if (per[x.type] <= ({ water: 15, clinic: 15, ev: 12, phone: 10 }[x.type] || 25)) keep.push(x); });
     st.places = keep; st.src = 'pack'; st.loadedAt = Date.parse(pack.built) || Date.now(); st.loadedFrom = p;
     return keep.length > 0;
   }
@@ -151,8 +157,13 @@ var NAV = (function () {
   function typeOf(t) {
     if (t.emergency === 'assembly_point') return 'assembly';
     if (t.amenity === 'hospital') return 'hospital';
-    if (t.amenity === 'fire_station' || t.amenity === 'police') return 'rescue';
+    if (t.amenity === 'fire_station') return 'fire';
+    if (t.amenity === 'police') return 'police';
+    if (t.emergency === 'ses_station') return 'ses';
     if (t.amenity === 'drinking_water') return 'water';
+    if ((t.amenity === 'clinic' || t.amenity === 'doctors') && t.name) return 'clinic';
+    if (t.amenity === 'charging_station') return 'ev';
+    if (t.amenity === 'device_charging_station') return 'phone';
     return null;
   }
   function parse(els) {
@@ -175,13 +186,16 @@ var NAV = (function () {
     } catch (e) {}
     return false;
   }
+  /* No location yet: show REAL places around the map centre (never invented ones). */
+  var CBD = { lat: -33.8732, lng: 151.2061 };
   function useSamples() {
-    var c = st.pos || { lat: -33.8732, lng: 151.2061 };
-    st.places = (window.SAMPLE_PLACES || []).map(function (p, i) {
-      var q = offset(c, p.dx, p.dy);
-      return { id: 'sample' + i, type: p.type, lat: q.lat, lng: q.lng, sample: true, name: p.name[0], nameZh: p.name[1], note: p.note };
+    var c = st.pos || st.browseAt || CBD;
+    st.places = []; st.src = 'none';
+    loadPack().then(function () {
+      if (st.pos) return;
+      if (pack && inPack(c)) { fromPack(c); st.src = 'pack'; }
+      emit();
     });
-    st.src = 'sample'; st.loadedFrom = c;
   }
   var loading = false;
   function loadPlaces() {
@@ -231,6 +245,17 @@ var NAV = (function () {
     var list = withDist();
     if (st.targetId) { for (var i = 0; i < list.length; i++) if (list[i].p.id === st.targetId) return list[i]; }
     var safe = list.filter(function (x) { return SAFE[x.p.type]; });
+    var z = st.avoid;
+    if (z && st.pos) {
+      /* keep out of the warning area (+500 m) and away from its direction */
+      var hb = bearing(st.pos, z), inside = dist(st.pos, z) < z.r;
+      var ok = safe.filter(function (x) {
+        if (dist(x.p, z) < z.r + 500) return false;
+        var a = Math.abs(((x.b - hb) + 540) % 360 - 180);
+        return inside ? dist(x.p, z) > dist(st.pos, z) : a > 70;
+      });
+      if (ok.length) safe = ok;
+    }
     return safe[0] || list[0] || null;
   }
   function setTarget(id) { st.targetId = id; st.route = null; st.routeState = 'none'; maybeRoute(); emit(); if (map && mapState === 'ready') fit(); }
@@ -323,6 +348,9 @@ var NAV = (function () {
   }
   function addRouteLayer() {
     if (!map || map.getSource('route')) return;
+    map.addSource('hazard', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({ id: 'hazard-fill', type: 'fill', source: 'hazard', paint: { 'fill-color': '#C42B21', 'fill-opacity': 0.18 } });
+    map.addLayer({ id: 'hazard-line', type: 'line', source: 'hazard', paint: { 'line-color': '#C42B21', 'line-width': 2, 'line-dasharray': [2, 1.5] } });
     map.addSource('route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 9, 'line-opacity': 0.9 } });
     map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#1F5FAD', 'line-width': 5 } });
@@ -348,10 +376,12 @@ var NAV = (function () {
     Object.keys(markers).forEach(function (id) { if (!seen[id]) { markers[id].remove(); delete markers[id]; } });
     if (st.pos) {
       if (!meMk) {
-        var me = document.createElement('div'); me.className = 'me-mk'; me.innerHTML = '<span class="cone"></span><span class="dot"></span>';
+        var me = document.createElement('div'); me.className = 'me-mk'; me.innerHTML = '<span class="pulse"></span><span class="cone"></span><span class="dot"></span><span class="me-label"></span>';
         meMk = new maplibregl.Marker({ element: me }).setLngLat([st.pos.lng, st.pos.lat]).addTo(map);
       } else meMk.setLngLat([st.pos.lng, st.pos.lat]);
     }
+    var hz = map.getSource('hazard');
+    if (hz) hz.setData(st.avoid ? { type: 'Feature', geometry: { type: 'Polygon', coordinates: [circle(st.avoid)] } } : { type: 'FeatureCollection', features: [] });
     var src = map.getSource('route');
     if (src) src.setData(st.route && t && st.routeFor === t.p.id ? { type: 'Feature', geometry: { type: 'LineString', coordinates: st.route.coords.map(function (c) { return [c.lng, c.lat]; }) } }
       : { type: 'FeatureCollection', features: (st.pos && t) ? [{ type: 'Feature', geometry: { type: 'LineString', coordinates: [[st.pos.lng, st.pos.lat], [t.p.lng, t.p.lat]] } }] : [] });
@@ -366,7 +396,7 @@ var NAV = (function () {
       var hgt = map.getContainer().clientHeight, big = hgt > 600;
       map.fitBounds(b, { padding: big ? { top: 140, bottom: 340, left: 60, right: 90 } : { top: 40, bottom: 40, left: 40, right: 40 }, maxZoom: 17, duration: 0 });
     } else if (st.pos) map.jumpTo({ center: [st.pos.lng, st.pos.lat], zoom: 15 });
-    else map.jumpTo({ center: [151.2061, -33.8732], zoom: 11 });
+    else map.jumpTo({ center: [151.2061, -33.8732], zoom: 14 });
   }
   function live() {
     if (map) map.getCanvas().style.cursor = st.picking ? 'crosshair' : '';
@@ -387,7 +417,7 @@ var NAV = (function () {
   return {
     state: st, onChange: function (f) { subs.push(f); }, onLive: function (f) { liveSubs.push(f); },
     enable: enable, auto: auto, startLocation: startLocation, loadPlaces: loadPlaces, setManual: setManual, setPicking: setPicking,
-    retry: function () { startLocation(true); }, packInfo: function () { return pack ? { built: pack.built, osmBase: pack.osmBase, area: pack.area } : null; },
+    retry: function () { startLocation(true); }, setAvoid: setAvoid, offset: offset, packInfo: function () { return pack ? { built: pack.built, osmBase: pack.osmBase, area: pack.area } : null; },
     list: withDist, target: target, setTarget: setTarget, cycleTarget: cycleTarget, guide: guide,
     mount: mount, mapState: function () { return mapState; }, setFollow: setFollow, recenter: recenter,
     dist: dist, bearing: bearing

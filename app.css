@@ -523,36 +523,37 @@ body.em .guide{border-color:var(--green);border-width:2px}
    tablet and desktop alike. Primary, Emergency and Call 000 buttons stay
    solid so they can always be seen at a glance.
    ===================================================================== */
+:root{--ga:.7}
 :root[data-glass="frost"]{
-  --gl-bg:rgba(255,255,255,.52); --gl-blur:22px; --gl-sat:175%; --gl-border:rgba(255,255,255,.75);
+  --gl-bg:rgba(255,255,255,calc(.52*var(--ga))); --gl-blur:22px; --gl-sat:175%; --gl-border:rgba(255,255,255,.75);
   --gl-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(22,25,28,.06),0 8px 24px rgba(22,25,28,.08);
-  --gl-btn:rgba(255,255,255,.58); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 3px rgba(22,25,28,.08);
+  --gl-btn:rgba(255,255,255,calc(.58*var(--ga))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 3px rgba(22,25,28,.08);
   --gl-thumb:rgba(255,255,255,.92); --gl-thumb-shadow:inset 0 1px 0 #fff,0 2px 8px rgba(22,25,28,.14);
 }
 :root[data-glass="liquid"]{
-  --gl-bg:linear-gradient(160deg,rgba(255,255,255,.50) 0%,rgba(255,255,255,.22) 45%,rgba(255,255,255,.34) 100%);
+  --gl-bg:linear-gradient(160deg,rgba(255,255,255,calc(.50*var(--ga))) 0%,rgba(255,255,255,calc(.22*var(--ga))) 45%,rgba(255,255,255,calc(.34*var(--ga))) 100%);
   --gl-blur:14px; --gl-sat:210%; --gl-border:rgba(255,255,255,.95);
   --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.35),inset 0 -14px 24px -18px rgba(255,255,255,.9),inset 0 10px 20px -16px rgba(22,25,28,.12),0 12px 32px rgba(22,25,28,.12);
-  --gl-btn:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.28));
+  --gl-btn:linear-gradient(180deg,rgba(255,255,255,calc(.62*var(--ga))),rgba(255,255,255,calc(.28*var(--ga))));
   --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.5),0 4px 12px rgba(22,25,28,.10);
   --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.70));
   --gl-thumb-shadow:inset 0 1.5px 1px #fff,inset 0 -2px 3px rgba(22,25,28,.06),0 4px 14px rgba(22,25,28,.16);
 }
 :root[data-glass="tint"]{
-  --gl-bg:color-mix(in srgb,var(--primary) 10%,rgba(255,255,255,.55)); --gl-blur:20px; --gl-sat:160%;
+  --gl-bg:color-mix(in srgb,var(--primary) 10%,rgba(255,255,255,calc(.55*var(--ga)))); --gl-blur:20px; --gl-sat:160%;
   --gl-border:color-mix(in srgb,var(--primary) 22%,rgba(255,255,255,.7));
   --gl-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 24px color-mix(in srgb,var(--primary) 14%,transparent);
-  --gl-btn:color-mix(in srgb,var(--primary) 8%,rgba(255,255,255,.62)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 3px rgba(22,25,28,.08);
+  --gl-btn:color-mix(in srgb,var(--primary) 8%,rgba(255,255,255,calc(.62*var(--ga)))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 3px rgba(22,25,28,.08);
   --gl-thumb:color-mix(in srgb,var(--primary) 16%,rgba(255,255,255,.95)); --gl-thumb-shadow:inset 0 1px 0 #fff,0 2px 8px color-mix(in srgb,var(--primary) 24%,transparent);
 }
 @media (prefers-color-scheme: dark){
-  :root[data-glass="frost"]:not([data-theme="light"]){ --gl-bg:rgba(32,36,40,.52); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,.08); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
-  :root[data-glass="liquid"]:not([data-theme="light"]){ --gl-bg:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 50%,rgba(255,255,255,.09)); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05)); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
-  :root[data-glass="tint"]:not([data-theme="light"]){ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,.6)); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,.06)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
+  :root[data-glass="frost"]:not([data-theme="light"]){ --gl-bg:rgba(32,36,40,calc(.52*var(--ga))); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,calc(.08*var(--ga))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
+  :root[data-glass="liquid"]:not([data-theme="light"]){ --gl-bg:linear-gradient(160deg,rgba(255,255,255,calc(.14*var(--ga))),rgba(255,255,255,calc(.04*var(--ga))) 50%,rgba(255,255,255,calc(.09*var(--ga)))); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,calc(.16*var(--ga))),rgba(255,255,255,calc(.05*var(--ga)))); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
+  :root[data-glass="tint"]:not([data-theme="light"]){ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,calc(.6*var(--ga)))); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,calc(.06*var(--ga)))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
 }
-:root[data-theme="dark"][data-glass="frost"]{ --gl-bg:rgba(32,36,40,.52); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,.08); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
-:root[data-theme="dark"][data-glass="liquid"]{ --gl-bg:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 50%,rgba(255,255,255,.09)); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05)); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
-:root[data-theme="dark"][data-glass="tint"]{ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,.6)); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,.06)); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
+:root[data-theme="dark"][data-glass="frost"]{ --gl-bg:rgba(32,36,40,calc(.52*var(--ga))); --gl-border:rgba(255,255,255,.12); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 24px rgba(0,0,0,.35); --gl-btn:rgba(255,255,255,calc(.08*var(--ga))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.12); --gl-thumb:rgba(255,255,255,.18); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.4); }
+:root[data-theme="dark"][data-glass="liquid"]{ --gl-bg:linear-gradient(160deg,rgba(255,255,255,calc(.14*var(--ga))),rgba(255,255,255,calc(.04*var(--ga))) 50%,rgba(255,255,255,calc(.09*var(--ga)))); --gl-border:rgba(255,255,255,.22); --gl-shadow:inset 0 1.5px 1px rgba(255,255,255,.28),inset 0 -1px 1px rgba(255,255,255,.08),inset 0 -14px 24px -18px rgba(255,255,255,.25),0 12px 32px rgba(0,0,0,.45); --gl-btn:linear-gradient(180deg,rgba(255,255,255,calc(.16*var(--ga))),rgba(255,255,255,calc(.05*var(--ga)))); --gl-btn-shadow:inset 0 1.5px 1px rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.35); --gl-thumb:linear-gradient(180deg,rgba(255,255,255,.30),rgba(255,255,255,.14)); --gl-thumb-shadow:inset 0 1.5px 1px rgba(255,255,255,.4),0 4px 14px rgba(0,0,0,.45); }
+:root[data-theme="dark"][data-glass="tint"]{ --gl-bg:color-mix(in srgb,var(--primary) 14%,rgba(24,28,30,calc(.6*var(--ga)))); --gl-border:color-mix(in srgb,var(--primary) 30%,transparent); --gl-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.4); --gl-btn:color-mix(in srgb,var(--primary) 12%,rgba(255,255,255,calc(.06*var(--ga)))); --gl-btn-shadow:inset 0 1px 0 rgba(255,255,255,.1); --gl-thumb:color-mix(in srgb,var(--primary) 28%,rgba(255,255,255,.1)); --gl-thumb-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 8px rgba(0,0,0,.4); }
 
 @supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
   /* a background with enough variation for glass to be visible */
@@ -645,3 +646,54 @@ body.em .guide{border-color:var(--green);border-width:2px}
   [data-device="tablet"] .map-grid .map-hero{height:min(56vh,560px)}
 }
 .map-host.picking .mk{pointer-events:none;opacity:.55}
+
+/* v2.6 — "you are here": a colour no place type uses (violet), a pulse, and a label */
+.me-mk{width:26px;height:26px}
+.me-mk .dot{background:#7C3AED;border:3px solid #fff;box-shadow:0 0 0 2px #7C3AED,0 2px 8px rgba(0,0,0,.35);z-index:2}
+.me-mk .pulse{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:rgba(124,58,237,.35);animation:mePulse 1.8s ease-out infinite}
+@keyframes mePulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.4);opacity:0}}
+.me-mk .me-label{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;background:#7C3AED;color:#fff;font-weight:800;font-size:.8125rem;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:meBob 1.8s ease-in-out infinite;z-index:3}
+.me-mk .me-label::after{content:"";position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#7C3AED}
+@keyframes meBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
+.me-mk .cone{border-bottom-color:rgba(124,58,237,.28)}
+@media (prefers-reduced-motion: reduce){.me-mk .pulse{animation:none;opacity:.4;transform:scale(1.8)}.me-mk .me-label{animation:none}}
+/* place colours (each type its own colour + icon; violet is reserved for you) */
+.t-hospital{background:#C42B21} .t-clinic{background:#B8577A} .t-police{background:#1F3A93} .t-fire{background:#9A3412}
+.t-ses{background:#B7791F} .t-water{background:#1F6FB2} .t-ev{background:#0F766E} .t-phone{background:#4D5560}
+.t-nsp{background:#2F7A55} .t-assembly{background:#3F6B4A} .t-rescue{background:#464B52}
+.range{width:100%;accent-color:var(--ink);height:44px}
+/* v2.6 — tutorial spotlight */
+.tut{position:fixed;inset:0;z-index:150;cursor:pointer}
+.tut-hole{position:fixed;border-radius:20px;box-shadow:0 0 0 9999px rgba(8,10,12,.74),0 0 0 3px rgba(255,255,255,.9);pointer-events:none;transition:all .25s ease}
+.tut-tip{position:fixed;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 32px));background:var(--surface);color:var(--ink);border-radius:20px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.35);outline:none}
+.tut-tip.below::before,.tut-tip.above::after{content:"";position:absolute;left:50%;margin-left:-8px;border:8px solid transparent}
+.tut-tip.below::before{bottom:100%;border-bottom-color:var(--surface)}
+.tut-tip.above::after{top:100%;border-top-color:var(--surface)}
+.tut-step{font-size:.8125rem;font-weight:800;color:var(--ink-3);letter-spacing:.04em}
+.tut-text{font-size:1.125rem;font-weight:700;line-height:1.45;margin-top:4px}
+.tut-hint{font-size:.875rem;color:var(--ink-2);margin-top:10px}
+.tut-skip{position:absolute;right:10px;top:8px;min-height:44px;padding:0 10px;font-weight:700;color:var(--ink-2)}
+.tut-replay{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:0;min-height:44px;font-weight:700;color:var(--ink-2)}
+@media (prefers-reduced-motion: reduce){.tut-hole{transition:none}}
+/* v2.6 — warning flow */
+.em-quick{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-top:var(--s3)}
+.em-quick .emb{min-height:64px}
+.em-quick .emb:only-child{grid-column:1/-1}
+.wf{display:flex;gap:var(--s3);align-items:flex-start;margin-top:var(--s3);padding:var(--s4)}
+.wf-n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800}
+.wf-h{font-size:.8125rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+:lang(zh-CN) .wf-h{letter-spacing:.02em}
+.wf-big{display:flex;align-items:center;gap:8px;font-size:1.75rem;font-weight:800;line-height:1.2}
+.wf-big2{font-size:1.25rem;font-weight:700;line-height:1.35}
+.wf-act{display:inline-block;font-size:1.625rem;font-weight:800;line-height:1.2;padding:6px 14px;border-radius:14px}
+.wf-act.lv-emergency{background:var(--red);color:var(--on-red)}
+.wf-act.lv-watch{background:var(--orange);color:var(--on-orange)}
+.wf-act.lv-advice{background:var(--yellow);color:var(--on-yellow)}
+.wf-strong{border:2px solid var(--ink)!important}
+.wf-lead{font-weight:700;margin-bottom:6px}
+.wf-list{margin:4px 0 12px 1.2em;display:grid;gap:6px;font-size:1.0625rem}
+.wf .guide{margin-top:4px}
+.sim-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px 12px 0;border-radius:var(--r-md);border:1px solid var(--line);background:var(--surface);overflow:hidden;min-height:64px}
+.sim-band{align-self:stretch;width:10px;flex:none}
+.sim-opt.lv-emergency .sim-band{background:var(--red)} .sim-opt.lv-watch .sim-band{background:var(--orange)} .sim-opt.lv-advice .sim-band{background:var(--yellow)}
+[data-layout="desktop"] .wf{max-width:760px}

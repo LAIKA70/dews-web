@@ -30,6 +30,7 @@ function classify(t) {
   if (t.emergency === 'assembly_point') return /neighbourhood safer place/i.test(name) || t['assembly_point:fire'] === 'designated' ? 'nsp' : 'assembly';
   if (NOT_PUBLIC.test(name)) return null;
   if (t.amenity === 'hospital') {
+    if (/dentist|medical practice|health centre|cumberland hospital/i.test(name)) return null;
     if (t.emergency === 'yes') return 'hospital';
     if (t.emergency === 'no' || NOT_ED.test(name) || !/hospital/i.test(name)) return null;
     return 'hospital';

@@ -13,6 +13,9 @@ nwr["amenity"="hospital"]${bb};
 nwr["amenity"~"^(fire_station|police)$"]${bb};
 nwr["emergency"="ses_station"]${bb};
 node["amenity"="drinking_water"]${bb};
+nwr["amenity"~"^(clinic|doctors)$"]${bb};
+nwr["amenity"="charging_station"]${bb};
+nwr["amenity"="device_charging_station"]${bb};
 );out center tags;`;
 
 const SERVERS = [
@@ -35,8 +38,13 @@ function classify(t) {
     if (t.emergency === 'no' || NOT_ED.test(name) || !/hospital/i.test(name)) return null;
     return 'hospital';
   }
-  if (t.amenity === 'fire_station' || t.amenity === 'police' || t.emergency === 'ses_station') return name ? 'rescue' : null;
+  if (t.emergency === 'ses_station' || /\bSES\b|State Emergency Service/.test(name)) return name ? 'ses' : null;
+  if (t.amenity === 'fire_station') return name ? 'fire' : null;
+  if (t.amenity === 'police') return name ? 'police' : null;
   if (t.amenity === 'drinking_water') return 'water';
+  if (t.amenity === 'clinic' || t.amenity === 'doctors') return name && !/dentist|dental|physio|vet|cosmetic|skin|psych/i.test(name) ? 'clinic' : null;
+  if (t.amenity === 'charging_station') return t.motorcar === 'no' ? null : 'ev';
+  if (t.amenity === 'device_charging_station') return 'phone';
   return null;
 }
 
@@ -65,7 +73,7 @@ for (const e of j.elements) {
   const key = ty + ':' + Math.round(lat * 2500) + ':' + Math.round(lng * 2500);
   if (near.has(key)) continue; near.set(key, 1);
   const row = [ty, +lat.toFixed(5), +lng.toFixed(5)];
-  if (ty !== 'water') { row.push(t.name || '', t['name:zh'] || t['name:zh-Hans'] || ''); if (ty === 'hospital') row.push(t.emergency === 'yes' ? 1 : 0); }
+  if (ty !== 'water') { row.push(t.name || t.operator || t.brand || '', t['name:zh'] || t['name:zh-Hans'] || ''); if (ty === 'hospital') row.push(t.emergency === 'yes' ? 1 : 0); }
   out.push(row);
 }
 out.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);

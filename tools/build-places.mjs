@@ -3,7 +3,7 @@
  * public Overpass server, and works offline from the first visit.
  * Data © OpenStreetMap contributors, ODbL.
  */
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 
 const BBOX = [-34.25, 150.50, -33.40, 151.40]; /* south, west, north, east */
 const bb = '(' + BBOX.join(',') + ')';
@@ -70,5 +70,6 @@ for (const e of j.elements) {
 out.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
 const counts = {}; out.forEach((r) => { counts[r[0]] = (counts[r[0]] || 0) + 1; });
 const data = { v: 1, area: 'Greater Sydney', bbox: BBOX, osmBase: j.osm3s && j.osm3s.timestamp_osm_base, built: new Date().toISOString(), counts, licence: 'Data © OpenStreetMap contributors, ODbL 1.0', rows: out };
+mkdirSync(new URL('../data/', import.meta.url), { recursive: true });
 writeFileSync(new URL('../data/places-sydney.json', import.meta.url), JSON.stringify(data));
 console.log('places:', out.length, counts);

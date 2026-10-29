@@ -14,7 +14,7 @@ international students. It is survival-first and offline-first.
 - **Nearby**: shelters, hospitals, water and charging points, with distance and direction.
 - **Profile**: an emergency card in English for responders, plus language, text size and theme settings.
 
-Warnings, places and the help-request agency are **sample data** in this version.
+**Bushfire warnings are real** (NSW Rural Fire Service feed, CC BY 4.0: © State of New South Wales (NSW Rural Fire Service). For current information go to www.rfs.nsw.gov.au). Other hazards' warnings and the help-request agency are still **sample data**.
 
 ## Files
 
@@ -24,6 +24,7 @@ Warnings, places and the help-request agency are **sample data** in this version
 | `mobile/`, `tablet/`, `desktop/` | The three versions (small shells that load the shared files) |
 | `data/places-sydney.json` | Safe places across Greater Sydney, bundled for offline use. Built weekly by `tools/build-places.mjs` (GitHub Actions). Data © OpenStreetMap contributors, ODbL |
 | `app.js`, `app.css` | The app's logic and styles, shared by both versions |
+| `warnings.js` | Reads the NSW RFS incidents feed: distance, 50 km filter, Chinese terms, offline/stale notes. Tests in `tests/` |
 | `nav.js` | Location, compass, nearby places, walking route, map |
 | `content.js` | All text, safety steps and sources (English + 中文) |
 | `lib/` | MapLibre GL JS (BSD-3), bundled so the map works offline |

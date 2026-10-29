@@ -707,3 +707,6 @@ body.em .guide{border-color:var(--green);border-width:2px}
 .live-src{display:flex;gap:6px;align-items:center;margin-top:var(--s3)} .live-src .ic{width:16px;height:16px;flex:none}
 .live-kv{margin-top:var(--s3)}
 .practice-link{color:var(--ink-2)}
+/* source chip on coloured warning bands: readable on red, orange and yellow */
+.alert-band .chip:not(.sample){background:rgba(0,0,0,.22);color:inherit;border:0;font-weight:700}
+.lv-advice .alert-band .chip:not(.sample){background:rgba(0,0,0,.1)}

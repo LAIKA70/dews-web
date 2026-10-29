@@ -2,6 +2,14 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.8.0 — real NSW bushfire warnings (in testing, not released)
+- The home screen now shows real bushfire incidents from the NSW Rural Fire Service: every incident within 50 km of you, plus every Emergency Warning anywhere in NSW. Checked every 5 minutes while the app is open.
+- Each warning shows its official level, fire type and status (in Chinese where we have reviewed terms; place names stay in English), how far it is from you, and when RFS last updated it.
+- DEWS never decides "leave or shelter" for you: it links to the official warning on Fires Near Me for the exact action.
+- A pop-up appears once when a Watch and Act or Emergency Warning is within 50 km.
+- Clear notes when you're offline, when the data is over an hour old, or when a fire's exact location isn't mapped yet.
+- The old sample warnings moved into "Practice mode".
+
 ## 2.7.0 — 2026-10-26 · Feedback
 
 - **Feedback** (Profile → Feedback): "Report a problem" and "Suggest an idea" open a ready-made bilingual form on GitHub with your app version and device type filled in — never your profile, location or health details.

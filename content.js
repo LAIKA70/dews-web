@@ -655,4 +655,44 @@ STR26.fbPrivacy = ['Opens a public page on GitHub (free account needed). Your ap
 STR26.fbReportThis = ['Report this problem', '报告这个问题'];
 for (var k26 in STR26) STR[k26] = STR26[k26];
 STR.paletteNote = ['C is designed so people with colour blindness (difficulty telling some colours apart, about 1 in 12 men) can still tell every colour apart.', 'C 方案专为色盲、色弱的人设计（分不清某些颜色，约每 12 名男性中有 1 人），所有颜色仍能区分开。'];
-DEWS_VERSION = '2.7.0';
+/* 2.8.0 — real NSW bushfire warnings (NSW RFS feed). Chinese for fixed terms is in warnings.js (ZH). */
+var STR28 = {
+  practice: ['Practice', '练习'],
+  demoAlert: ['Practice mode: try a sample warning', '练习模式：试一条示例预警'],
+  demoAlertSub: ['See how DEWS guides you. Nothing real is happening.', '看看 DEWS 会怎样引导你，不是真实事件。'],
+  practiceEnd: ['End practice', '结束练习'],
+  liveFrom: ['NSW Rural Fire Service', '新州乡村消防局（NSW RFS）'],
+  liveChecked: ['checked', '检查于'],
+  agoNow: ['just now', '刚刚'],
+  liveRfsUpdated: ['RFS updated', 'RFS 更新于'],
+  liveLoading: ['Checking NSW bushfire warnings…', '正在检查新州山火警告…'],
+  liveNoData: ['Couldn’t load bushfire warnings', '无法载入山火警告'],
+  liveError: ['Couldn’t reach NSW RFS. Warnings may be missing.', '连不上 NSW RFS，可能漏掉警告。'],
+  liveOffline: ['You’re offline. These warnings may be out of date.', '你现在离线，这些警告可能已经过时。'],
+  liveStale: ['Not updated for over an hour. These warnings may be out of date.', '超过一小时没有更新，这些警告可能已经过时。'],
+  liveOpenFnm: ['Check Fires Near Me', '查看 Fires Near Me'],
+  liveNone: ['No bushfire warnings within 50 km', '50 公里内没有山火警告'],
+  liveNoneState: ['No Emergency Warnings for bushfires in NSW', '新州目前没有山火紧急警告'],
+  liveNeedLoc: ['Turn on location to see every fire within 50 km. Without it, DEWS shows only Emergency Warnings across NSW.', '开启定位才能看到 50 公里内的所有火情。没有定位时，只显示全新州的紧急警告。'],
+  liveScope: ['Bushfires in NSW only, from NSW RFS. Floods, storms and other hazards are not connected yet.', '目前只有新州山火，来自 NSW RFS。洪水、风暴等其他灾害还没有接入。'],
+  liveAll: ['See all', '查看全部'],
+  liveAllTitle: ['Fires near you', '你附近的火情'],
+  liveApprox: ['approx.', '大约'],
+  liveGone: ['This incident is no longer listed', '这个事件已不在列表中'],
+  liveGoneSub: ['NSW RFS has removed it or it has ended. Check Fires Near Me for the latest.', 'NSW RFS 已移除或事件已结束。请到 Fires Near Me 查看最新情况。'],
+  liveWhere: ['Where', '地点'],
+  liveSize: ['Size', '面积'],
+  liveAgency: ['Agency', '负责机构'],
+  liveUnmapped: ['Exact location not mapped yet. It is shown at the centre of the council area, so the distance is rough.', '准确位置还没有标出，暂时显示在所在地方政府区域的中心，所以距离只是粗略估计。'],
+  liveEnglishNote: ['Place names are kept in English, as on official signs and radio.', '地名保留英文，和官方路牌、电台一致。'],
+  liveToPoint: ['to the reported location (fire area not mapped)', '到报告位置的距离（火场范围未标出）'],
+  liveActionNote: ['The official warning says exactly what to do (for example, leave now or shelter). DEWS doesn’t have that message, so read it on Fires Near Me. If your life is in danger, call 000.', '官方警告会写明具体该怎么做（例如立即离开或就地避险）。DEWS 拿不到这段原文，请到 Fires Near Me 阅读。如有生命危险，拨打 000。'],
+  liveReadOfficial: ['Read the official warning', '阅读官方警告'],
+  liveFireSteps: ['Bushfire steps: can you leave safely?', '山火指引：你能安全离开吗？'],
+  liveNoLevel: ['No warning level has been issued for this incident.', '这个事件没有发布警告级别。'],
+  liveFarAway: ['This warning is far from you. It is shown because it is the highest level in NSW.', '这条警告离你很远。因为是新州最高级别的警告，所以也显示出来。'],
+  liveNearYou: ['A bushfire warning near you', '你附近有山火警告']
+};
+for (var k28 in STR28) STR[k28] = STR28[k28];
+SOURCES.rfs = { t: 'NSW RFS — Fires Near Me (live incidents feed, CC BY 4.0)', u: 'https://www.rfs.nsw.gov.au/fire-information/fires-near-me' };
+DEWS_VERSION = '2.8.0';

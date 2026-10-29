@@ -155,6 +155,8 @@ function render(){
     else if (p[0] === 'learn') main = p[1] ? vLearn(p[1]) : vLearnList();
     else if (S.mvp && !p[0]) main = vKit();
     else if (p[0] === 'me') main = p[1] === 'card' ? vCardEdit() : p[1] === 'sources' ? vSources() : vMe();
+    else if (p[0] === 'alert' && p[1] === 'rfs') main = vLive(p[2]);
+    else if (p[0] === 'fires') main = vFires();
     else if (p[0] === 'alert') main = vAlert();
     else main = vHome();
   }
@@ -225,9 +227,125 @@ function alertFar(){
 }
 function syncAlertZone(){
   if (S.demo.alert && !S.demo.anchored && NAV.state.pos) { S.demo.at = { lat: NAV.state.pos.lat, lng: NAV.state.pos.lng }; S.demo.anchored = true; save(); }
-  var z = alertZone(), cur = NAV.state.avoid;
+  var z = alertZone(); if (!z && !S.demo.alert && window.WARN) z = WARN.zone(liveFocus());
+  var cur = NAV.state.avoid;
   if (!z && cur) NAV.setAvoid(null);
-  else if (z && (!cur || Math.abs(cur.lat - z.lat) > 1e-6 || Math.abs(cur.lng - z.lng) > 1e-6)) NAV.setAvoid(z);
+  else if (z && (!cur || Math.abs(cur.lat - z.lat) > 1e-6 || Math.abs(cur.lng - z.lng) > 1e-6 || cur.r !== z.r)) NAV.setAvoid(z);
+}
+
+
+/* ---------- REAL warnings: NSW RFS bushfire feed (see warnings.js) ---------- */
+function liveSel(){ return window.WARN && WARN.state.list ? WARN.select(WARN.state.list, NAV.state.pos) : []; }
+function liveTerm(s){ return esc(WARN.term(s, li())); }
+function lvName(inc){ return inc.level ? tx(LEVELS[inc.level].name) : WARN.term(inc.category || 'Not Applicable', li()); }
+function ago(ms){
+  var m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+  if (m < 1) return t('agoNow');
+  if (m < 60) return li() ? m + ' 分钟前' : m + ' min ago';
+  var h = Math.round(m / 60); return li() ? h + ' 小时前' : h + (h === 1 ? ' hour ago' : ' hours ago');
+}
+function liveStatus(){
+  var w = WARN.state, bits = [];
+  if (w.at) bits.push(t('liveChecked') + ' ' + ago(w.at));
+  var line = '<p class="small live-src">' + ic('fire') + '<span>' + t('liveFrom') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</span></p>';
+  var warn = '';
+  if (navigator.onLine === false || w.state === 'offline') warn = t('liveOffline');
+  else if (w.state === 'error' && !w.at) warn = t('liveError');
+  else if (w.state === 'error' || (w.at && WARN.stale())) warn = t('liveStale');
+  return line + (warn ? '<p class="warnline">' + ic('alert') + '<span>' + warn + ' <a href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + '</a></span></p>' : '');
+}
+function liveFar(f, inc){
+  if (!f) return '';
+  if (f.inside) return t('farIn');
+  return fmtDist(f.m) + ' · ' + dirName(f.dir) + (li() ? '方' : '') + (f.edge && !inc.unmapped ? '' : ' · ' + t('liveApprox'));
+}
+function liveRow(x){
+  var inc = x.inc, lv = inc.level || 'none';
+  return '<a class="live-row lv-' + lv + '" href="#/alert/rfs/' + esc(inc.id) + '"><i class="live-dot"></i><span class="grow"><b>' + esc(lvName(inc)) + '</b> · ' + esc(inc.title) +
+    '<br><span class="small">' + liveTerm(inc.type) + (x.far ? ' · ' + liveFar(x.far, inc) : '') + '</span></span>' + ic('chevR') + '</a>';
+}
+function liveCard(){
+  var sel = liveSel(), w = WARN.state, hasPos = !!NAV.state.pos;
+  var warned = sel.filter(function(x){ return x.inc.level; }), other = sel.filter(function(x){ return !x.inc.level; });
+  var top = warned[0], h = '';
+  if (top) {
+    var inc = top.inc, L = LEVELS[inc.level];
+    h += '<a class="alert lv-' + inc.level + '" href="#/alert/rfs/' + esc(inc.id) + '">' +
+      '<div class="alert-band">' + ic('fire') + esc(tx(L.name)) + '<span class="chip">NSW RFS</span></div>' +
+      '<div class="alert-body"><div class="alert-act">' + esc(inc.title) + '</div>' +
+      '<div class="alert-meta">' + liveTerm(inc.type) + ' · ' + liveTerm(inc.status) + (top.far ? ' · ' + liveFar(top.far, inc) : '') + '</div>' +
+      '<div class="alert-meta">' + t('liveRfsUpdated') + ' ' + esc(inc.updated) + '</div>' + meter(inc.level) + '</div></a>';
+  } else {
+    h += '<div class="alert none"><div class="alert-body">' + ic(w.at ? 'check' : 'fire') + '<div class="grow"><h2>' +
+      (!w.at ? t(w.state === 'error' || w.state === 'offline' ? 'liveNoData' : 'liveLoading') : hasPos ? t('liveNone') : t('liveNoneState')) + '</h2>' +
+      (!hasPos ? '<p class="small">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>' : '') + '</div></div></div>';
+  }
+  if (top && !hasPos) h += '<p class="small" style="margin-top:8px">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>';
+  var rest = warned.slice(1).concat(other);
+  if (rest.length) h += '<div class="stack live-list">' + rest.slice(0, 4).map(liveRow).join('') + '</div>' + (rest.length > 4 ? '<a class="textlink" href="#/fires">' + t('liveAll') + ' (' + sel.length + ')' + ic('chevR') + '</a>' : '');
+  h += liveStatus() + '<p class="small">' + t('liveScope') + '</p>';
+  return h;
+}
+function vFires(){
+  var sel = liveSel();
+  return backTo('#/') + '<div class="page-head"><h1>' + t('liveAllTitle') + '</h1><p class="sub">' + t('liveScope') + '</p></div>' +
+    (sel.length ? '<div class="stack live-list">' + sel.map(liveRow).join('') + '</div>' : '<p>' + t('liveNone') + '</p>') + liveStatus() +
+    '<p class="src">' + esc(WARN.ATTRIBUTION) + '</p>';
+}
+function vLive(id){
+  var inc = WARN.find(id);
+  if (!inc) return backTo('#/') + '<div class="page-head"><h1>' + t('liveGone') + '</h1><p class="sub">' + t('liveGoneSub') + '</p></div>' + liveStatus();
+  var f = WARN.measure(inc, NAV.state.pos), L = inc.level ? LEVELS[inc.level] : null, near = f && f.m <= WARN.NEAR_M, act = inc.level === 'watch' || inc.level === 'emergency';
+  var n = 0, sec = function(title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + (++n) + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var fnm = '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" style="margin-top:12px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + ic('ext') + t('liveReadOfficial') + '</a>';
+  var far = !f ? '<p class="small">' + t('farNeedLoc') + '</p><button class="btn btn-line" style="margin-top:8px" data-a="navEnable">' + ic('locate') + t('guideEnable') + '</button>'
+    : f.inside ? '<p class="wf-big" style="color:var(--red-text)">' + ic('alert') + t('farIn') + '</p>'
+    : '<p class="wf-big">' + fmtDist(f.m) + '</p><p class="small">' + (f.edge && !inc.unmapped ? t('farAway') + (li() ? '' : ' ') + dirName(f.dir) + t('farDirSuffix') : t('liveToPoint') + ' · ' + dirName(f.dir) + (li() ? '方' : '')) + '</p>';
+  return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
+    '<div class="alert lv-' + (inc.level || 'none') + '"><div class="alert-band">' + ic('fire') + esc(lvName(inc)) + '<span class="chip">NSW RFS</span></div>' +
+    '<div class="alert-body"><h1 class="alert-act">' + esc(inc.title) + '</h1>' + (inc.level ? meter(inc.level) : '') + '</div></div>' +
+    '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a></div>' +
+    sec(t('qWhat'), '<p class="wf-big2">' + liveTerm(inc.type) + ' · ' + liveTerm(inc.status) + '</p>' +
+      '<dl class="kv live-kv"><dt>' + t('liveWhere') + '</dt><dd>' + esc(inc.location || inc.title) + (inc.council ? ' · ' + esc(inc.council) : '') + '</dd>' +
+      (inc.size && inc.size !== '0 ha' ? '<dt>' + t('liveSize') + '</dt><dd>' + esc(inc.size) + '</dd>' : '') +
+      '<dt>' + t('liveAgency') + '</dt><dd>' + esc(inc.agency) + '</dd><dt>' + t('liveRfsUpdated') + '</dt><dd>' + esc(inc.updated) + '</dd></dl>' +
+      (inc.unmapped ? '<p class="warnline">' + ic('alert') + '<span>' + t('liveUnmapped') + '</span></p>' : '') +
+      (li() ? '<p class="small" style="margin-top:6px">' + t('liveEnglishNote') + '</p>' : '')) +
+    sec(t('qFar'), far) +
+    sec(t('qDo'), L
+      ? '<p class="wf-act lv-' + inc.level + '">' + esc(tx(L.name)) + '</p><p class="small" style="margin-top:6px">' + esc(tx(L.desc)) + '</p>' +
+        (act ? '<div class="callout" style="margin-top:12px">' + ic('alert') + '<span>' + t('liveActionNote') + '</span></div>' + fnm +
+          '<a class="btn btn-line" style="margin-top:8px" href="#/sos/h/fire">' + ic('fire') + t('liveFireSteps') + '</a>'
+             : '<a class="btn btn-primary" style="margin-top:12px" href="#/">' + t('gotIt') + '</a><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>')
+      : '<p class="wf-big2">' + t('noAction') + '</p><p class="small" style="margin-top:6px">' + t('liveNoLevel') + '</p><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>', act ? 'wf-strong' : '') +
+    (act && near ? sec(t('qGo'), guideCard() + '<p class="small" style="margin-top:8px">' + t('awayNote') + '</p>' +
+      '<a class="btn btn-lg btn-primary" style="margin-top:12px" href="#/sos/go">' + ic('arrow') + t('navPreview') + '</a>' +
+      '<p class="warnline">' + ic('alert') + '<span>' + t('hazardWarn') + '</span></p>') : act && f ? '<p class="small" style="margin:12px 4px">' + t('liveFarAway') + '</p>' : '') +
+    liveStatus() + '<p class="src">' + esc(WARN.ATTRIBUTION) + ' CC BY 4.0.</p>' + srcLine('aws');
+}
+/* the real warning that should steer routes and pop up: highest Watch and Act / Emergency within 50 km */
+function liveFocus(){
+  var p = parts();
+  if (p[0] === 'alert' && p[1] === 'rfs') { var i = WARN.find(p[2]); if (i) return i; }
+  var x = liveSel().filter(function(x){ return x.near && (x.inc.level === 'watch' || x.inc.level === 'emergency'); })[0];
+  return x ? x.inc : null;
+}
+function liveSheet(inc){
+  var f = WARN.measure(inc, NAV.state.pos), L = LEVELS[inc.level];
+  return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
+    '<div class="alert lv-' + inc.level + '" style="margin:0"><div class="alert-band">' + ic('fire') + esc(tx(L.name)) + '<span class="chip">NSW RFS</span></div></div>' +
+    '<p class="small" style="margin-top:12px">' + t('liveNearYou') + ' · ' + liveTerm(inc.type) + '</p>' +
+    '<h2 id="ci-h">' + esc(inc.title) + '</h2>' +
+    (f ? '<p class="wf-big2" style="margin-top:4px">' + liveFar(f, inc) + '</p>' : '') +
+    '<p style="margin-top:8px">' + esc(tx(L.desc)) + '</p>' +
+    '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" href="#/alert/rfs/' + esc(inc.id) + '" data-a="liveSeen" data-id="' + esc(inc.id) + '">' + t('seeWhatToDo') + ic('chevR') + '</a>' +
+    '<button class="btn btn-ghost" data-a="liveSeen" data-id="' + esc(inc.id) + '">' + t('close') + '</button></div></div>';
+}
+function livePopup(){
+  if (S.demo.alert) return null;
+  var seen = S.liveSeen || {};
+  var x = liveSel().filter(function(x){ return x.near && (x.inc.level === 'watch' || x.inc.level === 'emergency') && seen[x.inc.id] !== x.inc.level; })[0];
+  return x ? x.inc : null;
 }
 
 /* ---------- HOME ---------- */
@@ -235,13 +353,14 @@ function dateLine(){
   try { return new Date().toLocaleDateString(li() ? 'zh-CN' : 'en-AU', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return ''; }
 }
 function alertCard(){
+  if (!S.demo.alert) return liveCard() + '<button class="textlink practice-link" data-a="demoAlert">' + t('demoAlert') + ic('chevR') + '</button>';
   if (S.demo.alert) {
     var a = curAlert(), L = LEVELS[a.level], h = hz(a.hazard);
     return '<a class="alert lv-' + a.level + '" href="#/alert">' +
-      '<div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
+      '<div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div>' +
       '<div class="alert-body"><div class="alert-act">' + esc(tx(a.action)) + '</div>' +
       '<div class="alert-meta">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</div>' +
-      meter(a.level) + '</div></a>';
+      meter(a.level) + '</div></a>' + '<button class="textlink practice-link" data-a="demoToggle">' + t('practiceEnd') + ic('x') + '</button>';
   }
   return '<div class="alert none"><div class="alert-body">' + ic('check') + '<div class="grow"><h2>' + t('noWarnings') + '</h2>' +
     '<p class="small">' + t('sampleData') + '</p>' +
@@ -288,7 +407,7 @@ function vAlert(){
   var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
   var n = 0;
   return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
-    '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
+    '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div>' +
     '<div class="alert-body"><h1 class="alert-act">' + esc(tx(a.action)) + '</h1>' + meter(a.level) + '</div></div>' +
     '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + (S.mvp ? '' : '<button class="emb" data-a="safe">' + ic('msg') + t('emSafe') + '</button>') + '</div>' +
     sec(++n, t('qWhat'), '<p class="wf-big2">' + esc(tx(a.what)) + '</p><p class="small">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</p>') +
@@ -315,7 +434,7 @@ function checkinSheet(){
   }
   var a = curAlert(), h = hz(a.hazard), L = LEVELS[a.level], f = alertFar();
   return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
-    '<div class="alert lv-' + a.level + '" style="margin:0"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div></div>' +
+    '<div class="alert lv-' + a.level + '" style="margin:0"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div></div>' +
     '<p class="small" style="margin-top:12px">' + t('receivedWarning') + ' · ' + esc(tx(h.name)) + '</p>' +
     '<h2 id="ci-h">' + esc(tx(a.what)) + '</h2>' +
     (f ? '<p class="wf-big2" style="margin-top:4px">' + (f.inside ? t('farIn') : fmtDist(f.edge) + ' · ' + f.dir) + '</p>' : '') +
@@ -339,7 +458,7 @@ function vSos(){
   var ctx = S.demo.alert && !S.mvp ? hz(curAlert().hazard) : null;
   var list = HAZARDS.slice();
   if (ctx) list.sort(function(a, b){ return (b.id === ctx.id) - (a.id === ctx.id); });
-  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('sample') + '</span></a>' : '') +
+  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('practice') + '</span></a>' : '') +
     '<div class="em-actions"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + guideCard() +
     (DESKTOP ? '</div><div class="mapbox" id="mapSlot">' + mapOvl() + '</div></div><div><div class="em-actions">' : '') +
     (S.mvp ? '' : '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
@@ -347,7 +466,7 @@ function vSos(){
     '<h1 class="em-h"' + (DESKTOP && S.mvp ? ' style="margin-top:0"' : '') + '>' + t('emTitle') + '</h1>' +
     list.map(function(h){
       var on = ctx && ctx.id === h.id;
-      return '<a class="hz' + (on ? ' ctx' : '') + '" href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('sample') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
+      return '<a class="hz' + (on ? ' ctx' : '') + '" href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('practice') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
     }).join('') +
     (S.mvp ? '<button class="link-row" style="margin-top:12px;width:100%;text-align:left" data-a="tool" data-t="card"><span class="badge">' + ic('card') + '</span><span class="grow"><span class="t">' + t('showCard') + '</span></span></button>' : '<h2 class="label">' + t('emTools') + '</h2>' +
     '<div class="tools">' +
@@ -700,7 +819,7 @@ function vGo(em){
     '<p class="small" style="margin-top:4px;font-size:.75rem">' + srcNote() + '</p></section></main>';
 }
 function isDark(){ return S.theme === 'dark' || (S.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
-function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map' || (p[0] === 'alert' && S.demo.alert); }
+function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map' || (p[0] === 'alert' && (S.demo.alert || p[1] === 'rfs')) ; }
 
 /* ---------- ME ---------- */
 function cardKV(){
@@ -772,6 +891,7 @@ function renderLayer(){
   else if (TOOL) h = toolView();
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
+  else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
   L.innerHTML = h;
 }
 var OB = 0, OB_DIR = 0;
@@ -892,6 +1012,7 @@ var A = {
   mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ CI = 'pick'; renderLayer(); },
+  liveSeen: function(el){ var inc = WARN.find(el.dataset.id); if (!S.liveSeen) S.liveSeen = {}; if (inc) S.liveSeen[inc.id] = inc.level; save(); renderLayer(); },
   ciCancel: function(){ CI = null; renderLayer(); },
   simPick: function(el){
     var pos = NAV.state.pos;
@@ -989,14 +1110,18 @@ function after(p){
   if (TUT) setTimeout(tutPlace, 80);
   else if (S.lang && !S.tutLearn && p[0] === 'learn' && !p[1] && !document.querySelector('.ob')) setTimeout(tutStart, 300);
   var m = document.getElementById('main'); if (m && p[0] === 'sos' && p[3]) { var n = m.querySelector('.now'); if (n) n.setAttribute('tabindex', '-1'); }
-  if (S.lang && usesNav(p)) NAV.auto();
+  if (S.lang && (usesNav(p) || !p[0] || p[0] === 'fires')) NAV.auto();
+  homePos = NAV.state.pos;
   var slot = document.getElementById('mapSlot');
   if (slot && NAV.mapState() !== 'failed') NAV.mount(slot, { dark: isDark() });
   updateLive();
 }
-var navRendering = false;
-NAV.onChange(function(){ var p = parts(); if (!S.lang || TOOL || navRendering || !usesNav(p)) return; navRendering = true; var y = window.scrollY; render(); window.scrollTo(0, y); navRendering = false; });
+var navRendering = false, homePos = null;
+function movedFar(){ var a = homePos, b = NAV.state.pos; if (!b) return false; if (!a) return true; return NAV.dist(a, b) > 300; }
+NAV.onChange(function(){ var p = parts(); if (!S.lang || TOOL || navRendering) return;
+  if (!usesNav(p)) { if ((!p[0] || p[0] === 'fires') && movedFar()) { navRendering = true; var y0 = window.scrollY; render(); window.scrollTo(0, y0); navRendering = false; } return; } navRendering = true; var y = window.scrollY; render(); window.scrollTo(0, y); navRendering = false; });
 NAV.onLive(updateLive);
+if (window.WARN) { WARN.onChange(function(){ if (!S.lang || TOOL) return; var p = parts(); if (p[1] === 'go') { syncAlertZone(); return; } var y = window.scrollY; render(); window.scrollTo(0, y); }); WARN.start(); }
 
 /* ---------- offline ---------- */
 if ('serviceWorker' in navigator) {

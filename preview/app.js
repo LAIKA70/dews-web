@@ -20,7 +20,7 @@ function load(){
   var d = JSON.parse(JSON.stringify(DEFAULTS));
   try {
     var s = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (s) for (var k in d) if (s[k] !== undefined) d[k] = s[k];
+    if (s) for (var k in s) if (s[k] !== undefined && s[k] !== null) d[k] = s[k]; /* keep every saved setting, not only the defaults (tutLearn, mvp, glassA, liveSeen) */
     if (!d.lang) { var old = localStorage.getItem('dews-lang'); if (old === 'zh' || old === 'en') d.pre = old; }
   } catch (e) {}
   return d;
@@ -144,7 +144,7 @@ function render(){
   document.documentElement.setAttribute('data-layout', DESKTOP ? 'desktop' : 'mobile');
   document.documentElement.setAttribute('data-device', TABLET ? 'tablet' : DESKTOP ? 'desktop' : 'phone');
   document.title = em ? 'DEWS — ' + t('sos') : 'DEWS';
-  if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em); renderLayer(); after(p); return; }
+  if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em) + helpTab(); renderLayer(); after(p); return; }
 
   if (em) {
     var r = sosRoute(p); main = r.main; dock = r.dock || ''; top = emTop(p.length > 1 ? r.back || '#/sos' : null);
@@ -170,8 +170,8 @@ function render(){
     tabLink('#/prepare', 'shield', t('tabPrep'), tab === 'prepare') +
     tabLink('#/map', 'pin', t('tabMap'), tab === 'map') +
     tabLink('#/me', 'user', t('tabMe'), tab === 'me')) + '</div></nav>';
-  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>';
-  else document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs);
+  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>' + helpTab();
+  else document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs) + helpTab();
   renderLayer();
   after(p);
 }
@@ -881,6 +881,30 @@ function vSources(){
     '<h2 class="label">Map &amp; places</h2><p class="small">Map tiles: OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors. Places: OpenStreetMap via Overpass API. Walking routes: FOSSGIS OSRM (routing.openstreetmap.de). Map library: MapLibre GL JS (BSD-3).</p>';
 }
 
+
+/* ---------- screen guide: "?" tab on the right edge ---------- */
+var HELPO = false;
+function helpKey(p){
+  if (!p[0]) return S.mvp ? 'kit' : 'home';
+  if (p[1] === 'go') return 'go';
+  if (p[0] === 'alert') return p[1] === 'rfs' ? 'live' : 'practice';
+  if (p[0] === 'fires') return 'fires';
+  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : 'sos';
+  if (p[0] === 'prepare') return p[1] || 'prepare';
+  if (p[0] === 'learn') return p[1] ? 'learnOne' : 'learn';
+  if (p[0] === 'me') return p[1] === 'card' ? 'card' : p[1] === 'sources' ? 'sources' : 'me';
+  return p[0];
+}
+function helpTab(){ return S.lang && !TOOL ? '<button class="helptab" data-a="helpOpen" aria-label="' + t('helpBtn') + '" aria-haspopup="dialog">?</button>' : ''; }
+function helpSheet(){
+  var H = HELP[helpKey(parts())] || HELP.home;
+  return '<div class="scrim help-scrim"><div class="sheet help-sheet" role="dialog" aria-modal="true" aria-labelledby="help-h">' +
+    '<p class="eyebrow">' + t('helpBtn') + '</p><h2 id="help-h" tabindex="-1">' + esc(tx(H.t)) + '</h2>' +
+    '<ol class="help-list">' + H.s.map(function(x){ return '<li>' + linkify(tx(x)) + '</li>'; }).join('') + '</ol>' +
+    (H.tour ? '<button class="btn btn-line" data-a="helpTour">' + ic('quiz') + t('helpTour') + '</button>' : '') +
+    '<button class="btn btn-primary" data-a="helpClose">' + t('gotIt') + '</button></div></div>';
+}
+
 /* ---------- layer: onboarding, sheets, tools ---------- */
 var TOOL = null, toolTimer = null, audio = null, wake = null;
 function renderLayer(){
@@ -889,6 +913,7 @@ function renderLayer(){
   if (CI && CI !== 'pick' && parts()[0] && parts()[0] !== '') CI = null;
   if (!S.lang) h = onboarding();
   else if (TOOL) h = toolView();
+  else if (HELPO) h = helpSheet();
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
   else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
@@ -1012,6 +1037,9 @@ var A = {
   mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ CI = 'pick'; renderLayer(); },
+  helpOpen: function(){ HELPO = true; renderLayer(); var h = document.getElementById('help-h'); if (h) try { h.focus(); } catch (e) {} },
+  helpClose: function(){ HELPO = false; renderLayer(); var b = document.querySelector('.helptab'); if (b) try { b.focus({ preventScroll: true }); } catch (x) {} },
+  helpTour: function(){ HELPO = false; renderLayer(); location.hash = '#/learn'; setTimeout(tutStart, 300); },
   liveSeen: function(el){ var inc = WARN.find(el.dataset.id); if (!S.liveSeen) S.liveSeen = {}; if (inc) S.liveSeen[inc.id] = inc.level; save(); renderLayer(); },
   ciCancel: function(){ CI = null; renderLayer(); },
   simPick: function(el){
@@ -1074,6 +1102,7 @@ var A = {
   }
 };
 document.addEventListener('click', function(e){
+  if (HELPO && e.target.classList && e.target.classList.contains('help-scrim')) { A.helpClose(); return; }
   var el = e.target.closest('[data-a]'); if (!el) return;
   var fn = A[el.dataset.a]; if (!fn) return;
   if (el.tagName !== 'A') e.preventDefault();
@@ -1085,7 +1114,7 @@ document.addEventListener('input', function(e){
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
   if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
-document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
+document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (HELPO) A.helpClose(document.body); else if (CI) A.ciClose(); } });
 /* onboarding: swipe left/right (touch) and arrow keys; Next/Back buttons stay as the main way */
 function obFocus(){ var h = document.getElementById('ob-h'); if (h) try { h.focus({ preventScroll: true }); } catch (e) {} }
 var obTouch = null;
@@ -1102,7 +1131,7 @@ document.addEventListener('keydown', function(e){
   if (S.lang || !document.querySelector('.ob')) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); obGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); obGo(-1); }
 });
-window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
+window.addEventListener('hashchange', function(){ HELPO = false; render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){
   syncAlertZone();

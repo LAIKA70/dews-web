@@ -142,13 +142,13 @@
     return out;
   }
 
-  /* ---------- fixed terms in Chinese (reviewed list; anything not here stays in English) ---------- */
+  /* ---------- fixed terms in Chinese (reviewed by LAIKA 2026-10-30; anything not here stays in English) ---------- */
   var ZH = {
     'Advice': '建议', 'Watch and Act': '注意并行动', 'Emergency Warning': '紧急警告',
-    'Planned Burn': '计划烧除', 'Not Applicable': '无警告级别',
-    'Out of control': '未受控制', 'Being controlled': '正在控制', 'Under control': '已受控制', 'Responding': '消防正在赶赴',
-    'Bush Fire': '山火', 'Grass Fire': '草地火', 'Scrub Fire': '灌木火', 'Forest Fire': '森林火',
-    'Hazard Reduction': '减灾烧除', 'Burn off': '焚烧作业', 'Structure Fire': '建筑物火灾', 'Haystack fire': '干草堆火灾',
+    'Planned Burn': '计划性焚烧', 'Not Applicable': '未分级',
+    'Out of control': '失控', 'Being controlled': '控制中', 'Under control': '已控制', 'Responding': '消防队正在前往',
+    'Bush Fire': '丛林火', 'Grass Fire': '草火', 'Scrub Fire': '灌木火', 'Forest Fire': '森林火',
+    'Hazard Reduction': '计划性烧除', 'Burn off': '烧荒', 'Structure Fire': '建筑物火灾', 'Haystack fire': '干草堆火灾',
     'Vehicle Fire': '车辆火灾', 'MVA/Transport': '交通事故', 'Other': '其他', 'Flood': '洪水', 'Search': '搜救'
   };
   function term(s, zh) {

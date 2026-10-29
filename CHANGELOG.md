@@ -9,7 +9,9 @@ Plain-language notes on what changed in each version.
 - A pop-up appears once when a Watch and Act or Emergency Warning is within 50 km.
 - Clear notes when you're offline, when the data is over an hour old, or when a fire's exact location isn't mapped yet.
 - The old sample warnings moved into "Practice mode".
-- New: a "?" tab on the right edge of every screen explains how to use that screen (English and 中文). On Learn it can also start the on-screen tour.
+- New: a small ? icon on every screen starts a step-by-step tour of that screen: a dark backdrop with the part being explained lit up, and a light tip (English and 中文).
+- Warning pop-ups are now solid, not see-through grey, with more space above the buttons.
+- Accessibility check (WCAG 2.2 AA) on every screen, in light and dark, on phone, tablet and desktop: fixed text that was too faint (tab labels, selected places, labels on the orange band, palette B red in dark mode), and the direction card now reads its visible text to screen readers.
 - Fixed: some settings (finished tutorial, MVP mode, glass amount) were forgotten after closing the app.
 
 ## 2.7.0 — 2026-10-26 · Feedback

@@ -5,6 +5,7 @@ A record of who decided what, and why. Newest first.
 
 | # | Date | Decision | Proposed by | Why / evidence |
 |---|---|---|---|---|
+| 25 | 2026-10-30 | Every screen has a ? icon that starts a spotlight tour (dark backdrop, light tip); replaces the edge tab and text sheet | LAIKA | One consistent way to learn any screen; the Learn tour already worked well |
 | 24 | 2026-10-30 | Real warnings: show the official level, its meaning and a link to the official warning; DEWS never picks "leave" or "shelter" for a specific fire. Only fixed terms (level, status, fire type) are translated, with reviewed Chinese; place names stay English | Claude | The RFS feed has the level but not the action text; a wrong guess could send someone out when it's too late to leave. AIDR republisher guideline: keep official wording, show source, date and time |
 | 23 | 2026-10-30 | Real NSW bushfire warnings from the NSW RFS feed, read on the phone (no DEWS server). Show every incident within 50 km, plus every Emergency Warning in NSW; samples move to Practice mode | LAIKA (range), Claude (approach) | Nearby small fires matter to someone without a car; a statewide Emergency must never be missed |
 | 22 | 2026-10-26 | No invented places on the map, ever; only real OpenStreetMap places, with evacuation centres left to official channels | LAIKA | People act on what the map shows; a fake place could send someone the wrong way |

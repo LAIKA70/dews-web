@@ -739,7 +739,7 @@ function guideBody(){
     (st.compass === 'needs-tap' ? '<button class="btn btn-line" data-a="navEnable">' + ic('arrow') + t('compassTap') + '</button>' :
      st.compass === 'unavailable' ? '<p class="small">' + t('compassNone') + '</p>' : '');
 }
-function guideCard(){ return '<div class="guide" data-a="openGo" role="link" tabindex="0" aria-label="' + t('openMap') + '">' + dialHTML() + '<div class="grow">' + guideBody() + '</div></div>'; }
+function guideCard(){ return '<div class="guide" data-a="openGo" role="link" tabindex="0">' + dialHTML() + '<div class="grow">' + guideBody() + '<span class="sr-only"> — ' + t('openMap') + '</span></div></div>'; }
 function rot(el, deg){
   var prev = el._a == null ? deg : el._a, d = ((deg - prev) % 360 + 540) % 360 - 180;
   el._a = prev + d; el.style.transform = 'rotate(' + el._a + 'deg)';

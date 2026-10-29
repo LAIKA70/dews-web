@@ -9,6 +9,8 @@ Plain-language notes on what changed in each version.
 - A pop-up appears once when a Watch and Act or Emergency Warning is within 50 km.
 - Clear notes when you're offline, when the data is over an hour old, or when a fire's exact location isn't mapped yet.
 - The old sample warnings moved into "Practice mode".
+- New: a "?" tab on the right edge of every screen explains how to use that screen (English and 中文). On Learn it can also start the on-screen tour.
+- Fixed: some settings (finished tutorial, MVP mode, glass amount) were forgotten after closing the app.
 
 ## 2.7.0 — 2026-10-26 · Feedback
 

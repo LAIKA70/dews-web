@@ -62,11 +62,11 @@ const txt = p => p.locator('body').innerText();
 // 2. Chinese
 { const { page, ctx, errs } = await open({ lang: 'zh', state: { liveSeen: { 900002: 'watch' } } });
   const t = await txt(page);
-  ok(t.includes('紧急警告') && t.includes('山火') && t.includes('未受控制'), 'zh: fixed terms translated');
+  ok(t.includes('紧急警告') && t.includes('丛林火') && t.includes('失控'), 'zh: fixed terms translated');
   ok(t.includes('BLACKHEATH'), 'zh: place names stay English');
   await page.screenshot({ path: OUT + '4-home_zh.png', fullPage: true });
   await page.goto('http://localhost:8099/mobile/#/alert/rfs/900002'); await page.waitForTimeout(800);
-  const k = await txt(page); ok(k.includes('注意并行动') && k.includes('正在控制') && k.includes('阅读官方警告'), 'zh: warning page');
+  const k = await txt(page); ok(k.includes('注意并行动') && k.includes('控制中') && k.includes('阅读官方警告'), 'zh: warning page');
   await page.screenshot({ path: OUT + '5-watch_zh.png', fullPage: true });
   ok(errs.length === 0, 'zh no errors'); await ctx.close(); }
 
@@ -112,6 +112,38 @@ for (const [layout, size] of [['tablet', { width: 1024, height: 768 }], ['deskto
   const { page, ctx, errs } = await open({ layout, size, state: { liveSeen: { 900002: 'watch' } } });
   ok((await txt(page)).includes('BLACKHEATH') && errs.length === 0, layout + ' renders live warnings');
   await page.screenshot({ path: OUT + `8-home_${layout}.png` }); await ctx.close(); }
+
+// 10. screen guide "?" on every screen, both languages
+{ const { page, ctx, errs } = await open({ feed: 'rfs-quiet' });
+  const routes = { '#/': 'Today', '#/alert/rfs/683451': 'A real bushfire warning', '#/fires': 'Fires near you', '#/sos': 'Emergency mode', '#/sos/h/fire': 'Choose your situation', '#/sos/h/fire/leave': 'Step-by-step help', '#/sos/help': 'Ask for help', '#/prepare': 'Prepare', '#/prepare/kit': 'Emergency kit', '#/prepare/plan': 'Household plan', '#/prepare/quiz': 'Practice quiz', '#/learn': 'Learn the disasters', '#/learn/fire': 'About this disaster', '#/map': 'Nearby', '#/map/go': 'Directions', '#/me': 'Profile', '#/me/card': 'Edit your profile', '#/me/sources': 'Sources' };
+  let all = true;
+  for (const [r, title] of Object.entries(routes)) {
+    await page.goto('http://localhost:8099/mobile/' + r); await page.waitForTimeout(350);
+    await page.locator('.helptab').click(); await page.waitForTimeout(150);
+    const h = await page.locator('#help-h').innerText().catch(() => '');
+    if (h !== title) { all = false; console.log('  guide mismatch', r, JSON.stringify(h)); }
+    if (r === '#/learn') await page.screenshot({ path: OUT + '9-guide_learn_en.png' });
+    await page.keyboard.press('Escape'); await page.waitForTimeout(100);
+    if (await page.locator('.help-sheet').count()) { all = false; console.log('  not closed', r); }
+  }
+  ok(all, 'guide opens with the right title on all 18 screens and closes with Esc');
+  await page.goto('http://localhost:8099/mobile/#/'); await page.waitForTimeout(300);
+  await page.locator('.helptab').click(); await page.mouse.click(200, 30); await page.waitForTimeout(150);
+  ok(await page.locator('.help-sheet').count() === 0, 'tap outside closes guide');
+  await page.goto('http://localhost:8099/mobile/#/learn'); await page.waitForTimeout(300);
+  await page.locator('.helptab').click(); await page.locator('[data-a="helpTour"]').click(); await page.waitForTimeout(700);
+  ok(await page.locator('#tut').count() === 1, 'guide can start the on-screen tour');
+  ok(errs.length === 0, 'guide no errors ' + errs.join(' | ')); await ctx.close(); }
+{ const { page, ctx } = await open({ feed: 'rfs-quiet', lang: 'zh' });
+  await page.goto('http://localhost:8099/mobile/#/sos'); await page.waitForTimeout(400);
+  await page.locator('.helptab').click(); await page.waitForTimeout(150);
+  ok((await page.locator('.help-sheet').innerText()).includes('给家人报平安'), 'zh guide');
+  await page.screenshot({ path: OUT + '9-guide_sos_zh.png' }); await ctx.close(); }
+for (const [layout, size] of [['tablet', { width: 1024, height: 768 }], ['desktop', { width: 1280, height: 800 }]]) {
+  const { page, ctx } = await open({ layout, size, feed: 'rfs-quiet' });
+  await page.locator('.helptab').click(); await page.waitForTimeout(200);
+  ok(await page.locator('.help-sheet').count() === 1, layout + ' guide');
+  await page.screenshot({ path: OUT + `9-guide_${layout}.png` }); await ctx.close(); }
 
 await browser.close(); srv.kill();
 console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); process.exit(fails ? 1 : 0);

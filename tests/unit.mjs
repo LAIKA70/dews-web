@@ -20,6 +20,6 @@ const w = S.find(x => x.inc.id === '900002').far; ok(w.edge && w.m > 8000 && w.m
 const I = W.select(W.parse(JSON.parse(readFileSync(new URL('./fixtures/rfs-inside.json', import.meta.url)))), mascot);
 ok(I[0].far.inside && I[0].far.m === 0, 'inside detection');
 ok(W.select(L, null).map(x => x.inc.id).join() === '900003', 'no location: emergency only');
-ok(W.term('Being controlled', 1) === '正在控制' && W.term('Weird Type', 1) === 'Weird Type', 'terms');
+ok(W.term('Being controlled', 1) === '控制中' && W.term('Weird Type', 1) === 'Weird Type', 'terms');
 const z = W.zone(by('900002')); ok(z.r > 1500 && z.r < 2200, 'zone radius covers box');
 process.exit(fails ? 1 : 0);

@@ -710,3 +710,12 @@ body.em .guide{border-color:var(--green);border-width:2px}
 /* source chip on coloured warning bands: readable on red, orange and yellow */
 .alert-band .chip:not(.sample){background:rgba(0,0,0,.22);color:inherit;border:0;font-weight:700}
 .lv-advice .alert-band .chip:not(.sample){background:rgba(0,0,0,.1)}
+/* screen guide tab on the right edge */
+.helptab{position:fixed;right:0;top:40%;z-index:45;width:40px;height:52px;border-radius:14px 0 0 14px;border:1px solid var(--line);border-right:0;
+  background:var(--surface);color:var(--ink);font:800 1.25rem/1 inherit;font-family:inherit;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer}
+:root:not([data-glass="off"]) .helptab{background:var(--glass,var(--surface));-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
+.helptab:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.help-sheet h2{margin:2px 0 var(--s3)}
+.help-list{margin:0 0 var(--s4);padding-left:1.3em;display:grid;gap:var(--s3);line-height:1.5}
+.help-sheet .btn{width:100%;margin-top:var(--s2)}
+@media (prefers-reduced-transparency: reduce){ .helptab{background:var(--surface)!important;backdrop-filter:none!important} }

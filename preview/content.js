@@ -695,96 +695,125 @@ var STR28 = {
 };
 for (var k28 in STR28) STR[k28] = STR28[k28];
 SOURCES.rfs = { t: 'NSW RFS — Fires Near Me (live incidents feed, CC BY 4.0)', u: 'https://www.rfs.nsw.gov.au/fire-information/fires-near-me' };
-/* Screen guide — the "?" tab on the edge of every screen. One entry per screen: title + how to use it. */
-var HELP = {
-  home: { t: ['Today', '今天'], s: [
-    ['The top card shows real bushfire warnings from NSW RFS: every fire within 50 km of you, and every Emergency Warning in NSW. Tap a card to see what it means for you.', '最上面的卡片显示 NSW RFS 的真实山火警告：你 50 公里内的所有火情，以及全新州的紧急警告。点卡片看它对你意味着什么。'],
-    ['The coloured bar shows the level: yellow Advice, orange Watch and Act, red Emergency Warning.', '彩色条表示警告级别：黄色「建议」、橙色「注意并行动」、红色「紧急警告」。'],
-    ['“Checked … ago” shows when DEWS last checked. If you’re offline or it’s over an hour old, you’ll see a note.', '「检查于……」是 DEWS 最近一次检查的时间。离线或超过一小时没更新时，会出现提示。'],
-    ['Practice mode lets you try a sample warning safely. Nothing real happens.', '「练习模式」可以安全地试一条示例预警，不会发生真实的事。'],
-    ['In danger now? Tap the red “I’m in an emergency” button, or call 000.', '现在有危险？点红色「我遇到紧急情况」，或直接拨打 000。'],
-    ['“Your readiness” shows how prepared you are. Tap “Next step” to keep going.', '「你的准备度」显示你准备得怎么样。点「下一步」继续完成。'] ] },
-  live: { t: ['A real bushfire warning', '一条真实山火警告'], s: [
-    ['The coloured band is the official warning level from NSW RFS.', '顶部彩色条是 NSW RFS 发布的官方警告级别。'],
-    ['1 What’s happening: the fire type, whether firefighters have it under control, where it is and when RFS last updated it. Place names stay in English, as on signs and radio.', '第 1 步「发生了什么」：火的类型、消防是否已控制、在哪里、RFS 最近更新时间。地名保留英文，和路牌、电台一致。'],
-    ['2 How far: the distance from you to the edge of the fire area, and which direction it is.', '第 2 步「离你多远」：你到火场边缘的距离和方向。'],
-    ['3 What to do: what this level means. Tap “Read the official warning” for the exact action RFS has given for this fire.', '第 3 步「你需要做什么」：这个级别的意思。点「阅读官方警告」看 RFS 对这场火给出的具体行动。'],
-    ['4 Where to go: the nearest help point, with a route that keeps away from the fire. Never walk towards fire or smoke.', '第 4 步「去哪里」：最近的求助地点，路线会避开火场。不要朝火或烟的方向走。'] ] },
-  fires: { t: ['Fires near you', '你附近的火情'], s: [
-    ['Every incident DEWS is showing, highest level first, then nearest first.', '这里列出 DEWS 正在显示的所有火情，先按级别高低，再按距离远近排列。'],
-    ['A dot with no colour means no warning level, for example a planned burn by firefighters. There may be smoke, but it is not a disaster.', '没有颜色的圆点表示「未分级」，例如消防部门的计划性焚烧。可能有烟，但不是灾害。'],
-    ['“approx.” means the exact fire area isn’t mapped yet, so the distance is rough.', '「大约」表示火场范围还没标出，距离只是粗略估计。'] ] },
-  practice: { t: ['Practice warning', '练习预警'], s: [
-    ['This is a sample, marked “Practice”. Nothing real is happening.', '这是一条示例，标着「练习」，不是真实事件。'],
-    ['Follow the steps from top to bottom: what, how far, what to do, what to take, where to go.', '从上往下按步骤看：发生了什么、离你多远、该做什么、带什么、去哪里。'],
-    ['To stop practising, go back to Today and tap “End practice”.', '要结束练习，回到「今天」，点「结束练习」。'] ] },
-  sos: { t: ['Emergency mode', '紧急模式'], s: [
-    ['Life in danger? Tap “Call 000” first.', '有生命危险？先点「拨打 000」。'],
-    ['The arrow points to the nearest help point. Tap it for a full-screen map and directions.', '箭头指向最近的求助地点。点它打开全屏地图和导航。'],
-    ['“Tell family I’m safe” sends them a text. “Request help” makes a help request (sample only for now).', '「给家人报平安」会给家人发短信；「请求救援」发出求助（目前只是演示）。'],
-    ['Pick what’s happening (bushfire, flood, storm…) for step-by-step help.', '选择正在发生的灾害（山火、洪水、风暴……），查看分步指引。'],
-    ['Tools: torch, SOS flashing light, whistle, and a card to show responders.', '工具：手电筒、SOS 闪光、口哨，以及给救援人员看的卡片。'],
-    ['Tap “Exit” at the top to leave emergency mode.', '点顶部的「退出」离开紧急模式。'] ] },
-  fork: { t: ['Choose your situation', '选择你的情况'], s: [
-    ['Answer the one question, then tap the answer that fits you right now.', '回答这一个问题，点最符合你现在情况的选项。'],
-    ['The coloured label shows what kind of action follows: leave, or shelter where you are.', '彩色标签说明接下来是哪种行动：离开，或就地避险。'] ] },
-  steps: { t: ['Step-by-step help', '分步指引'], s: [
-    ['“Do this now” is the one most important step. Do it first.', '「现在就做」是最重要的一步，先做这件。'],
-    ['Then work down the numbered steps.', '然后按编号一步步往下做。'],
-    ['Wrong choice? Tap “Not right? Choose again”.', '选错了？点「不对？重新选择」。'],
-    ['The red 000 button stays at the bottom of the screen.', '红色 000 按钮一直在屏幕底部。'] ] },
-  helpreq: { t: ['Ask for help', '请求帮助'], s: [
-    ['This is a demo: requests aren’t sent to a real agency yet. In danger, call 000.', '这是演示功能：请求还不会发给真实机构。有危险请拨打 000。'],
-    ['Choose how badly anyone is hurt. “Serious injury” shows a 000 button straight away.', '选择受伤程度。选「重伤」会立刻出现 000 按钮。'],
-    ['Set how many people, tap what you need, and add a short note.', '设置人数，点选需要的东西，再写一句简短说明。'],
-    ['Switches let you share your location and your profile needs.', '开关可以选择是否分享你的位置和档案里的需求。'] ] },
-  sent: { t: ['Request sent', '请求已发送'], s: [
-    ['This shows what was sent. The arrival time is a sample.', '这里显示发送了什么内容。预计到达时间只是示例。'],
-    ['“Also text my contacts” opens a text message with the same details.', '「同时发短信给我的联系人」会打开一条内容相同的短信。'] ] },
-  go: { t: ['Directions', '导航'], s: [
-    ['The arrow and map show the way to the help point. Walk where it is safe; follow roads and paths.', '箭头和地图指向求助地点。走安全的路，沿着道路和小路走。'],
-    ['Tap a place name at the bottom to go somewhere else.', '点底部的地点名称可以换一个目的地。'],
-    ['Right-side buttons: centre on you, and turn the map with your direction.', '右侧按钮：回到你的位置；地图跟着你的朝向转动。'],
-    ['Never walk towards fire, smoke or floodwater, even if the arrow points that way.', '即使箭头指着那里，也不要朝火、烟或洪水走。'] ] },
-  prepare: { t: ['Prepare', '准备'], s: [
-    ['Four things to do before a disaster. The bar under each shows your progress.', '灾害来之前要做的四件事。每项下面的进度条显示你完成了多少。'],
-    ['Start with the emergency kit, then learn the disasters, make a plan, and practise.', '建议顺序：先备好应急包，再了解灾害、制定计划，最后做练习。'] ] },
-  kit: { t: ['Emergency kit', '应急包'], s: [
-    ['Set how many people, and turn on baby or pet if needed. The water amount updates.', '设置人数；有婴儿或宠物就打开对应开关。饮用水数量会自动更新。'],
-    ['Tick each item when you have it packed.', '每备好一样东西就打勾。'],
-    ['Items you added in Learn appear under “Added from Learn”.', '在「了解灾害」里加入的物品，会出现在「从“了解灾害”加入的」下面。'] ] },
-  plan: { t: ['Household plan', '家庭计划'], s: [
-    ['Add everyone you live with and their phone numbers.', '添加一起住的每个人和他们的电话。'],
-    ['Choose a meeting place nearby, and one further away in case your area is closed.', '定一个附近的集合点，再定一个较远的，以防你所在区域被封锁。'],
-    ['Add a contact outside the area, and what will make you leave.', '填写一个外地联系人，以及什么情况下你们会离开。'],
-    ['Tap “Share plan” to send it to everyone. It’s saved on this phone only.', '点「分享计划」发给所有人。计划只保存在这部手机上。'] ] },
-  quiz: { t: ['Practice quiz', '练习题'], s: [
-    ['Tap an answer. You’ll see why it’s right or wrong, and the official source.', '点一个答案，就能看到对错原因和官方来源。'],
-    ['Tap the button under the answer to go on. Your best score is saved.', '点答案下面的按钮继续。会保存你的最好成绩。'] ] },
-  learn: { t: ['Learn the disasters', '了解灾害'], s: [
-    ['Pick a disaster to see what it is, how to prepare and what to add to your kit.', '选一种灾害，看它是什么、怎么准备、应急包要加什么。'],
-    ['“x / y In your kit” shows how many of its supplies are already in your kit.', '「x / y 已在应急包里」显示它需要的物资有几样已经在你的应急包里。'] ], tour: true },
-  learnOne: { t: ['About this disaster', '关于这种灾害'], s: [
-    ['Read what it is, then the things to do now. Every step comes from an official Australian source.', '先看它是什么，再看现在就能做的事。每一条都来自澳洲官方来源。'],
-    ['Tick the supplies, or tap “Add all to my kit”.', '勾选物资，或点「全部加入我的应急包」。'],
-    ['If it’s happening now, tap “What to do when it happens”.', '如果灾害正在发生，点「发生时怎么做」。'] ], tour: true },
-  map: { t: ['Nearby', '附近'], s: [
-    ['The map shows real places from OpenStreetMap: hospitals, police, fire stations, water, charging points.', '地图显示 OpenStreetMap 上的真实地点：医院、警察局、消防站、饮用水、充电点。'],
-    ['Location not working? Tap the pin button (“Set my location on the map”) and tap where you are.', '定位不了？点图钉按钮（「在地图上标出我的位置」），再点你所在的地方。'],
-    ['Use the filters to show one type of place. Tap a place to see distance and directions.', '用筛选按钮只看某一类地点。点一个地点查看距离和路线。'],
-    ['Evacuation centres are announced by officials during an emergency, so they aren’t listed here.', '疏散中心由官方在紧急时公布，所以这里不列出。'] ] },
-  me: { t: ['Profile', '个人档案'], s: [
-    ['Your emergency card is in English so responders can read it. Tap it to edit.', '应急卡用英文，方便救援人员阅读。点它进行编辑。'],
-    ['Settings: language, text size, light or dark, colours and glass style.', '设置：语言、字体大小、浅色或深色、配色和玻璃效果。'],
-    ['Feedback opens a form on GitHub, so you can report a problem or share an idea.', '「反馈与建议」会打开 GitHub 表单，可以报告问题或提建议。'],
-    ['Everything stays on this phone. Nothing is uploaded.', '所有内容只保存在这部手机上，不会上传。'] ] },
-  card: { t: ['Edit your profile', '编辑档案'], s: [
-    ['Fill in what helps responders: language, needs, allergies, medication, emergency contact.', '填写对救援人员有用的信息：语言、需求、过敏、用药、紧急联系人。'],
-    ['Write in English if you can, so Australian responders can read it.', '尽量用英文填写，方便澳洲救援人员阅读。'],
-    ['Also fill in Medical ID on your phone, which shows on the lock screen.', '也请在手机里填写「医疗急救卡」，锁屏时也能显示。'] ] },
-  sources: { t: ['Sources', '信息来源'], s: [
-    ['Every safety step in DEWS comes from one of these official sources. Tap one to read the original.', 'DEWS 里的每一条安全指引都来自这些官方来源。点开可以看原文。'] ] }
+/* Screen tours — the ? icon on every screen. Each step: [element to light up, English, 中文].
+   Steps whose element isn't on screen right now are skipped. Wording matches the real button labels. */
+var TOURS = {
+  home: [
+    ['#main .alert', 'Real bushfire warnings from NSW RFS: every fire within 50 km of you, and every Emergency Warning in NSW. Tap a card to see what it means for you.', 'NSW RFS 的真实山火警告：你 50 公里内的所有火情，以及全新州的紧急警告。点卡片看它对你意味着什么。'],
+    ['#main .meter', 'The level: yellow Advice, orange Watch and Act, red Emergency Warning.', '警告级别：黄色「建议」、橙色「注意并行动」、红色「紧急警告」。'],
+    ['.live-list', 'Other fires near you, highest level first.', '你附近的其他火情，级别高的排在前面。'],
+    ['.live-src', 'When DEWS last checked. If you’re offline or it’s over an hour old, a note appears here.', 'DEWS 最近一次检查的时间。离线或超过一小时没更新时，这里会出现提示。'],
+    ['.practice-link', 'Practice mode: try a sample warning safely. Nothing real happens.', '练习模式：安全地试一条示例预警，不会发生真实的事。'],
+    ['.em-entry', 'In danger now? Tap here for step-by-step help.', '现在有危险？点这里看分步指引。'],
+    ['[data-tut="ready"]', 'How prepared you are. Tap “Next step” to keep going.', '你准备得怎么样。点「下一步」继续完成。'],
+    ['.num.red', 'Life-threatening emergency: call 000. Flood or storm help: 132 500.', '有生命危险：拨打 000。洪水、风暴求助：132 500。'],
+    ['.sosbtn', 'Emergency mode, from any screen.', '在任何页面都能进入紧急模式。'],
+    ['.tabs, .side-nav', 'Move between Today, Prepare, Nearby and Profile.', '在「今天」「准备」「附近」「个人档案」之间切换。']
+  ],
+  live: [
+    ['#main .alert', 'The official warning level from NSW RFS and the fire’s name.', 'NSW RFS 发布的官方警告级别和火情名称。'],
+    ['.em-quick', 'Life in danger? Call 000.', '有生命危险？拨打 000。'],
+    ['[data-tut="wf1"]', 'What’s happening: fire type, whether firefighters have it under control, where, and when RFS last updated it. Place names stay in English, as on signs and radio.', '发生了什么：火的类型、是否已控制、地点、RFS 最近更新时间。地名保留英文，和路牌、电台一致。'],
+    ['[data-tut="wf2"]', 'How far it is from you, and in which direction.', '离你多远，在哪个方向。'],
+    ['[data-tut="wf3"]', 'What this level means. Tap “Read the official warning” for the exact action RFS has given for this fire.', '这个级别的意思。点「阅读官方警告」看 RFS 对这场火给出的具体行动。'],
+    ['[data-tut="wf4"]', 'The nearest help point, with a route away from the fire. Never walk towards fire or smoke.', '最近的求助地点，路线会避开火场。不要朝火或烟的方向走。'],
+    ['.live-src', 'Source and when DEWS last checked.', '信息来源和 DEWS 最近检查的时间。']
+  ],
+  fires: [
+    ['.live-list', 'Every fire DEWS is showing: highest level first, then nearest.', 'DEWS 正在显示的所有火情：先按级别，再按距离排列。'],
+    ['.live-row.lv-none', 'Grey dot: no warning level, for example a planned burn by firefighters. There may be smoke, but it is not a disaster.', '灰色圆点：未分级，例如消防部门的计划性焚烧。可能有烟，但不是灾害。'],
+    ['.live-src', 'When DEWS last checked NSW RFS.', 'DEWS 最近检查 NSW RFS 的时间。']
+  ],
+  practice: [
+    ['#main .alert', 'A sample warning marked “Practice”. Nothing real is happening.', '标着「练习」的示例预警，不是真实事件。'],
+    ['[data-tut="wf1"]', 'Go through the steps from top to bottom.', '从上往下一步步看。'],
+    ['[data-tut="wf3"]', 'What you need to do now.', '现在你需要做什么。'],
+    ['[data-tut="wf5"]', 'Where to go, with a route away from the warning area.', '去哪里，路线会避开预警区域。']
+  ],
+  sos: [
+    ['.em-actions .emb.red', 'Life in danger? Call 000 first.', '有生命危险？先拨打 000。'],
+    ['.guide', 'The arrow points to the nearest help point. Tap it for a full-screen map.', '箭头指向最近的求助地点。点它打开全屏地图。'],
+    ['.em-two', '“Tell family I’m safe” sends them a text. “Request help” is a demo for now.', '「给家人报平安」会给家人发短信；「请求救援」目前是演示。'],
+    ['[data-tut="hz"]', 'Pick what’s happening for step-by-step help.', '选择正在发生的灾害，看分步指引。'],
+    ['.tools', 'Torch, SOS flashing light, whistle, and a card to show responders.', '手电筒、SOS 闪光、口哨，以及给救援人员看的卡片。'],
+    ['.top .iconbtn', 'Tap “Exit” to leave emergency mode.', '点「退出」离开紧急模式。']
+  ],
+  fork: [
+    ['.fork-q', 'Answer this one question.', '回答这一个问题。'],
+    ['.fork', 'Tap the answer that fits you right now. The label shows what follows: leave, or shelter where you are.', '点最符合你现在情况的选项。标签说明接下来是离开，还是就地避险。']
+  ],
+  steps: [
+    ['.now', 'The most important step. Do it first.', '最重要的一步，先做这件。'],
+    ['.steps', 'Then work down the numbered steps.', '然后按编号往下做。'],
+    ['#main .textlink', 'Wrong choice? Choose again here.', '选错了？在这里重新选择。'],
+    ['.dock', 'Call 000 stays here at the bottom.', '拨打 000 一直在底部。']
+  ],
+  helpreq: [
+    ['.callout.demo', 'This is a demo: requests don’t reach a real agency yet. In danger, call 000.', '这是演示：请求还不会发给真实机构。有危险请拨打 000。'],
+    ['.seg-ctl.danger', 'How badly is anyone hurt? “Serious injury” shows a 000 button straight away.', '有人受伤吗？选「重伤」会立刻出现 000 按钮。'],
+    ['#main .stepper', 'How many people are with you.', '你身边有几个人。'],
+    ['#main .chips', 'Tap what you need.', '点选你需要的东西。'],
+    ['[data-a="hrToggle"]', 'Choose whether to share your location and your emergency card.', '选择是否分享你的位置和应急卡。'],
+    ['.dock', 'Send the request.', '发送请求。']
+  ],
+  sent: [
+    ['.eta', 'The arrival time is a sample.', '预计到达时间只是示例。'],
+    ['#main .kv', 'What was sent.', '发送了哪些内容。'],
+    ['[data-a="hrSms"]', 'Also send the same details by text message.', '同时用短信发送相同的内容。']
+  ],
+  go: [
+    ['.go-panel', 'Which way to walk, how far and how long. Follow roads and paths.', '往哪个方向走、多远、多久。沿着道路和小路走。'],
+    ['.go-panel .chips', 'Tap another place to go there instead.', '点别的地点可以换目的地。'],
+    ['.go-side', 'Centre the map on you, or turn it with your direction.', '让地图回到你的位置，或跟着你的朝向转动。'],
+    ['.go-top .iconbtn', 'Back.', '返回。']
+  ],
+  prepare: [
+    ['a.prep-card:nth-of-type(1)', 'Start here: your emergency kit. The bar shows your progress.', '从这里开始：应急包。进度条显示完成了多少。'],
+    ['a.prep-card:nth-of-type(2)', 'Learn each disaster and what to add to your kit.', '了解每种灾害，以及应急包里要加什么。'],
+    ['a.prep-card:nth-of-type(3)', 'Make a plan with the people you live with.', '和一起住的人制定计划。'],
+    ['a.prep-card:nth-of-type(4)', 'Test yourself with a short quiz.', '用小测验检验一下自己。']
+  ],
+  kit: [
+    ['.calc', 'How many people the kit is for.', '应急包是给几个人准备的。'],
+    ['[data-a="kitToggle"]', 'Turn on Baby or Pets if you need them.', '有婴儿或宠物就打开对应开关。'],
+    ['.water', 'Drinking water you need. It updates with the number of people.', '需要的饮用水，会随人数自动更新。'],
+    ['#main .check', 'Tick each item when it’s packed.', '每备好一样就打勾。']
+  ],
+  plan: [
+    ['.person', 'Everyone you live with, and their phone numbers.', '一起住的每个人和他们的电话。'],
+    ['[data-a="planAdd"]', 'Add another person.', '再添加一个人。'],
+    ['[data-bind="plan.near"]', 'A meeting point near home, and one outside your suburb in case your area is closed.', '家附近的集合点，以及区外的集合点，以防你所在区域被封锁。'],
+    ['[data-bind="plan.contact"]', 'Someone outside the area everyone can call.', '大家都能联系的外地联系人。'],
+    ['[data-bind="plan.trigger"]', 'What will make you leave.', '出现什么情况时你们就离开。'],
+    ['[data-a="planShare"]', 'Send the plan to everyone. It’s saved on this phone only.', '把计划发给所有人。计划只保存在这部手机上。']
+  ],
+  quiz: [
+    ['[data-a="quizStart"]', 'Start the quiz. After each answer you’ll see why, and the official source.', '开始测验。每答一题都会看到原因和官方来源。'],
+    ['.qprog', 'Your progress.', '你的进度。']
+  ],
+  map: [
+    ['#mapWrap', 'Real places from OpenStreetMap: hospitals, police, fire stations, water, charging points.', 'OpenStreetMap 上的真实地点：医院、警察局、消防站、饮用水、充电点。'],
+    ['.map-chip', 'Whether your location is on.', '你的定位是否开启。'],
+    ['[data-a="pickMe"]', 'Location not working? Tap here, then tap where you are on the map.', '定位不了？点这里，再在地图上点你所在的地方。'],
+    ['.filters', 'Show one type of place.', '只显示某一类地点。'],
+    ['.place-list', 'Tap a place to see distance and directions.', '点一个地点查看距离和路线。']
+  ],
+  me: [
+    ['.idcard', 'Your emergency card, in English so responders can read it. Tap to edit.', '你的应急卡，用英文方便救援人员阅读。点它编辑。'],
+    ['[data-a="mvpToggle"]', 'MVP mode: a simpler app with four parts.', 'MVP 模式：只有四个部分的简化版。'],
+    ['#main section.card', 'Language, text size, light or dark, colours and glass style.', '语言、字体大小、浅色或深色、配色和玻璃效果。'],
+    ['a[href*="issues/new"]', 'Report a problem or share an idea.', '报告问题或提建议。'],
+    ['[data-a="reset"]', 'Delete everything saved on this phone.', '删除这部手机上保存的所有内容。']
+  ],
+  card: [
+    ['#main .callout', 'Everything stays on this phone.', '所有内容只保存在这部手机上。'],
+    ['[data-bind="card.lang"]', 'Fill in what helps responders. Write in English if you can.', '填写对救援人员有用的信息，尽量用英文。'],
+    ['[data-bind="card.allergies"]', 'Allergies and medication.', '过敏和用药。'],
+    ['[data-bind="card.contactPhone"]', 'Someone responders can call.', '救援人员可以联系的人。']
+  ],
+  sources: [
+    ['.src-list', 'Every safety step in DEWS comes from one of these official sources. Tap one to read the original.', 'DEWS 的每一条安全指引都来自这些官方来源。点开可以看原文。']
+  ]
 };
 STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
-STR.helpTour = ['Show me on the screen', '在屏幕上演示给我看'];
 DEWS_VERSION = '2.8.0';

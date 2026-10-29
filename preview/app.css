@@ -46,8 +46,8 @@ body.em::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;backgr
 @media (prefers-color-scheme: dark){:root[data-palette="a"]:not([data-theme="light"]){--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}}
 :root[data-palette="a"][data-theme="dark"]{--bg:#121715; --surface:#1A201E; --surface-2:#232A27; --line:#313936; --ink:#EEF0EC; --ink-2:#B9C0BC; --ink-3:#8F9893; --primary:#9CC9B4; --on-primary:#10251C; --red:#B84733; --red-text:#F19A88; --red-soft:#3A1E19; --orange:#E58A3A; --orange-text:#F0A766; --yellow:#F2CB57; --green:#2F7A55; --green-text:#7CC9A0; --green-soft:#1A2E24; --blue:#4A86B8; --focus:#9CC9B4;}
 :root[data-palette="b"]{--bg:#F3F5F7; --surface:#FFFFFF; --surface-2:#E6EAEE; --line:#D3D9DF; --ink:#17212B; --ink-2:#45515D; --ink-3:#5D6975; --primary:#1F4E79; --on-primary:#FFFFFF; --red:#BC463C; --red-text:#A23A31; --red-soft:#F7E2DF; --orange:#EC8B3B; --orange-text:#985017; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#186A5F; --green-soft:#DCEFEC; --blue:#1F5FAD; --focus:#1F5FAD;}
-@media (prefers-color-scheme: dark){:root[data-palette="b"]:not([data-theme="light"]){--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}}
-:root[data-palette="b"][data-theme="dark"]{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#BF4A3E; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}
+@media (prefers-color-scheme: dark){:root[data-palette="b"]:not([data-theme="light"]){--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#B4433A; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}}
+:root[data-palette="b"][data-theme="dark"]{--bg:#0F151B; --surface:#172029; --surface-2:#202B35; --line:#2E3A46; --ink:#EDF1F5; --ink-2:#B6C0CA; --ink-3:#8C98A4; --primary:#8FB8E0; --on-primary:#0D2236; --red:#B4433A; --red-text:#F4998D; --red-soft:#36201E; --orange:#EC8B3B; --orange-text:#F2A462; --yellow:#F3CD4F; --green:#1F7A6E; --green-text:#6FCDBF; --green-soft:#14302C; --blue:#4F8ED6; --focus:#8FB8E0;}
 :root[data-palette="c"]{--bg:#F7F7F5; --surface:#FFFFFF; --surface-2:#ECECE8; --line:#D8D8D2; --ink:#1A1A1A; --ink-2:#4A4A4A; --ink-3:#646464; --primary:#0068A3; --on-primary:#FFFFFF; --red:#B34A00; --red-text:#A04200; --red-soft:#F8E5D8; --orange:#E69F00; --orange-text:#8A5F00; --yellow:#F0E442; --green:#007A5E; --green-text:#006B52; --green-soft:#D9F0E8; --blue:#0068A3; --focus:#0068A3;}
 @media (prefers-color-scheme: dark){:root[data-palette="c"]:not([data-theme="light"]){--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}}
 :root[data-palette="c"][data-theme="dark"]{--bg:#121212; --surface:#1C1C1C; --surface-2:#262626; --line:#333333; --ink:#EDEDED; --ink-2:#BDBDBD; --ink-3:#949494; --primary:#56B4E9; --on-primary:#06202E; --red:#B34A00; --red-text:#FF9C5E; --red-soft:#33200F; --orange:#E69F00; --orange-text:#F2B84B; --yellow:#F0E442; --green:#007A5E; --green-text:#4FD1A5; --green-soft:#10291F; --blue:#56B4E9; --focus:#56B4E9;}
@@ -710,12 +710,25 @@ body.em .guide{border-color:var(--green);border-width:2px}
 /* source chip on coloured warning bands: readable on red, orange and yellow */
 .alert-band .chip:not(.sample){background:rgba(0,0,0,.22);color:inherit;border:0;font-weight:700}
 .lv-advice .alert-band .chip:not(.sample){background:rgba(0,0,0,.1)}
-/* screen guide tab on the right edge */
-.helptab{position:fixed;right:0;top:40%;z-index:45;width:40px;height:52px;border-radius:14px 0 0 14px;border:1px solid var(--line);border-right:0;
-  background:var(--surface);color:var(--ink);font:800 1.25rem/1 inherit;font-family:inherit;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer}
-:root:not([data-glass="off"]) .helptab{background:var(--glass,var(--surface));-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%)}
-.helptab:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.help-sheet h2{margin:2px 0 var(--s3)}
-.help-list{margin:0 0 var(--s4);padding-left:1.3em;display:grid;gap:var(--s3);line-height:1.5}
-.help-sheet .btn{width:100%;margin-top:var(--s2)}
-@media (prefers-reduced-transparency: reduce){ .helptab{background:var(--surface)!important;backdrop-filter:none!important} }
+/* screen tour: small ? icon (same icon as Learn's "Show me how this works") */
+.helpbtn{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%;color:var(--ink-2);flex:none}
+.helpbtn .ic{width:24px;height:24px}
+.dhelp{position:fixed;top:16px;right:20px;z-index:25}
+.dhelp .helpbtn{background:var(--surface);border:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.go-top .helpbtn{margin-left:auto}
+/* tour tooltip is always light on the dark backdrop, in light and dark themes */
+.tut-tip{background:#FFFFFF;color:#16191C}
+.tut-tip.below::before{border-bottom-color:#FFFFFF} .tut-tip.above::after{border-top-color:#FFFFFF}
+.tut-step{color:#5A6168} .tut-hint{color:#4A5056} .tut-skip{color:#3D4349}
+.tut-text a{color:#16191C;text-decoration:underline}
+/* sheets are solid: glass over the dark scrim looked muddy grey */
+:root .sheet{background:var(--surface)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* 2.8.0 accessibility fixes (WCAG 2.2 AA audit) */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.lv-watch .alert-band .chip:not(.sample),.lv-advice .alert-band .chip:not(.sample){background:rgba(255,255,255,.45)}
+.tabs a{color:var(--ink-2)}
+.place-list .pl.on .dir,.place-list .pl.on .nt{color:var(--ink-2)}
+:root:not([data-glass="off"]) .tabs{background:color-mix(in srgb,var(--surface) 92%,transparent)!important}
+/* breathing room in sheets: text never touches the buttons */
+.sheet > .btn:first-of-type,.sheet > p + .btn,.sheet > p + a.btn{margin-top:var(--s5,20px)}
+.sheet > .btn + .btn,.sheet > .btn + a.btn,.sheet > a.btn + .btn{margin-top:var(--s2,8px)}

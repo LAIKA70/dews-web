@@ -113,37 +113,48 @@ for (const [layout, size] of [['tablet', { width: 1024, height: 768 }], ['deskto
   ok((await txt(page)).includes('BLACKHEATH') && errs.length === 0, layout + ' renders live warnings');
   await page.screenshot({ path: OUT + `8-home_${layout}.png` }); await ctx.close(); }
 
-// 10. screen guide "?" on every screen, both languages
-{ const { page, ctx, errs } = await open({ feed: 'rfs-quiet' });
-  const routes = { '#/': 'Today', '#/alert/rfs/683451': 'A real bushfire warning', '#/fires': 'Fires near you', '#/sos': 'Emergency mode', '#/sos/h/fire': 'Choose your situation', '#/sos/h/fire/leave': 'Step-by-step help', '#/sos/help': 'Ask for help', '#/prepare': 'Prepare', '#/prepare/kit': 'Emergency kit', '#/prepare/plan': 'Household plan', '#/prepare/quiz': 'Practice quiz', '#/learn': 'Learn the disasters', '#/learn/fire': 'About this disaster', '#/map': 'Nearby', '#/map/go': 'Directions', '#/me': 'Profile', '#/me/card': 'Edit your profile', '#/me/sources': 'Sources' };
-  let all = true;
-  for (const [r, title] of Object.entries(routes)) {
-    await page.goto('http://localhost:8099/mobile/' + r); await page.waitForTimeout(350);
-    await page.locator('.helptab').click(); await page.waitForTimeout(150);
-    const h = await page.locator('#help-h').innerText().catch(() => '');
-    if (h !== title) { all = false; console.log('  guide mismatch', r, JSON.stringify(h)); }
-    if (r === '#/learn') await page.screenshot({ path: OUT + '9-guide_learn_en.png' });
-    await page.keyboard.press('Escape'); await page.waitForTimeout(100);
-    if (await page.locator('.help-sheet').count()) { all = false; console.log('  not closed', r); }
+// 10. ? icon starts a spotlight tour on every screen
+async function tour(page, label) {
+  await page.locator('.helpbtn').first().click(); await page.waitForTimeout(250);
+  let n = 0, total = null;
+  while (await page.locator('#tut .tut-tip').count() && n < 20) {
+    const step = await page.locator('.tut-step').innerText(); total = step.split('/')[1].trim();
+    const tt = await page.locator('.tut-text').innerText(); if (!tt || /undefined/.test(tt)) console.log('  bad text', label, step);
+    const hole = await page.locator('.tut-hole').boundingBox();
+    if (!hole || hole.width < 10) console.log('  empty hole', label, step);
+    n++; await page.keyboard.press('Enter'); await page.waitForTimeout(160);
   }
-  ok(all, 'guide opens with the right title on all 18 screens and closes with Esc');
-  await page.goto('http://localhost:8099/mobile/#/'); await page.waitForTimeout(300);
-  await page.locator('.helptab').click(); await page.mouse.click(200, 30); await page.waitForTimeout(150);
-  ok(await page.locator('.help-sheet').count() === 0, 'tap outside closes guide');
-  await page.goto('http://localhost:8099/mobile/#/learn'); await page.waitForTimeout(300);
-  await page.locator('.helptab').click(); await page.locator('[data-a="helpTour"]').click(); await page.waitForTimeout(700);
-  ok(await page.locator('#tut').count() === 1, 'guide can start the on-screen tour');
-  ok(errs.length === 0, 'guide no errors ' + errs.join(' | ')); await ctx.close(); }
-{ const { page, ctx } = await open({ feed: 'rfs-quiet', lang: 'zh' });
+  return { n, total };
+}
+{ const { page, ctx, errs } = await open({ state: { liveSeen: { 900002: 'watch' } } });
+  const routes = ['#/', '#/alert/rfs/900002', '#/fires', '#/sos', '#/sos/h/fire', '#/sos/h/fire/leave', '#/sos/help', '#/prepare', '#/prepare/kit', '#/prepare/plan', '#/prepare/quiz', '#/learn', '#/learn/flood', '#/map', '#/map/go', '#/me', '#/me/card', '#/me/sources'];
+  let all = true;
+  for (const r of routes) {
+    await page.goto('http://localhost:8099/mobile/' + r); await page.waitForTimeout(400);
+    if (r === '#/') { await page.locator('.helpbtn').first().click(); await page.waitForTimeout(300); await page.screenshot({ path: OUT + '9-tour_home_en.png' }); await page.keyboard.press('Escape'); await page.waitForTimeout(100); }
+    const { n, total } = await tour(page, r);
+    const ok1 = n >= 1 && (r === '#/learn' || String(n) === total);
+    if (!ok1) { all = false; console.log('  tour problem', r, n, total); } else console.log('  ', r, n + ' steps');
+  }
+  ok(all, 'tour runs on all 18 screens');
+  await page.goto('http://localhost:8099/mobile/#/sos'); await page.waitForTimeout(300);
+  await page.locator('.helpbtn').first().click(); await page.waitForTimeout(200); await page.keyboard.press('Escape'); await page.waitForTimeout(150);
+  ok(await page.locator('#tut').count() === 0, 'Esc ends the tour');
+  ok(errs.length === 0, 'tour no errors ' + errs.join(' | ')); await ctx.close(); }
+{ const { page, ctx } = await open({ feed: 'rfs-quiet', lang: 'zh', state: { theme: 'dark' } });
   await page.goto('http://localhost:8099/mobile/#/sos'); await page.waitForTimeout(400);
-  await page.locator('.helptab').click(); await page.waitForTimeout(150);
-  ok((await page.locator('.help-sheet').innerText()).includes('给家人报平安'), 'zh guide');
-  await page.screenshot({ path: OUT + '9-guide_sos_zh.png' }); await ctx.close(); }
+  await page.locator('.helpbtn').first().click(); await page.waitForTimeout(300);
+  ok((await page.locator('.tut-tip').innerText()).includes('000'), 'zh tour (dark theme)');
+  const bg = await page.locator('.tut-tip').evaluate(e => getComputedStyle(e).backgroundColor);
+  ok(bg === 'rgb(255, 255, 255)', 'tour tip stays light in dark theme');
+  await page.screenshot({ path: OUT + '9-tour_sos_zh_dark.png' }); await ctx.close(); }
 for (const [layout, size] of [['tablet', { width: 1024, height: 768 }], ['desktop', { width: 1280, height: 800 }]]) {
   const { page, ctx } = await open({ layout, size, feed: 'rfs-quiet' });
-  await page.locator('.helptab').click(); await page.waitForTimeout(200);
-  ok(await page.locator('.help-sheet').count() === 1, layout + ' guide');
-  await page.screenshot({ path: OUT + `9-guide_${layout}.png` }); await ctx.close(); }
+  const { n, total } = await tour(page, layout);
+  ok(n >= 5 && String(n) === total, layout + ' home tour (' + n + ' steps)');
+  await page.goto(`http://localhost:8099/${layout}/#/map`); await page.waitForTimeout(500);
+  await page.locator('.helpbtn').first().click(); await page.waitForTimeout(300);
+  await page.screenshot({ path: OUT + `9-tour_map_${layout}.png` }); await ctx.close(); }
 
 await browser.close(); srv.kill();
 console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); process.exit(fails ? 1 : 0);

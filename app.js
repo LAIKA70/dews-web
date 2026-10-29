@@ -144,7 +144,7 @@ function render(){
   document.documentElement.setAttribute('data-layout', DESKTOP ? 'desktop' : 'mobile');
   document.documentElement.setAttribute('data-device', TABLET ? 'tablet' : DESKTOP ? 'desktop' : 'phone');
   document.title = em ? 'DEWS — ' + t('sos') : 'DEWS';
-  if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em) + helpTab(); renderLayer(); after(p); return; }
+  if (p[1] === 'go' && (p[0] === 'sos' || p[0] === 'map')) { document.getElementById('app').innerHTML = vGo(em); renderLayer(); after(p); return; }
 
   if (em) {
     var r = sosRoute(p); main = r.main; dock = r.dock || ''; top = emTop(p.length > 1 ? r.back || '#/sos' : null);
@@ -170,8 +170,8 @@ function render(){
     tabLink('#/prepare', 'shield', t('tabPrep'), tab === 'prepare') +
     tabLink('#/map', 'pin', t('tabMap'), tab === 'map') +
     tabLink('#/me', 'user', t('tabMe'), tab === 'me')) + '</div></nav>';
-  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>' + helpTab();
-  else document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs) + helpTab();
+  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + (em ? '' : '<div class="dhelp">' + helpBtn() + '</div>') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>';
+  else document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs);
   renderLayer();
   after(p);
 }
@@ -192,14 +192,15 @@ function offChip(){
   return swReady ? '<span class="chip ok">' + ic('check') + '<span class="ell">' + t('offlineReady') + '</span></span>' : '<span class="chip"><span class="ell">' + t('offlineNot') + '</span></span>';
 }
 function offlineBar(){ return navigator.onLine === false ? '<div class="offbar">' + ic('wifi') + t('youreOffline') + '</div>' : ''; }
+function helpBtn(){ return S.lang && !TOOL ? '<button class="iconbtn helpbtn" data-a="tourStart" aria-label="' + t('helpBtn') + '" title="' + t('helpBtn') + '">' + ic('quiz') + '</button>' : ''; }
 function normalTop(){
-  return '<header class="top"><a class="brand" href="#/" aria-label="DEWS home">DEWS</a>' + offChip() + '<span class="sp"></span>' +
+  return '<header class="top"><a class="brand" href="#/" aria-label="DEWS home">DEWS</a>' + offChip() + '<span class="sp"></span>' + helpBtn() +
     '<a class="sosbtn" href="#/sos">' + ic('alert') + t('sos') + '</a></header>';
 }
 function emTop(back){
   return '<header class="top">' +
     (back ? '<a class="iconbtn" href="' + back + '">' + ic('chevL') + t('back') + '</a>' : '<a class="iconbtn" href="#/">' + ic('x') + t('exitEmergency') + '</a>') +
-    '<span class="sp"></span><span class="em-label">' + t('sos') + '</span></header>';
+    '<span class="sp"></span>' + helpBtn() + '<span class="em-label">' + t('sos') + '</span></header>';
 }
 
 /* ---------- feedback: opens a GitHub issue with version and device filled in ---------- */
@@ -296,7 +297,7 @@ function vLive(id){
   var inc = WARN.find(id);
   if (!inc) return backTo('#/') + '<div class="page-head"><h1>' + t('liveGone') + '</h1><p class="sub">' + t('liveGoneSub') + '</p></div>' + liveStatus();
   var f = WARN.measure(inc, NAV.state.pos), L = inc.level ? LEVELS[inc.level] : null, near = f && f.m <= WARN.NEAR_M, act = inc.level === 'watch' || inc.level === 'emergency';
-  var n = 0, sec = function(title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + (++n) + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var n = 0, sec = function(title, body, cls){ ++n; return '<section class="card wf' + (cls ? ' ' + cls : '') + '" data-tut="wf' + n + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
   var fnm = '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" style="margin-top:12px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + ic('ext') + t('liveReadOfficial') + '</a>';
   var far = !f ? '<p class="small">' + t('farNeedLoc') + '</p><button class="btn btn-line" style="margin-top:8px" data-a="navEnable">' + ic('locate') + t('guideEnable') + '</button>'
     : f.inside ? '<p class="wf-big" style="color:var(--red-text)">' + ic('alert') + t('farIn') + '</p>'
@@ -379,7 +380,7 @@ function vHome(){
     '<a class="em-entry" href="#/sos">' + ic('alert', 'lg') + '<div class="grow"><b>' + t('imIn') + '</b><span>' + t('imInSub') + '</span></div>' + ic('chevR') + '</a>' +
     (DESKTOP ? '<h2 class="label">' + t('numbers') + '</h2>' + numbers() + '</div><div>' : '') +
     '<h2 class="label"' + (DESKTOP ? ' style="margin-top:0"' : '') + '>' + t('readiness') + '</h2>' +
-    '<section class="card"><div class="between"><span class="ready-num">' + on + '<small> / 4</small></span></div>' +
+    '<section class="card" data-tut="ready"><div class="between"><span class="ready-num">' + on + '<small> / 4</small></span></div>' +
     '<div class="segs">' + R.map(function(r){ return '<a class="seg' + (r.on ? ' on' : '') + '" href="' + r.href + '"><i></i><span>' + tx(r.label) + '</span></a>'; }).join('') + '</div>' +
     (nx ? '<a class="next" href="' + nx.href + '"><div class="grow"><span class="eyebrow">' + t('nextStep') + '</span>' + t(nx.ns) + '</div>' + ic('chevR') + '</a>'
         : '<div class="next"><div class="grow">' + t('nsDone') + '</div></div>') + '</section>' +
@@ -404,7 +405,7 @@ function vAlert(){
   var bring = k === 'evacuate'
     ? '<p class="wf-lead">' + t('bringNow') + '</p><ol class="wf-list"><li>' + t('bring1') + '</li><li>' + t('bring2') + '</li><li>' + t('bring3') + '</li></ol>' + srcLine('fire')
     : k === 'prepare' ? '<p class="wf-lead">' + t('prepareNow') + '</p><ul class="wf-list">' + kitItems().slice(0, 6).map(function(i){ return '<li>' + (S.kit.have[i[0]] ? '✓ ' : '') + esc(li() ? i[2] : i[1]) + '</li>'; }).join('') + '</ul><a class="btn btn-line" href="#/prepare/kit">' + ic('bag') + t('openKit') + '</a>' : '';
-  var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '" data-tut="wf' + n + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
   var n = 0;
   return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
     '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div>' +
@@ -466,7 +467,7 @@ function vSos(){
     '<h1 class="em-h"' + (DESKTOP && S.mvp ? ' style="margin-top:0"' : '') + '>' + t('emTitle') + '</h1>' +
     list.map(function(h){
       var on = ctx && ctx.id === h.id;
-      return '<a class="hz' + (on ? ' ctx' : '') + '" href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('practice') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
+      return '<a class="hz' + (on ? ' ctx' : '') + '"' + (h === list[0] ? ' data-tut="hz"' : '') + ' href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('practice') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
     }).join('') +
     (S.mvp ? '<button class="link-row" style="margin-top:12px;width:100%;text-align:left" data-a="tool" data-t="card"><span class="badge">' + ic('card') + '</span><span class="grow"><span class="t">' + t('showCard') + '</span></span></button>' : '<h2 class="label">' + t('emTools') + '</h2>' +
     '<div class="tools">' +
@@ -575,19 +576,40 @@ var TUT_LEARN = [
   { route: '#/learn/fire', sel: '[data-tut="addall"]', k: 'tut5' },
   { route: '#/learn/fire', sel: '[data-tut="during"]', k: 'tut6' }
 ];
-function tutStart(){ TUT = { steps: TUT_LEARN, i: 0 }; tutGo(); }
+function tutStart(){ TUT = { steps: TUT_LEARN, i: 0, learn: true }; tutGo(); }
+function visible(el){ if (!el) return false; var r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; }
+/* screen tour: the ? icon. Learn keeps its two-page tour; every other screen gets its own steps from TOURS. */
+function tourStart(){
+  var p = parts(), key = helpKey(p);
+  if (key === 'learn') return tutStart();
+  if (key === 'learnOne') { TUT = { steps: TUT_LEARN.slice(1).map(function(x){ return { route: location.hash, sel: x.sel, k: x.k }; }), i: 0 }; return tutGo(); }
+  var T = TOURS[key] || [], here = location.hash || '#/';
+  var steps = T.filter(function(x){ return visible(document.querySelector(x[0])); }).map(function(x){ return { route: here, sel: x[0], s: [x[1], x[2]] }; });
+  if (!steps.length) return;
+  TUT = { steps: steps, i: 0 }; tutGo();
+}
+function helpKey(p){
+  if (!p[0]) return S.mvp ? 'kit' : 'home';
+  if (p[1] === 'go') return 'go';
+  if (p[0] === 'alert') return p[1] === 'rfs' ? 'live' : 'practice';
+  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : 'sos';
+  if (p[0] === 'prepare') return p[1] || 'prepare';
+  if (p[0] === 'learn') return p[1] ? 'learnOne' : 'learn';
+  if (p[0] === 'me') return p[1] === 'card' ? 'card' : p[1] === 'sources' ? 'sources' : 'me';
+  return p[0];
+}
 function tutGo(){
   var st = TUT.steps[TUT.i];
-  if (location.hash !== st.route) { location.hash = st.route; return; } /* hashchange → render → after → tutPlace */
+  if ((location.hash || '#/') !== st.route && !(st.route === '#/' && !location.hash)) { location.hash = st.route; return; } /* hashchange → render → after → tutPlace */
   tutPlace();
 }
-function tutEnd(){ TUT = null; S.tutLearn = 1; save(); var o = document.getElementById('tut'); if (o) o.remove(); }
+function tutEnd(){ var was = TUT; TUT = null; if (was && was.learn) { S.tutLearn = 1; save(); } var o = document.getElementById('tut'); if (o) o.remove(); }
 function tutNext(){ if (!TUT) return; TUT.i++; if (TUT.i >= TUT.steps.length) tutEnd(); else tutGo(); }
 function tutPlace(){
   var o = document.getElementById('tut');
   if (!TUT) { if (o) o.remove(); return; }
   var st = TUT.steps[TUT.i], el = document.querySelector(st.sel);
-  if (!el) return;
+  if (!visible(el)) { if (TUT.i + 1 < TUT.steps.length) { TUT.steps.splice(TUT.i, 1); return tutPlace(); } return; }
   el.scrollIntoView({ block: 'center' });
   var r = el.getBoundingClientRect(), pad = 8, vh = window.innerHeight;
   if (!o) { o = document.createElement('div'); o.id = 'tut'; o.className = 'tut'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); document.body.appendChild(o); }
@@ -595,7 +617,7 @@ function tutPlace(){
   var top = below ? Math.min(r.bottom + pad + 14, vh - 170) : Math.max(r.top - pad - 14, 170);
   o.innerHTML = '<div class="tut-hole" style="left:' + (r.left - pad) + 'px;top:' + (r.top - pad) + 'px;width:' + (r.width + pad * 2) + 'px;height:' + (r.height + pad * 2) + 'px"></div>' +
     '<div class="tut-tip ' + (below ? 'below' : 'above') + '" style="' + (below ? 'top:' + top + 'px' : 'bottom:' + (vh - top) + 'px') + '" tabindex="-1" aria-live="polite">' +
-    '<p class="tut-step">' + (TUT.i + 1) + ' / ' + TUT.steps.length + '</p><p class="tut-text">' + t(st.k) + '</p>' +
+    '<p class="tut-step">' + (TUT.i + 1) + ' / ' + TUT.steps.length + '</p><p class="tut-text">' + (st.s ? linkify(tx(st.s)) : t(st.k)) + '</p>' +
     '<p class="tut-hint">' + (TUT.i + 1 === TUT.steps.length ? t('tutDone') : t('tutTap')) + '</p>' +
     '<button class="tut-skip" data-tutskip="1">' + t('tutSkip') + '</button></div>';
   var tip = o.querySelector('.tut-tip'); try { tip.focus({ preventScroll: true }); } catch (e) {}
@@ -807,7 +829,7 @@ function vGo(em){
   var back = em ? '#/sos' : '#/map', tg = NAV.target();
   var safe = NAV.list().filter(function(x){ return ['assembly', 'shelter', 'rescue', 'hospital'].indexOf(x.p.type) >= 0; }).slice(0, 6);
   return '<main class="go" id="main" tabindex="-1"><div class="go-map" id="mapSlot" role="img" aria-label="' + t('mapTitle') + '">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
-    '<header class="go-top glass"><a class="iconbtn" href="' + back + '" aria-label="' + t('back') + '">' + ic('chevL') + '</a><h1>' + t('goTitle') + '</h1>' +
+    '<header class="go-top glass"><a class="iconbtn" href="' + back + '" aria-label="' + t('back') + '">' + ic('chevL') + '</a><h1>' + t('goTitle') + '</h1>' + helpBtn() +
     (em ? '<a class="sosbtn" href="tel:000">' + ic('phone') + '000</a>' : '') + '</header>' +
     '<div class="go-side"><button class="fab glass" data-a="recenter" aria-label="' + t('recenter') + '">' + ic('locate') + '</button>' +
     '<button class="fab glass" data-a="follow" aria-pressed="' + NAV.state.follow + '" aria-label="' + t('followHeading') + '">' + ic('arrow') + '</button></div>' +
@@ -882,29 +904,6 @@ function vSources(){
 }
 
 
-/* ---------- screen guide: "?" tab on the right edge ---------- */
-var HELPO = false;
-function helpKey(p){
-  if (!p[0]) return S.mvp ? 'kit' : 'home';
-  if (p[1] === 'go') return 'go';
-  if (p[0] === 'alert') return p[1] === 'rfs' ? 'live' : 'practice';
-  if (p[0] === 'fires') return 'fires';
-  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : 'sos';
-  if (p[0] === 'prepare') return p[1] || 'prepare';
-  if (p[0] === 'learn') return p[1] ? 'learnOne' : 'learn';
-  if (p[0] === 'me') return p[1] === 'card' ? 'card' : p[1] === 'sources' ? 'sources' : 'me';
-  return p[0];
-}
-function helpTab(){ return S.lang && !TOOL ? '<button class="helptab" data-a="helpOpen" aria-label="' + t('helpBtn') + '" aria-haspopup="dialog">?</button>' : ''; }
-function helpSheet(){
-  var H = HELP[helpKey(parts())] || HELP.home;
-  return '<div class="scrim help-scrim"><div class="sheet help-sheet" role="dialog" aria-modal="true" aria-labelledby="help-h">' +
-    '<p class="eyebrow">' + t('helpBtn') + '</p><h2 id="help-h" tabindex="-1">' + esc(tx(H.t)) + '</h2>' +
-    '<ol class="help-list">' + H.s.map(function(x){ return '<li>' + linkify(tx(x)) + '</li>'; }).join('') + '</ol>' +
-    (H.tour ? '<button class="btn btn-line" data-a="helpTour">' + ic('quiz') + t('helpTour') + '</button>' : '') +
-    '<button class="btn btn-primary" data-a="helpClose">' + t('gotIt') + '</button></div></div>';
-}
-
 /* ---------- layer: onboarding, sheets, tools ---------- */
 var TOOL = null, toolTimer = null, audio = null, wake = null;
 function renderLayer(){
@@ -913,7 +912,6 @@ function renderLayer(){
   if (CI && CI !== 'pick' && parts()[0] && parts()[0] !== '') CI = null;
   if (!S.lang) h = onboarding();
   else if (TOOL) h = toolView();
-  else if (HELPO) h = helpSheet();
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
   else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
@@ -1037,9 +1035,7 @@ var A = {
   mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ CI = 'pick'; renderLayer(); },
-  helpOpen: function(){ HELPO = true; renderLayer(); var h = document.getElementById('help-h'); if (h) try { h.focus(); } catch (e) {} },
-  helpClose: function(){ HELPO = false; renderLayer(); var b = document.querySelector('.helptab'); if (b) try { b.focus({ preventScroll: true }); } catch (x) {} },
-  helpTour: function(){ HELPO = false; renderLayer(); location.hash = '#/learn'; setTimeout(tutStart, 300); },
+  tourStart: function(){ tourStart(); },
   liveSeen: function(el){ var inc = WARN.find(el.dataset.id); if (!S.liveSeen) S.liveSeen = {}; if (inc) S.liveSeen[inc.id] = inc.level; save(); renderLayer(); },
   ciCancel: function(){ CI = null; renderLayer(); },
   simPick: function(el){
@@ -1102,7 +1098,6 @@ var A = {
   }
 };
 document.addEventListener('click', function(e){
-  if (HELPO && e.target.classList && e.target.classList.contains('help-scrim')) { A.helpClose(); return; }
   var el = e.target.closest('[data-a]'); if (!el) return;
   var fn = A[el.dataset.a]; if (!fn) return;
   if (el.tagName !== 'A') e.preventDefault();
@@ -1114,7 +1109,7 @@ document.addEventListener('input', function(e){
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
   if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
-document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (HELPO) A.helpClose(document.body); else if (CI) A.ciClose(); } });
+document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
 /* onboarding: swipe left/right (touch) and arrow keys; Next/Back buttons stay as the main way */
 function obFocus(){ var h = document.getElementById('ob-h'); if (h) try { h.focus({ preventScroll: true }); } catch (e) {} }
 var obTouch = null;
@@ -1131,11 +1126,11 @@ document.addEventListener('keydown', function(e){
   if (S.lang || !document.querySelector('.ob')) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); obGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); obGo(-1); }
 });
-window.addEventListener('hashchange', function(){ HELPO = false; render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
+window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){
   syncAlertZone();
-  if (TUT && location.hash !== TUT.steps[TUT.i].route) tutEnd();
+  if (TUT && (location.hash || '#/') !== TUT.steps[TUT.i].route) tutEnd();
   if (TUT) setTimeout(tutPlace, 80);
   else if (S.lang && !S.tutLearn && p[0] === 'learn' && !p[1] && !document.querySelector('.ob')) setTimeout(tutStart, 300);
   var m = document.getElementById('main'); if (m && p[0] === 'sos' && p[3]) { var n = m.querySelector('.now'); if (n) n.setAttribute('tabindex', '-1'); }

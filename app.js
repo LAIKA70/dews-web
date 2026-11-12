@@ -20,7 +20,7 @@ function load(){
   var d = JSON.parse(JSON.stringify(DEFAULTS));
   try {
     var s = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (s) for (var k in d) if (s[k] !== undefined) d[k] = s[k];
+    if (s) for (var k in s) if (s[k] !== undefined && s[k] !== null) d[k] = s[k]; /* keep every saved setting, not only the defaults (tutLearn, mvp, glassA, liveSeen) */
     if (!d.lang) { var old = localStorage.getItem('dews-lang'); if (old === 'zh' || old === 'en') d.pre = old; }
   } catch (e) {}
   return d;
@@ -91,6 +91,11 @@ var P = {
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
   wifi:'<path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19v.01"/><path d="M3 3l18 18"/>',
+  mobile:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  tablet:'<rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  desktop:'<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 17v3.5"/>',
+  mic:'<rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5v3.5M8.5 21h7"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
   locate:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'
 };
 function ic(n, cls){ return '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (P[n] || '') + '</svg>'; }
@@ -155,6 +160,8 @@ function render(){
     else if (p[0] === 'learn') main = p[1] ? vLearn(p[1]) : vLearnList();
     else if (S.mvp && !p[0]) main = vKit();
     else if (p[0] === 'me') main = p[1] === 'card' ? vCardEdit() : p[1] === 'sources' ? vSources() : vMe();
+    else if (p[0] === 'alert' && p[1] === 'rfs') main = vLive(p[2]);
+    else if (p[0] === 'fires') main = vFires();
     else if (p[0] === 'alert') main = vAlert();
     else main = vHome();
   }
@@ -168,7 +175,7 @@ function render(){
     tabLink('#/prepare', 'shield', t('tabPrep'), tab === 'prepare') +
     tabLink('#/map', 'pin', t('tabMap'), tab === 'map') +
     tabLink('#/me', 'user', t('tabMe'), tab === 'me')) + '</div></nav>';
-  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>';
+  if (DESKTOP) document.getElementById('app').innerHTML = sidebar(p, em) + '<div class="dmain">' + (em ? top : '') + (em ? '' : '<div class="dhelp">' + helpBtn() + '</div>') + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : '') + '</div>';
   else document.getElementById('app').innerHTML = top + '<main class="wrap" id="main" tabindex="-1">' + offlineBar() + main + '</main>' + (em ? dock : tabs);
   renderLayer();
   after(p);
@@ -181,7 +188,7 @@ function sidebar(p, em){
     '<a class="sosbtn side-sos" href="#/sos"' + (cur === 'sos' ? ' aria-current="page"' : '') + '>' + ic('alert') + t('sos') + '</a>' +
     '<nav class="side-nav" aria-label="Main">' + items.map(function(x){ return '<a href="' + x[1] + '"' + (cur === x[0] ? ' class="on" aria-current="page"' : '') + '>' + ic(x[2]) + '<span>' + t(x[3]) + '</span></a>'; }).join('') + '</nav>' +
     '<div class="side-foot"><button class="iconbtn" data-a="set" data-k="lang" data-v="' + (li() ? 'en' : 'zh') + '">' + ic('globe') + (li() ? 'English' : '中文') + '</button>' +
-    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('phone') + t('mobileLink') + '</a>' + '<a class="iconbtn" href="' + BASE + (TABLET ? 'desktop/' : 'tablet/') + '">' + ic(TABLET ? 'card' : 'phone') + t(TABLET ? 'desktopLink' : 'tabletLink') + '</a></div></aside>';
+    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('mobile') + t('mobileLink') + '</a>' + '<a class="iconbtn" href="' + BASE + (TABLET ? 'desktop/' : 'tablet/') + '">' + ic(TABLET ? 'desktop' : 'tablet') + t(TABLET ? 'desktopLink' : 'tabletLink') + '</a></div></aside>';
 }
 function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : ''; }
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
@@ -190,14 +197,15 @@ function offChip(){
   return swReady ? '<span class="chip ok">' + ic('check') + '<span class="ell">' + t('offlineReady') + '</span></span>' : '<span class="chip"><span class="ell">' + t('offlineNot') + '</span></span>';
 }
 function offlineBar(){ return navigator.onLine === false ? '<div class="offbar">' + ic('wifi') + t('youreOffline') + '</div>' : ''; }
+function helpBtn(){ return S.lang && !TOOL ? '<button class="iconbtn helpbtn" data-a="tourStart" aria-label="' + t('helpBtn') + '" title="' + t('helpBtn') + '">' + ic('quiz') + '</button>' : ''; }
 function normalTop(){
-  return '<header class="top"><a class="brand" href="#/" aria-label="DEWS home">DEWS</a>' + offChip() + '<span class="sp"></span>' +
+  return '<header class="top"><a class="brand" href="#/" aria-label="DEWS home">DEWS</a>' + offChip() + '<span class="sp"></span>' + helpBtn() +
     '<a class="sosbtn" href="#/sos">' + ic('alert') + t('sos') + '</a></header>';
 }
 function emTop(back){
   return '<header class="top">' +
     (back ? '<a class="iconbtn" href="' + back + '">' + ic('chevL') + t('back') + '</a>' : '<a class="iconbtn" href="#/">' + ic('x') + t('exitEmergency') + '</a>') +
-    '<span class="sp"></span><span class="em-label">' + t('sos') + '</span></header>';
+    '<span class="sp"></span>' + helpBtn() + '<span class="em-label">' + t('sos') + '</span></header>';
 }
 
 /* ---------- feedback: opens a GitHub issue with version and device filled in ---------- */
@@ -225,9 +233,125 @@ function alertFar(){
 }
 function syncAlertZone(){
   if (S.demo.alert && !S.demo.anchored && NAV.state.pos) { S.demo.at = { lat: NAV.state.pos.lat, lng: NAV.state.pos.lng }; S.demo.anchored = true; save(); }
-  var z = alertZone(), cur = NAV.state.avoid;
+  var z = alertZone(); if (!z && !S.demo.alert && window.WARN) z = WARN.zone(liveFocus());
+  var cur = NAV.state.avoid;
   if (!z && cur) NAV.setAvoid(null);
-  else if (z && (!cur || Math.abs(cur.lat - z.lat) > 1e-6 || Math.abs(cur.lng - z.lng) > 1e-6)) NAV.setAvoid(z);
+  else if (z && (!cur || Math.abs(cur.lat - z.lat) > 1e-6 || Math.abs(cur.lng - z.lng) > 1e-6 || cur.r !== z.r)) NAV.setAvoid(z);
+}
+
+
+/* ---------- REAL warnings: NSW RFS bushfire feed (see warnings.js) ---------- */
+function liveSel(){ return window.WARN && WARN.state.list ? WARN.select(WARN.state.list, NAV.state.pos) : []; }
+function liveTerm(s){ return esc(WARN.term(s, li())); }
+function lvName(inc){ return inc.level ? tx(LEVELS[inc.level].name) : WARN.term(inc.category || 'Not Applicable', li()); }
+function ago(ms){
+  var m = Math.max(0, Math.round((Date.now() - ms) / 60000));
+  if (m < 1) return t('agoNow');
+  if (m < 60) return li() ? m + ' 分钟前' : m + ' min ago';
+  var h = Math.round(m / 60); return li() ? h + ' 小时前' : h + (h === 1 ? ' hour ago' : ' hours ago');
+}
+function liveStatus(){
+  var w = WARN.state, bits = [];
+  if (w.at) bits.push(t('liveChecked') + ' ' + ago(w.at));
+  var line = '<p class="small live-src">' + ic('fire') + '<span>' + t('liveFrom') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</span></p>';
+  var warn = '';
+  if (navigator.onLine === false || w.state === 'offline') warn = t('liveOffline');
+  else if (w.state === 'error' && !w.at) warn = t('liveError');
+  else if (w.state === 'error' || (w.at && WARN.stale())) warn = t('liveStale');
+  return line + (warn ? '<p class="warnline">' + ic('alert') + '<span>' + warn + ' <a href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + '</a></span></p>' : '');
+}
+function liveFar(f, inc){
+  if (!f) return '';
+  if (f.inside) return t('farIn');
+  return fmtDist(f.m) + ' · ' + dirName(f.dir) + (li() ? '方' : '') + (f.edge && !inc.unmapped ? '' : ' · ' + t('liveApprox'));
+}
+function liveRow(x){
+  var inc = x.inc, lv = inc.level || 'none';
+  return '<a class="live-row lv-' + lv + '" href="#/alert/rfs/' + esc(inc.id) + '"><i class="live-dot"></i><span class="grow"><b>' + esc(lvName(inc)) + '</b> · ' + esc(inc.title) +
+    '<br><span class="small">' + liveTerm(inc.type) + (x.far ? ' · ' + liveFar(x.far, inc) : '') + '</span></span>' + ic('chevR') + '</a>';
+}
+function liveCard(){
+  var sel = liveSel(), w = WARN.state, hasPos = !!NAV.state.pos;
+  var warned = sel.filter(function(x){ return x.inc.level; }), other = sel.filter(function(x){ return !x.inc.level; });
+  var top = warned[0], h = '';
+  if (top) {
+    var inc = top.inc, L = LEVELS[inc.level];
+    h += '<a class="alert lv-' + inc.level + '" href="#/alert/rfs/' + esc(inc.id) + '">' +
+      '<div class="alert-band">' + ic('fire') + esc(tx(L.name)) + '<span class="chip">NSW RFS</span></div>' +
+      '<div class="alert-body"><div class="alert-act">' + esc(inc.title) + '</div>' +
+      '<div class="alert-meta">' + liveTerm(inc.type) + ' · ' + liveTerm(inc.status) + (top.far ? ' · ' + liveFar(top.far, inc) : '') + '</div>' +
+      '<div class="alert-meta">' + t('liveRfsUpdated') + ' ' + esc(inc.updated) + '</div>' + meter(inc.level) + '</div></a>';
+  } else {
+    h += '<div class="alert none"><div class="alert-body">' + ic(w.at ? 'check' : 'fire') + '<div class="grow"><h2>' +
+      (!w.at ? t(w.state === 'error' || w.state === 'offline' ? 'liveNoData' : 'liveLoading') : hasPos ? t('liveNone') : t('liveNoneState')) + '</h2>' +
+      (!hasPos ? '<p class="small">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>' : '') + '</div></div></div>';
+  }
+  if (top && !hasPos) h += '<p class="small" style="margin-top:8px">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>';
+  var rest = warned.slice(1).concat(other);
+  if (rest.length) h += '<div class="stack live-list">' + rest.slice(0, 4).map(liveRow).join('') + '</div>' + (rest.length > 4 ? '<a class="textlink" href="#/fires">' + t('liveAll') + ' (' + sel.length + ')' + ic('chevR') + '</a>' : '');
+  h += liveStatus() + '<p class="small">' + t('liveScope') + '</p>';
+  return h;
+}
+function vFires(){
+  var sel = liveSel();
+  return backTo('#/') + '<div class="page-head"><h1>' + t('liveAllTitle') + '</h1><p class="sub">' + t('liveScope') + '</p></div>' +
+    (sel.length ? '<div class="stack live-list">' + sel.map(liveRow).join('') + '</div>' : '<p>' + t('liveNone') + '</p>') + liveStatus() +
+    '<p class="src">' + esc(WARN.ATTRIBUTION) + '</p>';
+}
+function vLive(id){
+  var inc = WARN.find(id);
+  if (!inc) return backTo('#/') + '<div class="page-head"><h1>' + t('liveGone') + '</h1><p class="sub">' + t('liveGoneSub') + '</p></div>' + liveStatus();
+  var f = WARN.measure(inc, NAV.state.pos), L = inc.level ? LEVELS[inc.level] : null, near = f && f.m <= WARN.NEAR_M, act = inc.level === 'watch' || inc.level === 'emergency';
+  var n = 0, sec = function(title, body, cls){ ++n; return '<section class="card wf' + (cls ? ' ' + cls : '') + '" data-tut="wf' + n + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var fnm = '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" style="margin-top:12px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + ic('ext') + t('liveReadOfficial') + '</a>';
+  var far = !f ? '<p class="small">' + t('farNeedLoc') + '</p><button class="btn btn-line" style="margin-top:8px" data-a="navEnable">' + ic('locate') + t('guideEnable') + '</button>'
+    : f.inside ? '<p class="wf-big" style="color:var(--red-text)">' + ic('alert') + t('farIn') + '</p>'
+    : '<p class="wf-big">' + fmtDist(f.m) + '</p><p class="small">' + (f.edge && !inc.unmapped ? t('farAway') + (li() ? '' : ' ') + dirName(f.dir) + t('farDirSuffix') : t('liveToPoint') + ' · ' + dirName(f.dir) + (li() ? '方' : '')) + '</p>';
+  return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
+    '<div class="alert lv-' + (inc.level || 'none') + '"><div class="alert-band">' + ic('fire') + esc(lvName(inc)) + '<span class="chip">NSW RFS</span></div>' +
+    '<div class="alert-body"><h1 class="alert-act">' + esc(inc.title) + '</h1>' + (inc.level ? meter(inc.level) : '') + '</div></div>' +
+    '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a></div>' +
+    sec(t('qWhat'), '<p class="wf-big2">' + liveTerm(inc.type) + ' · ' + liveTerm(inc.status) + '</p>' +
+      '<dl class="kv live-kv"><dt>' + t('liveWhere') + '</dt><dd>' + esc(inc.location || inc.title) + (inc.council ? ' · ' + esc(inc.council) : '') + '</dd>' +
+      (inc.size && inc.size !== '0 ha' ? '<dt>' + t('liveSize') + '</dt><dd>' + esc(inc.size) + '</dd>' : '') +
+      '<dt>' + t('liveAgency') + '</dt><dd>' + esc(inc.agency) + '</dd><dt>' + t('liveRfsUpdated') + '</dt><dd>' + esc(inc.updated) + '</dd></dl>' +
+      (inc.unmapped ? '<p class="warnline">' + ic('alert') + '<span>' + t('liveUnmapped') + '</span></p>' : '') +
+      (li() ? '<p class="small" style="margin-top:6px">' + t('liveEnglishNote') + '</p>' : '')) +
+    sec(t('qFar'), far) +
+    sec(t('qDo'), L
+      ? '<p class="wf-act lv-' + inc.level + '">' + esc(tx(L.name)) + '</p><p class="small" style="margin-top:6px">' + esc(tx(L.desc)) + '</p>' +
+        (act ? '<div class="callout" style="margin-top:12px">' + ic('alert') + '<span>' + t('liveActionNote') + '</span></div>' + fnm +
+          '<a class="btn btn-line" style="margin-top:8px" href="#/sos/h/fire">' + ic('fire') + t('liveFireSteps') + '</a>'
+             : '<a class="btn btn-primary" style="margin-top:12px" href="#/">' + t('gotIt') + '</a><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>')
+      : '<p class="wf-big2">' + t('noAction') + '</p><p class="small" style="margin-top:6px">' + t('liveNoLevel') + '</p><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>', act ? 'wf-strong' : '') +
+    (act && near ? sec(t('qGo'), guideCard() + '<p class="small" style="margin-top:8px">' + t('awayNote') + '</p>' +
+      '<a class="btn btn-lg btn-primary" style="margin-top:12px" href="#/sos/go">' + ic('arrow') + t('navPreview') + '</a>' +
+      '<p class="warnline">' + ic('alert') + '<span>' + t('hazardWarn') + '</span></p>') : act && f ? '<p class="small" style="margin:12px 4px">' + t('liveFarAway') + '</p>' : '') +
+    liveStatus() + '<p class="src">' + esc(WARN.ATTRIBUTION) + ' CC BY 4.0.</p>' + srcLine('aws');
+}
+/* the real warning that should steer routes and pop up: highest Watch and Act / Emergency within 50 km */
+function liveFocus(){
+  var p = parts();
+  if (p[0] === 'alert' && p[1] === 'rfs') { var i = WARN.find(p[2]); if (i) return i; }
+  var x = liveSel().filter(function(x){ return x.near && (x.inc.level === 'watch' || x.inc.level === 'emergency'); })[0];
+  return x ? x.inc : null;
+}
+function liveSheet(inc){
+  var f = WARN.measure(inc, NAV.state.pos), L = LEVELS[inc.level];
+  return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
+    '<div class="alert lv-' + inc.level + '" style="margin:0"><div class="alert-band">' + ic('fire') + esc(tx(L.name)) + '<span class="chip">NSW RFS</span></div></div>' +
+    '<p class="small" style="margin-top:12px">' + t('liveNearYou') + ' · ' + liveTerm(inc.type) + '</p>' +
+    '<h2 id="ci-h">' + esc(inc.title) + '</h2>' +
+    (f ? '<p class="wf-big2" style="margin-top:4px">' + liveFar(f, inc) + '</p>' : '') +
+    '<p style="margin-top:8px">' + esc(tx(L.desc)) + '</p>' +
+    '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" href="#/alert/rfs/' + esc(inc.id) + '" data-a="liveSeen" data-id="' + esc(inc.id) + '">' + t('seeWhatToDo') + ic('chevR') + '</a>' +
+    '<button class="btn btn-ghost" data-a="liveSeen" data-id="' + esc(inc.id) + '">' + t('close') + '</button></div></div>';
+}
+function livePopup(){
+  if (S.demo.alert) return null;
+  var seen = S.liveSeen || {};
+  var x = liveSel().filter(function(x){ return x.near && (x.inc.level === 'watch' || x.inc.level === 'emergency') && seen[x.inc.id] !== x.inc.level; })[0];
+  return x ? x.inc : null;
 }
 
 /* ---------- HOME ---------- */
@@ -235,13 +359,14 @@ function dateLine(){
   try { return new Date().toLocaleDateString(li() ? 'zh-CN' : 'en-AU', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return ''; }
 }
 function alertCard(){
+  if (!S.demo.alert) return liveCard() + '<button class="textlink practice-link" data-a="demoAlert">' + t('demoAlert') + ic('chevR') + '</button>';
   if (S.demo.alert) {
     var a = curAlert(), L = LEVELS[a.level], h = hz(a.hazard);
     return '<a class="alert lv-' + a.level + '" href="#/alert">' +
-      '<div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
+      '<div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div>' +
       '<div class="alert-body"><div class="alert-act">' + esc(tx(a.action)) + '</div>' +
       '<div class="alert-meta">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</div>' +
-      meter(a.level) + '</div></a>';
+      meter(a.level) + '</div></a>' + '<button class="textlink practice-link" data-a="demoToggle">' + t('practiceEnd') + ic('x') + '</button>';
   }
   return '<div class="alert none"><div class="alert-body">' + ic('check') + '<div class="grow"><h2>' + t('noWarnings') + '</h2>' +
     '<p class="small">' + t('sampleData') + '</p>' +
@@ -260,7 +385,7 @@ function vHome(){
     '<a class="em-entry" href="#/sos">' + ic('alert', 'lg') + '<div class="grow"><b>' + t('imIn') + '</b><span>' + t('imInSub') + '</span></div>' + ic('chevR') + '</a>' +
     (DESKTOP ? '<h2 class="label">' + t('numbers') + '</h2>' + numbers() + '</div><div>' : '') +
     '<h2 class="label"' + (DESKTOP ? ' style="margin-top:0"' : '') + '>' + t('readiness') + '</h2>' +
-    '<section class="card"><div class="between"><span class="ready-num">' + on + '<small> / 4</small></span></div>' +
+    '<section class="card" data-tut="ready"><div class="between"><span class="ready-num">' + on + '<small> / 4</small></span></div>' +
     '<div class="segs">' + R.map(function(r){ return '<a class="seg' + (r.on ? ' on' : '') + '" href="' + r.href + '"><i></i><span>' + tx(r.label) + '</span></a>'; }).join('') + '</div>' +
     (nx ? '<a class="next" href="' + nx.href + '"><div class="grow"><span class="eyebrow">' + t('nextStep') + '</span>' + t(nx.ns) + '</div>' + ic('chevR') + '</a>'
         : '<div class="next"><div class="grow">' + t('nsDone') + '</div></div>') + '</section>' +
@@ -285,10 +410,10 @@ function vAlert(){
   var bring = k === 'evacuate'
     ? '<p class="wf-lead">' + t('bringNow') + '</p><ol class="wf-list"><li>' + t('bring1') + '</li><li>' + t('bring2') + '</li><li>' + t('bring3') + '</li></ol>' + srcLine('fire')
     : k === 'prepare' ? '<p class="wf-lead">' + t('prepareNow') + '</p><ul class="wf-list">' + kitItems().slice(0, 6).map(function(i){ return '<li>' + (S.kit.have[i[0]] ? '✓ ' : '') + esc(li() ? i[2] : i[1]) + '</li>'; }).join('') + '</ul><a class="btn btn-line" href="#/prepare/kit">' + ic('bag') + t('openKit') + '</a>' : '';
-  var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  var sec = function(n, title, body, cls){ return '<section class="card wf' + (cls ? ' ' + cls : '') + '" data-tut="wf' + n + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
   var n = 0;
   return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
-    '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div>' +
+    '<div class="alert lv-' + a.level + '"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div>' +
     '<div class="alert-body"><h1 class="alert-act">' + esc(tx(a.action)) + '</h1>' + meter(a.level) + '</div></div>' +
     '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + (S.mvp ? '' : '<button class="emb" data-a="safe">' + ic('msg') + t('emSafe') + '</button>') + '</div>' +
     sec(++n, t('qWhat'), '<p class="wf-big2">' + esc(tx(a.what)) + '</p><p class="small">' + esc(tx(h.name)) + ' · ' + esc(tx(a.area)) + ' · ' + t('issued') + ' ' + a.issued + '</p>') +
@@ -315,7 +440,7 @@ function checkinSheet(){
   }
   var a = curAlert(), h = hz(a.hazard), L = LEVELS[a.level], f = alertFar();
   return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
-    '<div class="alert lv-' + a.level + '" style="margin:0"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('sample') + '</span></div></div>' +
+    '<div class="alert lv-' + a.level + '" style="margin:0"><div class="alert-band">' + ic(h.icon) + esc(tx(L.name)) + '<span class="chip sample">' + t('practice') + '</span></div></div>' +
     '<p class="small" style="margin-top:12px">' + t('receivedWarning') + ' · ' + esc(tx(h.name)) + '</p>' +
     '<h2 id="ci-h">' + esc(tx(a.what)) + '</h2>' +
     (f ? '<p class="wf-big2" style="margin-top:4px">' + (f.inside ? t('farIn') : fmtDist(f.edge) + ' · ' + f.dir) + '</p>' : '') +
@@ -333,13 +458,15 @@ function sosRoute(p){
     return { main: vFork(h) };
   }
   if (p[1] === 'help') return p[2] === 'sent' ? vSent() : vHelp();
+  if (p[1] === 'msg') return vMsg(p[2], p[3] === 'ok');
   return { main: vSos(), back: null };
 }
 function vSos(){
   var ctx = S.demo.alert && !S.mvp ? hz(curAlert().hazard) : null;
   var list = HAZARDS.slice();
   if (ctx) list.sort(function(a, b){ return (b.id === ctx.id) - (a.id === ctx.id); });
-  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('sample') + '</span></a>' : '') +
+  return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('practice') + '</span></a>' : '') +
+    (DANGER_NO ? '' : '<section class="card danger-q" aria-labelledby="dq-h"><h2 id="dq-h">' + t('dangerQ') + '</h2><div class="dq-btns"><a class="btn btn-red" href="#/sos/msg">' + t('dangerYes') + '</a><button class="btn btn-line" data-a="dangerNo">' + t('dangerNo') + '</button></div></section>') +
     '<div class="em-actions"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + guideCard() +
     (DESKTOP ? '</div><div class="mapbox" id="mapSlot">' + mapOvl() + '</div></div><div><div class="em-actions">' : '') +
     (S.mvp ? '' : '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
@@ -347,7 +474,7 @@ function vSos(){
     '<h1 class="em-h"' + (DESKTOP && S.mvp ? ' style="margin-top:0"' : '') + '>' + t('emTitle') + '</h1>' +
     list.map(function(h){
       var on = ctx && ctx.id === h.id;
-      return '<a class="hz' + (on ? ' ctx' : '') + '" href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('sample') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
+      return '<a class="hz' + (on ? ' ctx' : '') + '"' + (h === list[0] ? ' data-tut="hz"' : '') + ' href="#/sos/h/' + h.id + '">' + ic(h.icon) + '<span>' + esc(tx(h.name)) + '</span>' + (on ? '<span class="tag">' + t('practice') + '</span>' : '<span class="chev">' + ic('chevR') + '</span>') + '</a>';
     }).join('') +
     (S.mvp ? '<button class="link-row" style="margin-top:12px;width:100%;text-align:left" data-a="tool" data-t="card"><span class="badge">' + ic('card') + '</span><span class="grow"><span class="t">' + t('showCard') + '</span></span></button>' : '<h2 class="label">' + t('emTools') + '</h2>' +
     '<div class="tools">' +
@@ -374,6 +501,73 @@ function vSteps(h, oid){
       (st.length > 1 ? '<h2 class="label">' + t('then') + '</h2><ol class="steps" style="margin-top:0">' + st.slice(1).map(function(s, i){
         return '<li><span class="n">' + (i + 2) + '</span><p>' + linkify(tx(s)) + '</p></li>'; }).join('') + '</ol>' : '') +
       '<a class="textlink" href="#/sos/h/' + h.id + '">' + ic('chevL') + t('otherOption') + '</a>' + srcLine(h.src),
+    dock: dockCall()
+  };
+}
+/* "Are you in danger?" → what's happening → an editable help message → call 000 / text / copy */
+var DANGER_NO = false, MSG = null, REC = null;
+function sit(id){ return SITS.filter(function(x){ return x.id === id; })[0]; }
+function sitName(x){ var h = x.hz ? hz(x.hz) : null; return h ? tx(h.name) : tx(x.name); }
+function sitMatch(x, q){
+  q = (q || '').trim().toLowerCase(); if (!q) return true;
+  var h = x.hz ? hz(x.hz) : null, names = h ? h.name : x.name;
+  var hay = (names[0] + ' ' + names[1] + ' ' + x.kw).toLowerCase();
+  if (/[\u3400-\u9fff]/.test(q)) return hay.indexOf(q) >= 0;
+  if (hay.split(/[^a-z0-9\u3400-\u9fff]+/).some(function(w){ return w.indexOf(q) === 0; })) return true;
+  if (q.indexOf(' ') > 0 && hay.indexOf(q) >= 0) return true;
+  var ini = names[0].toLowerCase().split(/[^a-z]+/).filter(Boolean).map(function(w){ return w[0]; }).join('');
+  return ini.indexOf(q.replace(/\s/g, '')) === 0;
+}
+function micBtn(target){
+  return '<span class="mic-wrap"><button class="mic" data-a="mic" data-target="' + target + '" aria-label="' + esc(t('micLabel')) + '" aria-pressed="false">' + ic('mic') + '</button>' +
+    (S.micTip ? '' : '<span class="mic-tip" role="note">' + t('micTip') + '</span>') + '</span>';
+}
+function buildMsg(id, c){
+  var x = sit(id), out = [x.msg[0]];
+  if (S.card.name) out.push('My name is ' + S.card.name + '.');
+  out.push(c ? "I'm at: https://maps.google.com/?q=" + c.lat.toFixed(5) + ',' + c.lng.toFixed(5) + ' (' + c.lat.toFixed(5) + ', ' + c.lng.toFixed(5) + ')' : 'My location: not found yet.');
+  var about = needList(0).concat(S.card.allergies ? ['Allergies: ' + S.card.allergies] : []).concat(S.card.conditions ? ['Medical: ' + S.card.conditions] : []);
+  if (about.length) out.push('About me: ' + about.join('; ') + '.');
+  return out.join('\n');
+}
+function msgLocate(id){
+  withLocation(function(c){
+    if (!MSG || MSG.sit !== id) return;
+    MSG.c = c; MSG.locating = false;
+    if (!MSG.edited) { MSG.text = buildMsg(id, c); var ta = document.getElementById('msgT'); if (ta) ta.value = MSG.text; }
+    var st = document.getElementById('msgLoc'); if (st) { st.textContent = c ? '' : t('msgNoLoc'); st.hidden = !!c; }
+  });
+}
+function vMsg(id, ok){
+  var x = id ? sit(id) : null;
+  if (!x) return {
+    back: '#/sos',
+    main: '<div class="page-head"><h1>' + t('sitTitle') + '</h1><p class="sub">' + t('sitSub') + '</p></div>' +
+      '<div class="sit-search"><label class="sr-only" for="sitQ">' + t('sitTitle') + '</label><input class="input" id="sitQ" type="search" autocomplete="off" autocapitalize="off" placeholder="' + esc(t('sitPh')) + '">' + micBtn('sitQ') + '</div>' +
+      '<div class="stack sit-list">' + SITS.map(function(s){
+        return '<a class="link-row sit" data-sit="' + s.id + '" href="#/sos/msg/' + s.id + '"><span class="badge' + (s.red ? ' red' : '') + '">' + ic(s.icon || hz(s.hz).icon) + '</span><span class="grow"><span class="t">' + esc(sitName(s)) + '</span></span><span class="chev">' + ic('chevR') + '</span></a>';
+      }).join('') + '<p class="small sit-none" hidden>' + t('sitNone') + '</p></div>',
+    dock: dockCall()
+  };
+  if (!MSG || MSG.sit !== id) { MSG = { sit: id, text: buildMsg(id, null), edited: false, locating: true }; setTimeout(function(){ msgLocate(id); }, 0); }
+  var svc = '<p class="msg-svc">' + t('msgAskFor') + ' <b>' + t(x.svc) + '</b></p>';
+  if (!ok) return {
+    back: '#/sos/msg',
+    main: '<div class="page-head"><p class="eyebrow">' + esc(sitName(x)) + '</p><h1>' + t('msgTitle') + '</h1><p class="sub">' + t('msgSub') + '</p></div>' +
+      '<div class="msg-edit"><label class="sr-only" for="msgT">' + t('msgTitle') + '</label><textarea class="input" id="msgT" data-msg rows="7">' + esc(MSG.text) + '</textarea>' + micBtn('msgT') + '</div>' +
+      '<p class="small" id="msgLoc" aria-live="polite"' + (MSG.locating ? '' : ' hidden') + '>' + (MSG.locating ? t('msgLocating') : '') + '</p>' +
+      (li() ? '<div class="callout" style="margin-top:12px">' + ic('globe') + '<span>' + t('msgEnNote') + '<br><b>中文意思：</b>' + esc(x.msg[1]) + '</span></div>' : '') +
+      '<div class="callout" style="margin-top:12px">' + ic('alert') + '<span>' + t('msgCantSend') + '</span></div>',
+    dock: dockCall('<a class="btn btn-primary" href="#/sos/msg/' + id + '/ok">' + ic('check') + t('msgOk') + '</a>')
+  };
+  return {
+    back: '#/sos/msg/' + id,
+    main: '<div class="page-head"><h1>' + t('msgReadyTitle') + '</h1></div>' + svc +
+      '<div class="card msg-read" lang="en">' + esc(MSG.text) + '</div>' +
+      '<div class="msg-acts"><button class="btn btn-line" data-a="msgSms">' + ic('msg') + t('msgSms') + '</button>' +
+      '<button class="btn btn-line" data-a="msgCopy">' + ic('copy') + t('msgCopy') + '</button></div>' +
+      '<a class="textlink" href="#/sos/msg/' + id + '">' + ic('chevL') + t('msgEdit') + '</a>' +
+      '<div class="callout" style="margin-top:16px">' + ic('phone') + '<span>' + t('msg55') + '<br>' + t('msgCantSend') + '</span></div>' + srcLine('acma'),
     dock: dockCall()
   };
 }
@@ -456,19 +650,40 @@ var TUT_LEARN = [
   { route: '#/learn/fire', sel: '[data-tut="addall"]', k: 'tut5' },
   { route: '#/learn/fire', sel: '[data-tut="during"]', k: 'tut6' }
 ];
-function tutStart(){ TUT = { steps: TUT_LEARN, i: 0 }; tutGo(); }
+function tutStart(){ TUT = { steps: TUT_LEARN, i: 0, learn: true }; tutGo(); }
+function visible(el){ if (!el) return false; var r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; }
+/* screen tour: the ? icon. Learn keeps its two-page tour; every other screen gets its own steps from TOURS. */
+function tourStart(){
+  var p = parts(), key = helpKey(p);
+  if (key === 'learn') return tutStart();
+  if (key === 'learnOne') { TUT = { steps: TUT_LEARN.slice(1).map(function(x){ return { route: location.hash, sel: x.sel, k: x.k }; }), i: 0 }; return tutGo(); }
+  var T = TOURS[key] || [], here = location.hash || '#/';
+  var steps = T.filter(function(x){ return visible(document.querySelector(x[0])); }).map(function(x){ return { route: here, sel: x[0], s: [x[1], x[2]] }; });
+  if (!steps.length) return;
+  TUT = { steps: steps, i: 0 }; tutGo();
+}
+function helpKey(p){
+  if (!p[0]) return S.mvp ? 'kit' : 'home';
+  if (p[1] === 'go') return 'go';
+  if (p[0] === 'alert') return p[1] === 'rfs' ? 'live' : 'practice';
+  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : p[1] === 'msg' ? (p[3] ? 'msgReady' : p[2] ? 'msgEdit' : 'msgPick') : 'sos';
+  if (p[0] === 'prepare') return p[1] || 'prepare';
+  if (p[0] === 'learn') return p[1] ? 'learnOne' : 'learn';
+  if (p[0] === 'me') return p[1] === 'card' ? 'card' : p[1] === 'sources' ? 'sources' : 'me';
+  return p[0];
+}
 function tutGo(){
   var st = TUT.steps[TUT.i];
-  if (location.hash !== st.route) { location.hash = st.route; return; } /* hashchange → render → after → tutPlace */
+  if ((location.hash || '#/') !== st.route && !(st.route === '#/' && !location.hash)) { location.hash = st.route; return; } /* hashchange → render → after → tutPlace */
   tutPlace();
 }
-function tutEnd(){ TUT = null; S.tutLearn = 1; save(); var o = document.getElementById('tut'); if (o) o.remove(); }
+function tutEnd(){ var was = TUT; TUT = null; if (was && was.learn) { S.tutLearn = 1; save(); } var o = document.getElementById('tut'); if (o) o.remove(); }
 function tutNext(){ if (!TUT) return; TUT.i++; if (TUT.i >= TUT.steps.length) tutEnd(); else tutGo(); }
 function tutPlace(){
   var o = document.getElementById('tut');
   if (!TUT) { if (o) o.remove(); return; }
   var st = TUT.steps[TUT.i], el = document.querySelector(st.sel);
-  if (!el) return;
+  if (!visible(el)) { if (TUT.i + 1 < TUT.steps.length) { TUT.steps.splice(TUT.i, 1); return tutPlace(); } return; }
   el.scrollIntoView({ block: 'center' });
   var r = el.getBoundingClientRect(), pad = 8, vh = window.innerHeight;
   if (!o) { o = document.createElement('div'); o.id = 'tut'; o.className = 'tut'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); document.body.appendChild(o); }
@@ -476,7 +691,7 @@ function tutPlace(){
   var top = below ? Math.min(r.bottom + pad + 14, vh - 170) : Math.max(r.top - pad - 14, 170);
   o.innerHTML = '<div class="tut-hole" style="left:' + (r.left - pad) + 'px;top:' + (r.top - pad) + 'px;width:' + (r.width + pad * 2) + 'px;height:' + (r.height + pad * 2) + 'px"></div>' +
     '<div class="tut-tip ' + (below ? 'below' : 'above') + '" style="' + (below ? 'top:' + top + 'px' : 'bottom:' + (vh - top) + 'px') + '" tabindex="-1" aria-live="polite">' +
-    '<p class="tut-step">' + (TUT.i + 1) + ' / ' + TUT.steps.length + '</p><p class="tut-text">' + t(st.k) + '</p>' +
+    '<p class="tut-step">' + (TUT.i + 1) + ' / ' + TUT.steps.length + '</p><p class="tut-text">' + (st.s ? linkify(tx(st.s)) : t(st.k)) + '</p>' +
     '<p class="tut-hint">' + (TUT.i + 1 === TUT.steps.length ? t('tutDone') : t('tutTap')) + '</p>' +
     '<button class="tut-skip" data-tutskip="1">' + t('tutSkip') + '</button></div>';
   var tip = o.querySelector('.tut-tip'); try { tip.focus({ preventScroll: true }); } catch (e) {}
@@ -598,7 +813,7 @@ function guideBody(){
     (st.compass === 'needs-tap' ? '<button class="btn btn-line" data-a="navEnable">' + ic('arrow') + t('compassTap') + '</button>' :
      st.compass === 'unavailable' ? '<p class="small">' + t('compassNone') + '</p>' : '');
 }
-function guideCard(){ return '<div class="guide" data-a="openGo" role="link" tabindex="0" aria-label="' + t('openMap') + '">' + dialHTML() + '<div class="grow">' + guideBody() + '</div></div>'; }
+function guideCard(){ return '<div class="guide" data-a="openGo" role="link" tabindex="0">' + dialHTML() + '<div class="grow">' + guideBody() + '<span class="sr-only"> — ' + t('openMap') + '</span></div></div>'; }
 function rot(el, deg){
   var prev = el._a == null ? deg : el._a, d = ((deg - prev) % 360 + 540) % 360 - 180;
   el._a = prev + d; el.style.transform = 'rotate(' + el._a + 'deg)';
@@ -688,7 +903,7 @@ function vGo(em){
   var back = em ? '#/sos' : '#/map', tg = NAV.target();
   var safe = NAV.list().filter(function(x){ return ['assembly', 'shelter', 'rescue', 'hospital'].indexOf(x.p.type) >= 0; }).slice(0, 6);
   return '<main class="go" id="main" tabindex="-1"><div class="go-map" id="mapSlot" role="img" aria-label="' + t('mapTitle') + '">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
-    '<header class="go-top glass"><a class="iconbtn" href="' + back + '" aria-label="' + t('back') + '">' + ic('chevL') + '</a><h1>' + t('goTitle') + '</h1>' +
+    '<header class="go-top glass"><a class="iconbtn" href="' + back + '" aria-label="' + t('back') + '">' + ic('chevL') + '</a><h1>' + t('goTitle') + '</h1>' + helpBtn() +
     (em ? '<a class="sosbtn" href="tel:000">' + ic('phone') + '000</a>' : '') + '</header>' +
     '<div class="go-side"><button class="fab glass" data-a="recenter" aria-label="' + t('recenter') + '">' + ic('locate') + '</button>' +
     '<button class="fab glass" data-a="follow" aria-pressed="' + NAV.state.follow + '" aria-label="' + t('followHeading') + '">' + ic('arrow') + '</button></div>' +
@@ -700,7 +915,7 @@ function vGo(em){
     '<p class="small" style="margin-top:4px;font-size:.75rem">' + srcNote() + '</p></section></main>';
 }
 function isDark(){ return S.theme === 'dark' || (S.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); }
-function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map' || (p[0] === 'alert' && S.demo.alert); }
+function usesNav(p){ return (p[0] === 'sos' && (p.length === 1 || p[1] === 'go')) || p[0] === 'map' || (p[0] === 'alert' && (S.demo.alert || p[1] === 'rfs')) ; }
 
 /* ---------- ME ---------- */
 function cardKV(){
@@ -762,6 +977,7 @@ function vSources(){
     '<h2 class="label">Map &amp; places</h2><p class="small">Map tiles: OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors. Places: OpenStreetMap via Overpass API. Walking routes: FOSSGIS OSRM (routing.openstreetmap.de). Map library: MapLibre GL JS (BSD-3).</p>';
 }
 
+
 /* ---------- layer: onboarding, sheets, tools ---------- */
 var TOOL = null, toolTimer = null, audio = null, wake = null;
 function renderLayer(){
@@ -772,6 +988,7 @@ function renderLayer(){
   else if (TOOL) h = toolView();
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
+  else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
   L.innerHTML = h;
 }
 var OB = 0, OB_DIR = 0;
@@ -892,6 +1109,8 @@ var A = {
   mvpToggle: function(){ S.mvp = !S.mvp; save(); render(); },
   needToggle: function(el){ if (!S.card.needs) S.card.needs = {}; S.card.needs[el.dataset.v] = !S.card.needs[el.dataset.v]; save(); var y = window.scrollY; render(); window.scrollTo(0, y); },
   demoAlert: function(){ CI = 'pick'; renderLayer(); },
+  tourStart: function(){ tourStart(); },
+  liveSeen: function(el){ var inc = WARN.find(el.dataset.id); if (!S.liveSeen) S.liveSeen = {}; if (inc) S.liveSeen[inc.id] = inc.level; save(); renderLayer(); },
   ciCancel: function(){ CI = null; renderLayer(); },
   simPick: function(el){
     var pos = NAV.state.pos;
@@ -906,6 +1125,28 @@ var A = {
   ciClose: function(){ CI = null; S.demo.answered = true; save(); renderLayer(); },
   ciSafe: function(){ CI = null; S.demo.answered = true; save(); renderLayer(); sendSafe(); },
   safe: function(){ sendSafe(); },
+  dangerNo: function(){ DANGER_NO = true; render(); },
+  msgSms: function(){ var n = contacts(); location.href = 'sms:' + n.join(',') + '?&body=' + encodeURIComponent(MSG ? MSG.text : ''); },
+  msgCopy: function(){
+    var txt = MSG ? MSG.text : '';
+    var done = function(){ toast(t('msgCopied')); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function(){ toast(txt); }); else toast(txt);
+  },
+  mic: function(el){
+    var tg = document.getElementById(el.dataset.target);
+    if (!S.micTip) { S.micTip = 1; save(); document.querySelectorAll('.mic-tip').forEach(function(n){ n.remove(); }); }
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { toast(t('micKeyboard')); if (tg) tg.focus(); return; }
+    if (REC) { REC.stop(); return; }
+    try {
+      REC = new SR(); REC.lang = li() ? 'zh-CN' : 'en-AU'; REC.interimResults = false; REC.maxAlternatives = 1;
+      REC.onresult = function(e){ var said = e.results[0][0].transcript; if (!tg) return; tg.value = (tg.value ? tg.value.replace(/\s*$/, '') + (tg.tagName === 'TEXTAREA' ? '\n' : ' ') : '') + said; tg.dispatchEvent(new Event('input', { bubbles: true })); };
+      REC.onerror = function(e){ toast(e.error === 'network' ? t('micOffline') : e.error === 'not-allowed' ? t('micBlocked') : t('micKeyboard')); };
+      REC.onend = function(){ REC = null; el.classList.remove('on'); el.setAttribute('aria-pressed', 'false'); el.setAttribute('aria-label', t('micLabel')); };
+      el.classList.add('on'); el.setAttribute('aria-pressed', 'true'); el.setAttribute('aria-label', t('micListening'));
+      REC.start();
+    } catch (err) { REC = null; toast(t('micKeyboard')); }
+  },
   tool: function(el){ startTool(el.dataset.t); },
   toolStop: function(){ stopTool(); },
   hrInj: function(el){ HR.inj = el.dataset.v; render(); },
@@ -962,6 +1203,12 @@ document.addEventListener('input', function(e){
   var el = e.target;
   if (el.dataset.bind) { setPath(S, el.dataset.bind, el.value); save(); }
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
+  if (el.id === 'msgT' && MSG) { MSG.text = el.value; MSG.edited = true; }
+  if (el.id === 'sitQ') {
+    var any = false;
+    document.querySelectorAll('.sit-list .sit').forEach(function(a){ var on = sitMatch(sit(a.dataset.sit), el.value) || a.dataset.sit === 'other'; a.hidden = !on; if (on && a.dataset.sit !== 'other') any = true; });
+    var none = document.querySelector('.sit-none'); if (none) none.hidden = any || !el.value.trim();
+  }
   if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
 document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
@@ -985,18 +1232,22 @@ window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){
   syncAlertZone();
-  if (TUT && location.hash !== TUT.steps[TUT.i].route) tutEnd();
+  if (TUT && (location.hash || '#/') !== TUT.steps[TUT.i].route) tutEnd();
   if (TUT) setTimeout(tutPlace, 80);
   else if (S.lang && !S.tutLearn && p[0] === 'learn' && !p[1] && !document.querySelector('.ob')) setTimeout(tutStart, 300);
   var m = document.getElementById('main'); if (m && p[0] === 'sos' && p[3]) { var n = m.querySelector('.now'); if (n) n.setAttribute('tabindex', '-1'); }
-  if (S.lang && usesNav(p)) NAV.auto();
+  if (S.lang && (usesNav(p) || !p[0] || p[0] === 'fires')) NAV.auto();
+  homePos = NAV.state.pos;
   var slot = document.getElementById('mapSlot');
   if (slot && NAV.mapState() !== 'failed') NAV.mount(slot, { dark: isDark() });
   updateLive();
 }
-var navRendering = false;
-NAV.onChange(function(){ var p = parts(); if (!S.lang || TOOL || navRendering || !usesNav(p)) return; navRendering = true; var y = window.scrollY; render(); window.scrollTo(0, y); navRendering = false; });
+var navRendering = false, homePos = null;
+function movedFar(){ var a = homePos, b = NAV.state.pos; if (!b) return false; if (!a) return true; return NAV.dist(a, b) > 300; }
+NAV.onChange(function(){ var p = parts(); if (!S.lang || TOOL || navRendering) return;
+  if (!usesNav(p)) { if ((!p[0] || p[0] === 'fires') && movedFar()) { navRendering = true; var y0 = window.scrollY; render(); window.scrollTo(0, y0); navRendering = false; } return; } navRendering = true; var y = window.scrollY; render(); window.scrollTo(0, y); navRendering = false; });
 NAV.onLive(updateLive);
+if (window.WARN) { WARN.onChange(function(){ if (!S.lang || TOOL) return; var p = parts(); if (p[1] === 'go') { syncAlertZone(); return; } var y = window.scrollY; render(); window.scrollTo(0, y); }); WARN.start(); }
 
 /* ---------- offline ---------- */
 if ('serviceWorker' in navigator) {

@@ -7,6 +7,7 @@ var DEWS_VERSION = '2.2.0';
 var CONTENT_CHECKED = '2026-10-23';
 
 var SOURCES = {
+  acma:  { t: 'ACMA — Emergency calls (000, press 55, 106)', u: 'https://www.acma.gov.au/emergency-calls' },
   aws:   { t: 'NSW Government — Understand the warnings', u: 'https://www.nsw.gov.au/emergency/get-ready/warnings/warning-system' },
   awsq:  { t: 'Queensland Government — Watch for the warnings', u: 'https://www.disaster.qld.gov.au/watch-for-the-warnings' },
   kit:   { t: 'Get Ready Queensland — Emergency kit', u: 'https://getready.qld.gov.au/emergencykit' },
@@ -655,4 +656,239 @@ STR26.fbPrivacy = ['Opens a public page on GitHub (free account needed). Your ap
 STR26.fbReportThis = ['Report this problem', '报告这个问题'];
 for (var k26 in STR26) STR[k26] = STR26[k26];
 STR.paletteNote = ['C is designed so people with colour blindness (difficulty telling some colours apart, about 1 in 12 men) can still tell every colour apart.', 'C 方案专为色盲、色弱的人设计（分不清某些颜色，约每 12 名男性中有 1 人），所有颜色仍能区分开。'];
-DEWS_VERSION = '2.7.0';
+/* 2.8.0 — real NSW bushfire warnings (NSW RFS feed). Chinese for fixed terms is in warnings.js (ZH). */
+var STR28 = {
+  practice: ['Practice', '练习'],
+  demoAlert: ['Practice mode: try a sample warning', '练习模式：试一条示例预警'],
+  demoAlertSub: ['See how DEWS guides you. Nothing real is happening.', '看看 DEWS 会怎样引导你，不是真实事件。'],
+  practiceEnd: ['End practice', '结束练习'],
+  liveFrom: ['NSW Rural Fire Service', '新州乡村消防局（NSW RFS）'],
+  liveChecked: ['checked', '检查于'],
+  agoNow: ['just now', '刚刚'],
+  liveRfsUpdated: ['RFS updated', 'RFS 更新于'],
+  liveLoading: ['Checking NSW bushfire warnings…', '正在检查新州山火警告…'],
+  liveNoData: ['Couldn’t load bushfire warnings', '无法载入山火警告'],
+  liveError: ['Couldn’t reach NSW RFS. Warnings may be missing.', '连不上 NSW RFS，可能漏掉警告。'],
+  liveOffline: ['You’re offline. These warnings may be out of date.', '你现在离线，这些警告可能已经过时。'],
+  liveStale: ['Not updated for over an hour. These warnings may be out of date.', '超过一小时没有更新，这些警告可能已经过时。'],
+  liveOpenFnm: ['Check Fires Near Me', '查看 Fires Near Me'],
+  liveNone: ['No bushfire warnings within 50 km', '50 公里内没有山火警告'],
+  liveNoneState: ['No Emergency Warnings for bushfires in NSW', '新州目前没有山火紧急警告'],
+  liveNeedLoc: ['Turn on location to see every fire within 50 km. Without it, DEWS shows only Emergency Warnings across NSW.', '开启定位才能看到 50 公里内的所有火情。没有定位时，只显示全新州的紧急警告。'],
+  liveScope: ['Bushfires in NSW only, from NSW RFS. Floods, storms and other hazards are not connected yet.', '目前只有新州山火，来自 NSW RFS。洪水、风暴等其他灾害还没有接入。'],
+  liveAll: ['See all', '查看全部'],
+  liveAllTitle: ['Fires near you', '你附近的火情'],
+  liveApprox: ['approx.', '大约'],
+  liveGone: ['This incident is no longer listed', '这个事件已不在列表中'],
+  liveGoneSub: ['NSW RFS has removed it or it has ended. Check Fires Near Me for the latest.', 'NSW RFS 已移除或事件已结束。请到 Fires Near Me 查看最新情况。'],
+  liveWhere: ['Where', '地点'],
+  liveSize: ['Size', '面积'],
+  liveAgency: ['Agency', '负责机构'],
+  liveUnmapped: ['Exact location not mapped yet. It is shown at the centre of the council area, so the distance is rough.', '准确位置还没有标出，暂时显示在所在地方政府区域的中心，所以距离只是粗略估计。'],
+  liveEnglishNote: ['Place names are kept in English, as on official signs and radio.', '地名保留英文，和官方路牌、电台一致。'],
+  liveToPoint: ['to the reported location (fire area not mapped)', '到报告位置的距离（火场范围未标出）'],
+  liveActionNote: ['The official warning says exactly what to do (for example, leave now or shelter). DEWS doesn’t have that message, so read it on Fires Near Me. If your life is in danger, call 000.', '官方警告会写明具体该怎么做（例如立即离开或就地避险）。DEWS 拿不到这段原文，请到 Fires Near Me 阅读。如有生命危险，拨打 000。'],
+  liveReadOfficial: ['Read the official warning', '阅读官方警告'],
+  liveFireSteps: ['Bushfire steps: can you leave safely?', '山火指引：你能安全离开吗？'],
+  liveNoLevel: ['No warning level has been issued for this incident.', '这个事件没有发布警告级别。'],
+  liveFarAway: ['This warning is far from you. It is shown because it is the highest level in NSW.', '这条警告离你很远。因为是新州最高级别的警告，所以也显示出来。'],
+  liveNearYou: ['A bushfire warning near you', '你附近有山火警告']
+};
+for (var k28 in STR28) STR[k28] = STR28[k28];
+SOURCES.rfs = { t: 'NSW RFS — Fires Near Me (live incidents feed, CC BY 4.0)', u: 'https://www.rfs.nsw.gov.au/fire-information/fires-near-me' };
+/* Screen tours — the ? icon on every screen. Each step: [element to light up, English, 中文].
+   Steps whose element isn't on screen right now are skipped. Wording matches the real button labels. */
+var TOURS = {
+  msgPick: [
+    ['.sit-search .input', 'Type a word or its first letters, for example “rob” or “fi”.', '输入关键词或首字母，例如「抢」或「fi」。'],
+    ['.mic', 'Or tap the microphone and say it.', '也可以点麦克风说出来。'],
+    ['.sit-list', 'Or tap what is happening.', '或者直接点正在发生的情况。']
+  ],
+  msgEdit: [
+    ['#msgT', 'DEWS wrote this message in English, with your location and profile. Change anything.', 'DEWS 用英文写好了信息，包含你的位置和档案，可以随意修改。'],
+    ['.dock .btn-primary', 'Happy with it? Tap here.', '没问题就点这里。']
+  ],
+  msgReady: [
+    ['.msg-svc', 'Say this first when 000 answers.', '000 接通后先说这个。'],
+    ['.msg-read', 'Then read this out.', '然后照着念。'],
+    ['.msg-acts', 'Or text it to someone who can call for you.', '或者发短信给能帮你打电话的人。'],
+    ['.dock', 'Call 000.', '拨打 000。']
+  ],
+  home: [
+    ['#main .alert', 'Real bushfire warnings from NSW RFS: every fire within 50 km of you, and every Emergency Warning in NSW. Tap a card to see what it means for you.', 'NSW RFS 的真实山火警告：你 50 公里内的所有火情，以及全新州的紧急警告。点卡片看它对你意味着什么。'],
+    ['#main .meter', 'The level: yellow Advice, orange Watch and Act, red Emergency Warning.', '警告级别：黄色「建议」、橙色「注意并行动」、红色「紧急警告」。'],
+    ['.live-list', 'Other fires near you, highest level first.', '你附近的其他火情，级别高的排在前面。'],
+    ['.live-src', 'When DEWS last checked. If you’re offline or it’s over an hour old, a note appears here.', 'DEWS 最近一次检查的时间。离线或超过一小时没更新时，这里会出现提示。'],
+    ['.practice-link', 'Practice mode: try a sample warning safely. Nothing real happens.', '练习模式：安全地试一条示例预警，不会发生真实的事。'],
+    ['.em-entry', 'In danger now? Tap here for step-by-step help.', '现在有危险？点这里看分步指引。'],
+    ['[data-tut="ready"]', 'How prepared you are. Tap “Next step” to keep going.', '你准备得怎么样。点「下一步」继续完成。'],
+    ['.num.red', 'Life-threatening emergency: call 000. Flood or storm help: 132 500.', '有生命危险：拨打 000。洪水、风暴求助：132 500。'],
+    ['.sosbtn', 'Emergency mode, from any screen.', '在任何页面都能进入紧急模式。'],
+    ['.tabs, .side-nav', 'Move between Today, Prepare, Nearby and Profile.', '在「今天」「准备」「附近」「个人档案」之间切换。']
+  ],
+  live: [
+    ['#main .alert', 'The official warning level from NSW RFS and the fire’s name.', 'NSW RFS 发布的官方警告级别和火情名称。'],
+    ['.em-quick', 'Life in danger? Call 000.', '有生命危险？拨打 000。'],
+    ['[data-tut="wf1"]', 'What’s happening: fire type, whether firefighters have it under control, where, and when RFS last updated it. Place names stay in English, as on signs and radio.', '发生了什么：火的类型、是否已控制、地点、RFS 最近更新时间。地名保留英文，和路牌、电台一致。'],
+    ['[data-tut="wf2"]', 'How far it is from you, and in which direction.', '离你多远，在哪个方向。'],
+    ['[data-tut="wf3"]', 'What this level means. Tap “Read the official warning” for the exact action RFS has given for this fire.', '这个级别的意思。点「阅读官方警告」看 RFS 对这场火给出的具体行动。'],
+    ['[data-tut="wf4"]', 'The nearest help point, with a route away from the fire. Never walk towards fire or smoke.', '最近的求助地点，路线会避开火场。不要朝火或烟的方向走。'],
+    ['.live-src', 'Source and when DEWS last checked.', '信息来源和 DEWS 最近检查的时间。']
+  ],
+  fires: [
+    ['.live-list', 'Every fire DEWS is showing: highest level first, then nearest.', 'DEWS 正在显示的所有火情：先按级别，再按距离排列。'],
+    ['.live-row.lv-none', 'Grey dot: no warning level, for example a planned burn by firefighters. There may be smoke, but it is not a disaster.', '灰色圆点：未分级，例如消防部门的计划性焚烧。可能有烟，但不是灾害。'],
+    ['.live-src', 'When DEWS last checked NSW RFS.', 'DEWS 最近检查 NSW RFS 的时间。']
+  ],
+  practice: [
+    ['#main .alert', 'A sample warning marked “Practice”. Nothing real is happening.', '标着「练习」的示例预警，不是真实事件。'],
+    ['[data-tut="wf1"]', 'Go through the steps from top to bottom.', '从上往下一步步看。'],
+    ['[data-tut="wf3"]', 'What you need to do now.', '现在你需要做什么。'],
+    ['[data-tut="wf5"]', 'Where to go, with a route away from the warning area.', '去哪里，路线会避开预警区域。']
+  ],
+  sos: [
+    ['.danger-q', 'In danger? Tap “Yes” and DEWS writes a help message you can read out to 000 or text to someone.', '有危险？点「是」，DEWS 会帮你写好求助信息，可以念给 000 听或发短信给别人。'],
+    ['.em-actions .emb.red', 'Life in danger? Call 000 first.', '有生命危险？先拨打 000。'],
+    ['.guide', 'The arrow points to the nearest help point. Tap it for a full-screen map.', '箭头指向最近的求助地点。点它打开全屏地图。'],
+    ['.em-two', '“Tell family I’m safe” sends them a text. “Request help” is a demo for now.', '「给家人报平安」会给家人发短信；「请求救援」目前是演示。'],
+    ['[data-tut="hz"]', 'Pick what’s happening for step-by-step help.', '选择正在发生的灾害，看分步指引。'],
+    ['.tools', 'Torch, SOS flashing light, whistle, and a card to show responders.', '手电筒、SOS 闪光、口哨，以及给救援人员看的卡片。'],
+    ['.top .iconbtn', 'Tap “Exit” to leave emergency mode.', '点「退出」离开紧急模式。']
+  ],
+  fork: [
+    ['.fork-q', 'Answer this one question.', '回答这一个问题。'],
+    ['.fork', 'Tap the answer that fits you right now. The label shows what follows: leave, or shelter where you are.', '点最符合你现在情况的选项。标签说明接下来是离开，还是就地避险。']
+  ],
+  steps: [
+    ['.now', 'The most important step. Do it first.', '最重要的一步，先做这件。'],
+    ['.steps', 'Then work down the numbered steps.', '然后按编号往下做。'],
+    ['#main .textlink', 'Wrong choice? Choose again here.', '选错了？在这里重新选择。'],
+    ['.dock', 'Call 000 stays here at the bottom.', '拨打 000 一直在底部。']
+  ],
+  helpreq: [
+    ['.callout.demo', 'This is a demo: requests don’t reach a real agency yet. In danger, call 000.', '这是演示：请求还不会发给真实机构。有危险请拨打 000。'],
+    ['.seg-ctl.danger', 'How badly is anyone hurt? “Serious injury” shows a 000 button straight away.', '有人受伤吗？选「重伤」会立刻出现 000 按钮。'],
+    ['#main .stepper', 'How many people are with you.', '你身边有几个人。'],
+    ['#main .chips', 'Tap what you need.', '点选你需要的东西。'],
+    ['[data-a="hrToggle"]', 'Choose whether to share your location and your emergency card.', '选择是否分享你的位置和应急卡。'],
+    ['.dock', 'Send the request.', '发送请求。']
+  ],
+  sent: [
+    ['.eta', 'The arrival time is a sample.', '预计到达时间只是示例。'],
+    ['#main .kv', 'What was sent.', '发送了哪些内容。'],
+    ['[data-a="hrSms"]', 'Also send the same details by text message.', '同时用短信发送相同的内容。']
+  ],
+  go: [
+    ['.go-panel', 'Which way to walk, how far and how long. Follow roads and paths.', '往哪个方向走、多远、多久。沿着道路和小路走。'],
+    ['.go-panel .chips', 'Tap another place to go there instead.', '点别的地点可以换目的地。'],
+    ['.go-side', 'Centre the map on you, or turn it with your direction.', '让地图回到你的位置，或跟着你的朝向转动。'],
+    ['.go-top .iconbtn', 'Back.', '返回。']
+  ],
+  prepare: [
+    ['a.prep-card:nth-of-type(1)', 'Start here: your emergency kit. The bar shows your progress.', '从这里开始：应急包。进度条显示完成了多少。'],
+    ['a.prep-card:nth-of-type(2)', 'Learn each disaster and what to add to your kit.', '了解每种灾害，以及应急包里要加什么。'],
+    ['a.prep-card:nth-of-type(3)', 'Make a plan with the people you live with.', '和一起住的人制定计划。'],
+    ['a.prep-card:nth-of-type(4)', 'Test yourself with a short quiz.', '用小测验检验一下自己。']
+  ],
+  kit: [
+    ['.calc', 'How many people the kit is for.', '应急包是给几个人准备的。'],
+    ['[data-a="kitToggle"]', 'Turn on Baby or Pets if you need them.', '有婴儿或宠物就打开对应开关。'],
+    ['.water', 'Drinking water you need. It updates with the number of people.', '需要的饮用水，会随人数自动更新。'],
+    ['#main .check', 'Tick each item when it’s packed.', '每备好一样就打勾。']
+  ],
+  plan: [
+    ['.person', 'Everyone you live with, and their phone numbers.', '一起住的每个人和他们的电话。'],
+    ['[data-a="planAdd"]', 'Add another person.', '再添加一个人。'],
+    ['[data-bind="plan.near"]', 'A meeting point near home, and one outside your suburb in case your area is closed.', '家附近的集合点，以及区外的集合点，以防你所在区域被封锁。'],
+    ['[data-bind="plan.contact"]', 'Someone outside the area everyone can call.', '大家都能联系的外地联系人。'],
+    ['[data-bind="plan.trigger"]', 'What will make you leave.', '出现什么情况时你们就离开。'],
+    ['[data-a="planShare"]', 'Send the plan to everyone. It’s saved on this phone only.', '把计划发给所有人。计划只保存在这部手机上。']
+  ],
+  quiz: [
+    ['[data-a="quizStart"]', 'Start the quiz. After each answer you’ll see why, and the official source.', '开始测验。每答一题都会看到原因和官方来源。'],
+    ['.qprog', 'Your progress.', '你的进度。']
+  ],
+  map: [
+    ['#mapWrap', 'Real places from OpenStreetMap: hospitals, police, fire stations, water, charging points.', 'OpenStreetMap 上的真实地点：医院、警察局、消防站、饮用水、充电点。'],
+    ['.map-chip', 'Whether your location is on.', '你的定位是否开启。'],
+    ['[data-a="pickMe"]', 'Location not working? Tap here, then tap where you are on the map.', '定位不了？点这里，再在地图上点你所在的地方。'],
+    ['.filters', 'Show one type of place.', '只显示某一类地点。'],
+    ['.place-list', 'Tap a place to see distance and directions.', '点一个地点查看距离和路线。']
+  ],
+  me: [
+    ['.idcard', 'Your emergency card, in English so responders can read it. Tap to edit.', '你的应急卡，用英文方便救援人员阅读。点它编辑。'],
+    ['[data-a="mvpToggle"]', 'MVP mode: a simpler app with four parts.', 'MVP 模式：只有四个部分的简化版。'],
+    ['#main section.card', 'Language, text size, light or dark, colours and glass style.', '语言、字体大小、浅色或深色、配色和玻璃效果。'],
+    ['a[href*="issues/new"]', 'Report a problem or share an idea.', '报告问题或提建议。'],
+    ['[data-a="reset"]', 'Delete everything saved on this phone.', '删除这部手机上保存的所有内容。']
+  ],
+  card: [
+    ['#main .callout', 'Everything stays on this phone.', '所有内容只保存在这部手机上。'],
+    ['[data-bind="card.lang"]', 'Fill in what helps responders. Write in English if you can.', '填写对救援人员有用的信息，尽量用英文。'],
+    ['[data-bind="card.allergies"]', 'Allergies and medication.', '过敏和用药。'],
+    ['[data-bind="card.contactPhone"]', 'Someone responders can call.', '救援人员可以联系的人。']
+  ],
+  sources: [
+    ['.src-list', 'Every safety step in DEWS comes from one of these official sources. Tap one to read the original.', 'DEWS 的每一条安全指引都来自这些官方来源。点开可以看原文。']
+  ]
+};
+STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
+DEWS_VERSION = '2.8.0';
+
+/* "Are you in danger?" situations. msg[0] is the English message for 000 / responders, msg[1] its Chinese meaning. svc = what to ask for when 000 answers. */
+var SITS = [
+  { id: 'threat', icon: 'alert', red: true, svc: 'svcPolice', name: ['Someone is threatening or attacking me', '有人威胁或攻击我'],
+    kw: 'attack attacker threat threaten knife gun weapon kill killer hit assault violence danger stalker 攻击 威胁 刀 枪 杀 打 暴力 跟踪',
+    msg: ['EMERGENCY: Someone is threatening or attacking me. I need police now.', '紧急：有人威胁或攻击我，我需要警察马上来。'] },
+  { id: 'rob', icon: 'home', red: true, svc: 'svcPolice', name: ['Robbery or break-in', '抢劫或有人闯入'],
+    kw: 'rob robbed robbery thief theft steal stolen burglar burglary break in intruder 抢 劫 偷 盗 闯入 小偷',
+    msg: ['EMERGENCY: I am being robbed or someone has broken in. I need police now.', '紧急：我被抢劫了或有人闯入，我需要警察马上来。'] },
+  { id: 'hurt', icon: 'cross', red: true, svc: 'svcAmb', name: ['Someone is badly hurt or sick', '有人重伤或急病'],
+    kw: 'hurt injured injury bleeding blood sick ill unconscious fainted heart chest breathing ambulance accident crash 受伤 流血 晕倒 昏迷 心脏 呼吸 救护车 车祸 急病',
+    msg: ['EMERGENCY: Someone is badly hurt or sick. We need an ambulance now.', '紧急：有人重伤或急病，我们需要救护车马上来。'] },
+  { id: 'trapped', icon: 'alert', svc: 'svcPolice', name: ["I'm trapped", '我被困住了'],
+    kw: 'trapped stuck locked lift elevator collapsed 困 卡住 被锁 电梯 倒塌',
+    msg: ["EMERGENCY: I'm trapped and can't get out. I need help now.", '紧急：我被困住了出不去，我需要马上得到帮助。'] },
+  { id: 'fire', hz: 'fire', svc: 'svcFire', kw: 'fire bushfire smoke flames burning 火 山火 烟 着火',
+    msg: ['EMERGENCY: There is a fire near me and I need help now.', '紧急：我附近着火了，我需要马上得到帮助。'] },
+  { id: 'flood', hz: 'flood', svc: 'svcFire', kw: 'flood water rising river rain swept 洪水 水 河 暴雨 淹',
+    msg: ["EMERGENCY: I'm caught by floodwater and need rescue now.", '紧急：我被洪水困住了，需要马上救援。'] },
+  { id: 'storm', hz: 'storm', svc: 'svcFire', kw: 'storm wind tree roof damage lightning 风暴 大风 树 屋顶 雷',
+    msg: ['EMERGENCY: A storm has damaged where I am and I need help now.', '紧急：风暴损坏了我所在的地方，我需要马上得到帮助。'] },
+  { id: 'heat', hz: 'heat', svc: 'svcAmb', kw: 'heat hot heatstroke dizzy 热 中暑 头晕 高温',
+    msg: ['EMERGENCY: Someone is very unwell from the heat. We need an ambulance now.', '紧急：有人因高温非常不舒服，我们需要救护车马上来。'] },
+  { id: 'quake', hz: 'quake', svc: 'svcFire', kw: 'earthquake quake shaking building collapsed 地震 摇晃 倒塌',
+    msg: ["EMERGENCY: There's been an earthquake and I need help now.", '紧急：发生了地震，我需要马上得到帮助。'] },
+  { id: 'other', icon: 'quiz', svc: 'svcAsk', name: ['Something else', '其他情况'], kw: 'other else help 其他 帮助',
+    msg: ['EMERGENCY: I need help now.', '紧急：我需要马上得到帮助。'] }
+];
+Object.assign(STR, {
+  dangerQ: ['Are you in danger right now?', '你现在有危险吗？'],
+  dangerYes: ['Yes, I need help', '是，我需要帮助'],
+  dangerNo: ['No', '没有'],
+  sitTitle: ["What's happening?", '发生了什么？'],
+  sitSub: ['Type a word or its first letters, or tap one below. DEWS will write a help message for you.', '输入关键词或首字母，或直接点下面的选项。DEWS 会帮你写好求助信息。'],
+  sitPh: ['e.g. fire, rob, hurt', '例如：火、抢、受伤'],
+  sitNone: ['No match. Tap “Something else”.', '没有匹配。请点「其他情况」。'],
+  micLabel: ['Voice input', '语音输入'],
+  micTip: ['You can speak instead of typing', '可以用语音输入'],
+  micListening: ['Listening… tap to stop', '正在听…再点一下停止'],
+  micKeyboard: ['Use the microphone on your keyboard to speak.', '请用键盘上的麦克风说话。'],
+  micOffline: ['Voice input needs internet here. Use the microphone on your keyboard.', '这里的语音输入需要网络。请用键盘上的麦克风。'],
+  micBlocked: ['Microphone is blocked for this site. Use the microphone on your keyboard.', '这个网站的麦克风权限被关闭了。请用键盘上的麦克风。'],
+  msgTitle: ['Is this what you want to say?', '这是你想说的话吗？'],
+  msgSub: ['DEWS wrote this for you. Change anything you like.', 'DEWS 帮你写好了，可以随意修改。'],
+  msgLocating: ['Finding your location…', '正在获取你的位置…'],
+  msgNoLoc: ['Location not found. Say your address or a landmark.', '没找到你的位置。请说出地址或附近的地标。'],
+  msgEnNote: ['The message is in English so 000 and responders in Australia can read it.', '信息用英文写，方便澳洲的 000 接线员和救援人员看懂。'],
+  msgOk: ['Yes, use this message', '是的，用这段信息'],
+  msgReadyTitle: ['Call 000 and read this out', '拨打 000，照着念'],
+  msgAskFor: ['When 000 answers, ask for:', '000 接通后，说要：'],
+  svcPolice: ['Police', 'Police（警察）'], svcAmb: ['Ambulance', 'Ambulance（救护车）'], svcFire: ['Fire', 'Fire（消防）'],
+  svcAsk: ['Police, Fire or Ambulance — say what is happening', 'Police / Fire / Ambulance——说出发生了什么'],
+  msgSms: ['Text it to someone who can call for you', '发短信给能帮你打电话的人'],
+  msgCopy: ['Copy', '复制'], msgCopied: ['Copied', '已复制'],
+  msgEdit: ['Change the message', '修改信息'],
+  msgCantSend: ["DEWS can't send this to police or rescue for you, and 000 can't receive text messages. Call 000.", 'DEWS 无法替你把信息发给警察或救援队，000 也不能接收短信。请拨打 000。'],
+  msg55: ["Calling 000 from a mobile and can't speak? Stay on the line and press 55 when asked. You'll be put through to police.", '用手机拨打 000 但不方便说话？不要挂断，听到提示后按 55，会转接到警察。']
+});

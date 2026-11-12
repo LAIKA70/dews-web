@@ -1,10 +1,10 @@
 /* DEWS service worker — keeps the app working with no internet connection.
  * App files: network first (so updates show at once), cache when offline.
  * Map tiles: cache first, so places you've viewed work offline. */
-var CACHE = 'dews-v2.7.0';
+var CACHE = 'dews-v2.8.0';
 var TILES = 'dews-tiles';
 var TILE_MAX = 600;
-var FILES = ['./', './index.html', './app.css', './app.js', './content.js', './nav.js', './mobile/', './mobile/index.html', './desktop/', './desktop/index.html', './tablet/', './tablet/index.html', './data/places-sydney.json',
+var FILES = ['./', './index.html', './app.css', './app.js', './content.js', './nav.js', './warnings.js', './mobile/', './mobile/index.html', './desktop/', './desktop/index.html', './tablet/', './tablet/index.html', './data/places-sydney.json',
   './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png',
   './lib/maplibre-gl.js', './lib/maplibre-gl.css', './v1/', './v1/index.html'];
 

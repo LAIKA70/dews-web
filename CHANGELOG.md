@@ -9,6 +9,11 @@ Plain-language notes on what changed in each version.
 - A pop-up appears once when a Watch and Act or Emergency Warning is within 50 km.
 - Clear notes when you're offline, when the data is over an hour old, or when a fire's exact location isn't mapped yet.
 - The old sample warnings moved into "Practice mode".
+- **"Are you in danger right now?"** at the top of Emergency mode (LAIKA's idea). "Yes" asks what's happening: type a word or its first letters (for example "rob" or "fi", or 抢 in Chinese), or tap one. Besides the five disasters there are now: someone threatening or attacking me, robbery or break-in, someone badly hurt or sick, I'm trapped, and something else.
+- DEWS then **writes a help message for you** in English, with your location and your profile (name, access needs, allergies). You can change any word. "Yes, use this message" shows it in big text to read out when you call 000, says which service to ask for (Police, Fire or Ambulance), and lets you text it to someone who can call for you, or copy it. In Chinese, the Chinese meaning is shown under the message.
+- DEWS says plainly that it can't send the message to police or rescue, and that 000 can't receive texts. It adds the official tip from ACMA: on a mobile, if you can't speak, stay on the line and press 55 to reach police.
+- **Voice input**: a microphone next to the typing boxes, with a small "You can speak instead of typing" tip the first time. Where the browser can't listen (or needs internet), it tells you to use the microphone on your keyboard.
+- **Right icons** for Mobile, Tablet and Desktop version links (they showed a phone handset before).
 - New: a small ? icon on every screen starts a step-by-step tour of that screen: a dark backdrop with the part being explained lit up, and a light tip (English and 中文).
 - Warning pop-ups are now solid, not see-through grey, with more space above the buttons.
 - Accessibility check (WCAG 2.2 AA) on every screen, in light and dark, on phone, tablet and desktop: fixed text that was too faint (tab labels, selected places, labels on the orange band, palette B red in dark mode), and the direction card now reads its visible text to screen readers.

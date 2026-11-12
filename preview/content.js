@@ -7,6 +7,7 @@ var DEWS_VERSION = '2.2.0';
 var CONTENT_CHECKED = '2026-10-23';
 
 var SOURCES = {
+  acma:  { t: 'ACMA — Emergency calls (000, press 55, 106)', u: 'https://www.acma.gov.au/emergency-calls' },
   aws:   { t: 'NSW Government — Understand the warnings', u: 'https://www.nsw.gov.au/emergency/get-ready/warnings/warning-system' },
   awsq:  { t: 'Queensland Government — Watch for the warnings', u: 'https://www.disaster.qld.gov.au/watch-for-the-warnings' },
   kit:   { t: 'Get Ready Queensland — Emergency kit', u: 'https://getready.qld.gov.au/emergencykit' },
@@ -698,6 +699,21 @@ SOURCES.rfs = { t: 'NSW RFS — Fires Near Me (live incidents feed, CC BY 4.0)',
 /* Screen tours — the ? icon on every screen. Each step: [element to light up, English, 中文].
    Steps whose element isn't on screen right now are skipped. Wording matches the real button labels. */
 var TOURS = {
+  msgPick: [
+    ['.sit-search .input', 'Type a word or its first letters, for example “rob” or “fi”.', '输入关键词或首字母，例如「抢」或「fi」。'],
+    ['.mic', 'Or tap the microphone and say it.', '也可以点麦克风说出来。'],
+    ['.sit-list', 'Or tap what is happening.', '或者直接点正在发生的情况。']
+  ],
+  msgEdit: [
+    ['#msgT', 'DEWS wrote this message in English, with your location and profile. Change anything.', 'DEWS 用英文写好了信息，包含你的位置和档案，可以随意修改。'],
+    ['.dock .btn-primary', 'Happy with it? Tap here.', '没问题就点这里。']
+  ],
+  msgReady: [
+    ['.msg-svc', 'Say this first when 000 answers.', '000 接通后先说这个。'],
+    ['.msg-read', 'Then read this out.', '然后照着念。'],
+    ['.msg-acts', 'Or text it to someone who can call for you.', '或者发短信给能帮你打电话的人。'],
+    ['.dock', 'Call 000.', '拨打 000。']
+  ],
   home: [
     ['#main .alert', 'Real bushfire warnings from NSW RFS: every fire within 50 km of you, and every Emergency Warning in NSW. Tap a card to see what it means for you.', 'NSW RFS 的真实山火警告：你 50 公里内的所有火情，以及全新州的紧急警告。点卡片看它对你意味着什么。'],
     ['#main .meter', 'The level: yellow Advice, orange Watch and Act, red Emergency Warning.', '警告级别：黄色「建议」、橙色「注意并行动」、红色「紧急警告」。'],
@@ -731,6 +747,7 @@ var TOURS = {
     ['[data-tut="wf5"]', 'Where to go, with a route away from the warning area.', '去哪里，路线会避开预警区域。']
   ],
   sos: [
+    ['.danger-q', 'In danger? Tap “Yes” and DEWS writes a help message you can read out to 000 or text to someone.', '有危险？点「是」，DEWS 会帮你写好求助信息，可以念给 000 听或发短信给别人。'],
     ['.em-actions .emb.red', 'Life in danger? Call 000 first.', '有生命危险？先拨打 000。'],
     ['.guide', 'The arrow points to the nearest help point. Tap it for a full-screen map.', '箭头指向最近的求助地点。点它打开全屏地图。'],
     ['.em-two', '“Tell family I’m safe” sends them a text. “Request help” is a demo for now.', '「给家人报平安」会给家人发短信；「请求救援」目前是演示。'],
@@ -817,3 +834,61 @@ var TOURS = {
 };
 STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
 DEWS_VERSION = '2.8.0';
+
+/* "Are you in danger?" situations. msg[0] is the English message for 000 / responders, msg[1] its Chinese meaning. svc = what to ask for when 000 answers. */
+var SITS = [
+  { id: 'threat', icon: 'alert', red: true, svc: 'svcPolice', name: ['Someone is threatening or attacking me', '有人威胁或攻击我'],
+    kw: 'attack attacker threat threaten knife gun weapon kill killer hit assault violence danger stalker 攻击 威胁 刀 枪 杀 打 暴力 跟踪',
+    msg: ['EMERGENCY: Someone is threatening or attacking me. I need police now.', '紧急：有人威胁或攻击我，我需要警察马上来。'] },
+  { id: 'rob', icon: 'home', red: true, svc: 'svcPolice', name: ['Robbery or break-in', '抢劫或有人闯入'],
+    kw: 'rob robbed robbery thief theft steal stolen burglar burglary break in intruder 抢 劫 偷 盗 闯入 小偷',
+    msg: ['EMERGENCY: I am being robbed or someone has broken in. I need police now.', '紧急：我被抢劫了或有人闯入，我需要警察马上来。'] },
+  { id: 'hurt', icon: 'cross', red: true, svc: 'svcAmb', name: ['Someone is badly hurt or sick', '有人重伤或急病'],
+    kw: 'hurt injured injury bleeding blood sick ill unconscious fainted heart chest breathing ambulance accident crash 受伤 流血 晕倒 昏迷 心脏 呼吸 救护车 车祸 急病',
+    msg: ['EMERGENCY: Someone is badly hurt or sick. We need an ambulance now.', '紧急：有人重伤或急病，我们需要救护车马上来。'] },
+  { id: 'trapped', icon: 'alert', svc: 'svcPolice', name: ["I'm trapped", '我被困住了'],
+    kw: 'trapped stuck locked lift elevator collapsed 困 卡住 被锁 电梯 倒塌',
+    msg: ["EMERGENCY: I'm trapped and can't get out. I need help now.", '紧急：我被困住了出不去，我需要马上得到帮助。'] },
+  { id: 'fire', hz: 'fire', svc: 'svcFire', kw: 'fire bushfire smoke flames burning 火 山火 烟 着火',
+    msg: ['EMERGENCY: There is a fire near me and I need help now.', '紧急：我附近着火了，我需要马上得到帮助。'] },
+  { id: 'flood', hz: 'flood', svc: 'svcFire', kw: 'flood water rising river rain swept 洪水 水 河 暴雨 淹',
+    msg: ["EMERGENCY: I'm caught by floodwater and need rescue now.", '紧急：我被洪水困住了，需要马上救援。'] },
+  { id: 'storm', hz: 'storm', svc: 'svcFire', kw: 'storm wind tree roof damage lightning 风暴 大风 树 屋顶 雷',
+    msg: ['EMERGENCY: A storm has damaged where I am and I need help now.', '紧急：风暴损坏了我所在的地方，我需要马上得到帮助。'] },
+  { id: 'heat', hz: 'heat', svc: 'svcAmb', kw: 'heat hot heatstroke dizzy 热 中暑 头晕 高温',
+    msg: ['EMERGENCY: Someone is very unwell from the heat. We need an ambulance now.', '紧急：有人因高温非常不舒服，我们需要救护车马上来。'] },
+  { id: 'quake', hz: 'quake', svc: 'svcFire', kw: 'earthquake quake shaking building collapsed 地震 摇晃 倒塌',
+    msg: ["EMERGENCY: There's been an earthquake and I need help now.", '紧急：发生了地震，我需要马上得到帮助。'] },
+  { id: 'other', icon: 'quiz', svc: 'svcAsk', name: ['Something else', '其他情况'], kw: 'other else help 其他 帮助',
+    msg: ['EMERGENCY: I need help now.', '紧急：我需要马上得到帮助。'] }
+];
+Object.assign(STR, {
+  dangerQ: ['Are you in danger right now?', '你现在有危险吗？'],
+  dangerYes: ['Yes, I need help', '是，我需要帮助'],
+  dangerNo: ['No', '没有'],
+  sitTitle: ["What's happening?", '发生了什么？'],
+  sitSub: ['Type a word or its first letters, or tap one below. DEWS will write a help message for you.', '输入关键词或首字母，或直接点下面的选项。DEWS 会帮你写好求助信息。'],
+  sitPh: ['e.g. fire, rob, hurt', '例如：火、抢、受伤'],
+  sitNone: ['No match. Tap “Something else”.', '没有匹配。请点「其他情况」。'],
+  micLabel: ['Voice input', '语音输入'],
+  micTip: ['You can speak instead of typing', '可以用语音输入'],
+  micListening: ['Listening… tap to stop', '正在听…再点一下停止'],
+  micKeyboard: ['Use the microphone on your keyboard to speak.', '请用键盘上的麦克风说话。'],
+  micOffline: ['Voice input needs internet here. Use the microphone on your keyboard.', '这里的语音输入需要网络。请用键盘上的麦克风。'],
+  micBlocked: ['Microphone is blocked for this site. Use the microphone on your keyboard.', '这个网站的麦克风权限被关闭了。请用键盘上的麦克风。'],
+  msgTitle: ['Is this what you want to say?', '这是你想说的话吗？'],
+  msgSub: ['DEWS wrote this for you. Change anything you like.', 'DEWS 帮你写好了，可以随意修改。'],
+  msgLocating: ['Finding your location…', '正在获取你的位置…'],
+  msgNoLoc: ['Location not found. Say your address or a landmark.', '没找到你的位置。请说出地址或附近的地标。'],
+  msgEnNote: ['The message is in English so 000 and responders in Australia can read it.', '信息用英文写，方便澳洲的 000 接线员和救援人员看懂。'],
+  msgOk: ['Yes, use this message', '是的，用这段信息'],
+  msgReadyTitle: ['Call 000 and read this out', '拨打 000，照着念'],
+  msgAskFor: ['When 000 answers, ask for:', '000 接通后，说要：'],
+  svcPolice: ['Police', 'Police（警察）'], svcAmb: ['Ambulance', 'Ambulance（救护车）'], svcFire: ['Fire', 'Fire（消防）'],
+  svcAsk: ['Police, Fire or Ambulance — say what is happening', 'Police / Fire / Ambulance——说出发生了什么'],
+  msgSms: ['Text it to someone who can call for you', '发短信给能帮你打电话的人'],
+  msgCopy: ['Copy', '复制'], msgCopied: ['Copied', '已复制'],
+  msgEdit: ['Change the message', '修改信息'],
+  msgCantSend: ["DEWS can't send this to police or rescue for you, and 000 can't receive text messages. Call 000.", 'DEWS 无法替你把信息发给警察或救援队，000 也不能接收短信。请拨打 000。'],
+  msg55: ["Calling 000 from a mobile and can't speak? Stay on the line and press 55 when asked. You'll be put through to police.", '用手机拨打 000 但不方便说话？不要挂断，听到提示后按 55，会转接到警察。']
+});

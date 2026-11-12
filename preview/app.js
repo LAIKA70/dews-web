@@ -91,6 +91,11 @@ var P = {
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
   wifi:'<path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19v.01"/><path d="M3 3l18 18"/>',
+  mobile:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  tablet:'<rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  desktop:'<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 17v3.5"/>',
+  mic:'<rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5v3.5M8.5 21h7"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
   locate:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'
 };
 function ic(n, cls){ return '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (P[n] || '') + '</svg>'; }
@@ -183,7 +188,7 @@ function sidebar(p, em){
     '<a class="sosbtn side-sos" href="#/sos"' + (cur === 'sos' ? ' aria-current="page"' : '') + '>' + ic('alert') + t('sos') + '</a>' +
     '<nav class="side-nav" aria-label="Main">' + items.map(function(x){ return '<a href="' + x[1] + '"' + (cur === x[0] ? ' class="on" aria-current="page"' : '') + '>' + ic(x[2]) + '<span>' + t(x[3]) + '</span></a>'; }).join('') + '</nav>' +
     '<div class="side-foot"><button class="iconbtn" data-a="set" data-k="lang" data-v="' + (li() ? 'en' : 'zh') + '">' + ic('globe') + (li() ? 'English' : '中文') + '</button>' +
-    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('phone') + t('mobileLink') + '</a>' + '<a class="iconbtn" href="' + BASE + (TABLET ? 'desktop/' : 'tablet/') + '">' + ic(TABLET ? 'card' : 'phone') + t(TABLET ? 'desktopLink' : 'tabletLink') + '</a></div></aside>';
+    '<a class="iconbtn" href="' + BASE + 'mobile/">' + ic('mobile') + t('mobileLink') + '</a>' + '<a class="iconbtn" href="' + BASE + (TABLET ? 'desktop/' : 'tablet/') + '">' + ic(TABLET ? 'desktop' : 'tablet') + t(TABLET ? 'desktopLink' : 'tabletLink') + '</a></div></aside>';
 }
 function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : ''; }
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
@@ -453,6 +458,7 @@ function sosRoute(p){
     return { main: vFork(h) };
   }
   if (p[1] === 'help') return p[2] === 'sent' ? vSent() : vHelp();
+  if (p[1] === 'msg') return vMsg(p[2], p[3] === 'ok');
   return { main: vSos(), back: null };
 }
 function vSos(){
@@ -460,6 +466,7 @@ function vSos(){
   var list = HAZARDS.slice();
   if (ctx) list.sort(function(a, b){ return (b.id === ctx.id) - (a.id === ctx.id); });
   return (DESKTOP ? '<div class="dgrid"><div class="sticky">' : '') + (ctx ? '<a class="ctx-strip" href="#/sos/h/' + ctx.id + '">' + ic(ctx.icon) + '<span class="grow">' + esc(tx(LEVELS[curAlert().level].name)) + ' · ' + esc(tx(ctx.name)) + ' — ' + esc(tx(curAlert().action)) + '</span><span class="chip sample">' + t('practice') + '</span></a>' : '') +
+    (DANGER_NO ? '' : '<section class="card danger-q" aria-labelledby="dq-h"><h2 id="dq-h">' + t('dangerQ') + '</h2><div class="dq-btns"><a class="btn btn-red" href="#/sos/msg">' + t('dangerYes') + '</a><button class="btn btn-line" data-a="dangerNo">' + t('dangerNo') + '</button></div></section>') +
     '<div class="em-actions"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a>' + guideCard() +
     (DESKTOP ? '</div><div class="mapbox" id="mapSlot">' + mapOvl() + '</div></div><div><div class="em-actions">' : '') +
     (S.mvp ? '' : '<div class="em-two"><button class="emb" data-a="safe">' + ic('msg', 'lg') + t('emSafe') + '</button>' +
@@ -494,6 +501,73 @@ function vSteps(h, oid){
       (st.length > 1 ? '<h2 class="label">' + t('then') + '</h2><ol class="steps" style="margin-top:0">' + st.slice(1).map(function(s, i){
         return '<li><span class="n">' + (i + 2) + '</span><p>' + linkify(tx(s)) + '</p></li>'; }).join('') + '</ol>' : '') +
       '<a class="textlink" href="#/sos/h/' + h.id + '">' + ic('chevL') + t('otherOption') + '</a>' + srcLine(h.src),
+    dock: dockCall()
+  };
+}
+/* "Are you in danger?" → what's happening → an editable help message → call 000 / text / copy */
+var DANGER_NO = false, MSG = null, REC = null;
+function sit(id){ return SITS.filter(function(x){ return x.id === id; })[0]; }
+function sitName(x){ var h = x.hz ? hz(x.hz) : null; return h ? tx(h.name) : tx(x.name); }
+function sitMatch(x, q){
+  q = (q || '').trim().toLowerCase(); if (!q) return true;
+  var h = x.hz ? hz(x.hz) : null, names = h ? h.name : x.name;
+  var hay = (names[0] + ' ' + names[1] + ' ' + x.kw).toLowerCase();
+  if (/[\u3400-\u9fff]/.test(q)) return hay.indexOf(q) >= 0;
+  if (hay.split(/[^a-z0-9\u3400-\u9fff]+/).some(function(w){ return w.indexOf(q) === 0; })) return true;
+  if (q.indexOf(' ') > 0 && hay.indexOf(q) >= 0) return true;
+  var ini = names[0].toLowerCase().split(/[^a-z]+/).filter(Boolean).map(function(w){ return w[0]; }).join('');
+  return ini.indexOf(q.replace(/\s/g, '')) === 0;
+}
+function micBtn(target){
+  return '<span class="mic-wrap"><button class="mic" data-a="mic" data-target="' + target + '" aria-label="' + esc(t('micLabel')) + '" aria-pressed="false">' + ic('mic') + '</button>' +
+    (S.micTip ? '' : '<span class="mic-tip" role="note">' + t('micTip') + '</span>') + '</span>';
+}
+function buildMsg(id, c){
+  var x = sit(id), out = [x.msg[0]];
+  if (S.card.name) out.push('My name is ' + S.card.name + '.');
+  out.push(c ? "I'm at: https://maps.google.com/?q=" + c.lat.toFixed(5) + ',' + c.lng.toFixed(5) + ' (' + c.lat.toFixed(5) + ', ' + c.lng.toFixed(5) + ')' : 'My location: not found yet.');
+  var about = needList(0).concat(S.card.allergies ? ['Allergies: ' + S.card.allergies] : []).concat(S.card.conditions ? ['Medical: ' + S.card.conditions] : []);
+  if (about.length) out.push('About me: ' + about.join('; ') + '.');
+  return out.join('\n');
+}
+function msgLocate(id){
+  withLocation(function(c){
+    if (!MSG || MSG.sit !== id) return;
+    MSG.c = c; MSG.locating = false;
+    if (!MSG.edited) { MSG.text = buildMsg(id, c); var ta = document.getElementById('msgT'); if (ta) ta.value = MSG.text; }
+    var st = document.getElementById('msgLoc'); if (st) { st.textContent = c ? '' : t('msgNoLoc'); st.hidden = !!c; }
+  });
+}
+function vMsg(id, ok){
+  var x = id ? sit(id) : null;
+  if (!x) return {
+    back: '#/sos',
+    main: '<div class="page-head"><h1>' + t('sitTitle') + '</h1><p class="sub">' + t('sitSub') + '</p></div>' +
+      '<div class="sit-search"><label class="sr-only" for="sitQ">' + t('sitTitle') + '</label><input class="input" id="sitQ" type="search" autocomplete="off" autocapitalize="off" placeholder="' + esc(t('sitPh')) + '">' + micBtn('sitQ') + '</div>' +
+      '<div class="stack sit-list">' + SITS.map(function(s){
+        return '<a class="link-row sit" data-sit="' + s.id + '" href="#/sos/msg/' + s.id + '"><span class="badge' + (s.red ? ' red' : '') + '">' + ic(s.icon || hz(s.hz).icon) + '</span><span class="grow"><span class="t">' + esc(sitName(s)) + '</span></span><span class="chev">' + ic('chevR') + '</span></a>';
+      }).join('') + '<p class="small sit-none" hidden>' + t('sitNone') + '</p></div>',
+    dock: dockCall()
+  };
+  if (!MSG || MSG.sit !== id) { MSG = { sit: id, text: buildMsg(id, null), edited: false, locating: true }; setTimeout(function(){ msgLocate(id); }, 0); }
+  var svc = '<p class="msg-svc">' + t('msgAskFor') + ' <b>' + t(x.svc) + '</b></p>';
+  if (!ok) return {
+    back: '#/sos/msg',
+    main: '<div class="page-head"><p class="eyebrow">' + esc(sitName(x)) + '</p><h1>' + t('msgTitle') + '</h1><p class="sub">' + t('msgSub') + '</p></div>' +
+      '<div class="msg-edit"><label class="sr-only" for="msgT">' + t('msgTitle') + '</label><textarea class="input" id="msgT" data-msg rows="7">' + esc(MSG.text) + '</textarea>' + micBtn('msgT') + '</div>' +
+      '<p class="small" id="msgLoc" aria-live="polite"' + (MSG.locating ? '' : ' hidden') + '>' + (MSG.locating ? t('msgLocating') : '') + '</p>' +
+      (li() ? '<div class="callout" style="margin-top:12px">' + ic('globe') + '<span>' + t('msgEnNote') + '<br><b>中文意思：</b>' + esc(x.msg[1]) + '</span></div>' : '') +
+      '<div class="callout" style="margin-top:12px">' + ic('alert') + '<span>' + t('msgCantSend') + '</span></div>',
+    dock: dockCall('<a class="btn btn-primary" href="#/sos/msg/' + id + '/ok">' + ic('check') + t('msgOk') + '</a>')
+  };
+  return {
+    back: '#/sos/msg/' + id,
+    main: '<div class="page-head"><h1>' + t('msgReadyTitle') + '</h1></div>' + svc +
+      '<div class="card msg-read" lang="en">' + esc(MSG.text) + '</div>' +
+      '<div class="msg-acts"><button class="btn btn-line" data-a="msgSms">' + ic('msg') + t('msgSms') + '</button>' +
+      '<button class="btn btn-line" data-a="msgCopy">' + ic('copy') + t('msgCopy') + '</button></div>' +
+      '<a class="textlink" href="#/sos/msg/' + id + '">' + ic('chevL') + t('msgEdit') + '</a>' +
+      '<div class="callout" style="margin-top:16px">' + ic('phone') + '<span>' + t('msg55') + '<br>' + t('msgCantSend') + '</span></div>' + srcLine('acma'),
     dock: dockCall()
   };
 }
@@ -592,7 +666,7 @@ function helpKey(p){
   if (!p[0]) return S.mvp ? 'kit' : 'home';
   if (p[1] === 'go') return 'go';
   if (p[0] === 'alert') return p[1] === 'rfs' ? 'live' : 'practice';
-  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : 'sos';
+  if (p[0] === 'sos') return p[1] === 'h' ? (p[3] ? 'steps' : 'fork') : p[1] === 'help' ? (p[2] === 'sent' ? 'sent' : 'helpreq') : p[1] === 'msg' ? (p[3] ? 'msgReady' : p[2] ? 'msgEdit' : 'msgPick') : 'sos';
   if (p[0] === 'prepare') return p[1] || 'prepare';
   if (p[0] === 'learn') return p[1] ? 'learnOne' : 'learn';
   if (p[0] === 'me') return p[1] === 'card' ? 'card' : p[1] === 'sources' ? 'sources' : 'me';
@@ -1051,6 +1125,28 @@ var A = {
   ciClose: function(){ CI = null; S.demo.answered = true; save(); renderLayer(); },
   ciSafe: function(){ CI = null; S.demo.answered = true; save(); renderLayer(); sendSafe(); },
   safe: function(){ sendSafe(); },
+  dangerNo: function(){ DANGER_NO = true; render(); },
+  msgSms: function(){ var n = contacts(); location.href = 'sms:' + n.join(',') + '?&body=' + encodeURIComponent(MSG ? MSG.text : ''); },
+  msgCopy: function(){
+    var txt = MSG ? MSG.text : '';
+    var done = function(){ toast(t('msgCopied')); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function(){ toast(txt); }); else toast(txt);
+  },
+  mic: function(el){
+    var tg = document.getElementById(el.dataset.target);
+    if (!S.micTip) { S.micTip = 1; save(); document.querySelectorAll('.mic-tip').forEach(function(n){ n.remove(); }); }
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { toast(t('micKeyboard')); if (tg) tg.focus(); return; }
+    if (REC) { REC.stop(); return; }
+    try {
+      REC = new SR(); REC.lang = li() ? 'zh-CN' : 'en-AU'; REC.interimResults = false; REC.maxAlternatives = 1;
+      REC.onresult = function(e){ var said = e.results[0][0].transcript; if (!tg) return; tg.value = (tg.value ? tg.value.replace(/\s*$/, '') + (tg.tagName === 'TEXTAREA' ? '\n' : ' ') : '') + said; tg.dispatchEvent(new Event('input', { bubbles: true })); };
+      REC.onerror = function(e){ toast(e.error === 'network' ? t('micOffline') : e.error === 'not-allowed' ? t('micBlocked') : t('micKeyboard')); };
+      REC.onend = function(){ REC = null; el.classList.remove('on'); el.setAttribute('aria-pressed', 'false'); el.setAttribute('aria-label', t('micLabel')); };
+      el.classList.add('on'); el.setAttribute('aria-pressed', 'true'); el.setAttribute('aria-label', t('micListening'));
+      REC.start();
+    } catch (err) { REC = null; toast(t('micKeyboard')); }
+  },
   tool: function(el){ startTool(el.dataset.t); },
   toolStop: function(){ stopTool(); },
   hrInj: function(el){ HR.inj = el.dataset.v; render(); },
@@ -1107,6 +1203,12 @@ document.addEventListener('input', function(e){
   var el = e.target;
   if (el.dataset.bind) { setPath(S, el.dataset.bind, el.value); save(); }
   if (el.dataset.hr && HR) HR[el.dataset.hr] = el.value;
+  if (el.id === 'msgT' && MSG) { MSG.text = el.value; MSG.edited = true; }
+  if (el.id === 'sitQ') {
+    var any = false;
+    document.querySelectorAll('.sit-list .sit').forEach(function(a){ var on = sitMatch(sit(a.dataset.sit), el.value) || a.dataset.sit === 'other'; a.hidden = !on; if (on && a.dataset.sit !== 'other') any = true; });
+    var none = document.querySelector('.sit-none'); if (none) none.hidden = any || !el.value.trim();
+  }
   if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
 document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });

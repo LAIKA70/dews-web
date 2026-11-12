@@ -732,3 +732,30 @@ body.em .guide{border-color:var(--green);border-width:2px}
 /* breathing room in sheets: text never touches the buttons */
 .sheet > .btn:first-of-type,.sheet > p + .btn,.sheet > p + a.btn{margin-top:var(--s5,20px)}
 .sheet > .btn + .btn,.sheet > .btn + a.btn,.sheet > a.btn + .btn{margin-top:var(--s2,8px)}
+
+/* "Are you in danger?" + help message (2.8.0) */
+.danger-q{display:grid;gap:var(--s3);margin-top:var(--s2);padding:var(--s4);border:2px solid var(--red)}
+.danger-q h2{font-size:1.25rem;line-height:1.3;margin:0}
+.dq-btns{display:grid;grid-template-columns:2fr 1fr;gap:var(--s2)}
+.dq-btns .btn{min-height:var(--tap-lg)}
+.sit-search{display:flex;gap:var(--s2);align-items:center;margin:var(--s2) 0 var(--s4)}
+.sit-search .input{flex:1}
+.badge.red{background:var(--red-soft);color:var(--red-text)}
+.sit[hidden]{display:none}
+.mic-wrap{position:relative;flex:none;display:inline-flex}
+.mic{width:var(--tap);height:var(--tap);border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1.5px solid var(--line);color:var(--ink)}
+.mic .ic{width:24px;height:24px}
+.mic.on{background:var(--red);border-color:var(--red);color:var(--on-red);animation:micpulse 1.2s ease-in-out infinite}
+@keyframes micpulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--red) 25%,transparent)}}
+@media (prefers-reduced-motion:reduce){.mic.on{animation:none}}
+.mic-tip{position:absolute;right:0;bottom:calc(100% + 10px);width:max-content;max-width:200px;padding:6px 10px;border-radius:var(--r-sm);background:var(--ink);color:var(--bg);font-size:.8125rem;line-height:1.3;font-weight:600;pointer-events:none;z-index:2}
+.mic-tip::after{content:"";position:absolute;right:18px;top:100%;border:6px solid transparent;border-top-color:var(--ink)}
+.msg-edit{display:flex;gap:var(--s2);align-items:flex-start}
+.msg-edit textarea{flex:1;min-height:180px;line-height:1.45}
+.msg-edit .mic-wrap{margin-top:4px}
+.msg-svc{font-size:1.125rem;margin:var(--s2) 0 var(--s3)}
+.msg-read{white-space:pre-wrap;overflow-wrap:anywhere;font-size:1.25rem;line-height:1.45;font-weight:600}
+.msg-acts{display:grid;gap:var(--s2);margin:var(--s4) 0 var(--s3)}
+.dock-in:has(.btn-primary + .btn-red){flex-direction:column;gap:var(--s2)}
+.sit-search:has(.mic-tip){margin-top:44px}
+.msg-edit:has(.mic-tip){margin-top:40px}

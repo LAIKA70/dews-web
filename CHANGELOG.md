@@ -2,6 +2,18 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.9.0 — 2026-11-14 · Official safer places, honest warning coverage, clearer offline notes
+From LAIKA's offline test of 2.8.0 on her phone.
+- **Neighbourhood Safer Places now come from the official NSW RFS list**: 240 in Greater Sydney (was 8 from OpenStreetMap). Each one shows its address, the source and the date DEWS checked the list.
+- **Removed "assembly points"** from help points. They came from OpenStreetMap and were mostly tunnel or building fire-drill points (some were in the M5 tunnel, one was named "1"). Evacuation centres are announced by officials for each disaster, so DEWS says to follow those.
+- **The home screen says what live warnings cover**: NSW bushfires only, from NSW RFS. For floods and storms it links to Hazards Near Me and NSW SES.
+- **One offline note instead of two that disagreed.** At the top: what still works (steps, 000, help points, help message) and when bushfire warnings were last updated, for example "last updated 12:19 (25 min ago), may be out of date". The warning card itself turns amber and grey with "Last updated HH:MM".
+- Incidents with no warning level (like planned burns) now sit under **"Other incidents nearby (not warnings)"**, so "No bushfire warnings within 50 km" no longer looks wrong.
+- **New page: "No internet? How to still get warnings"** (Prepare). How to keep phone emergency alerts (AusAlert) on, on iPhone and Android; ABC Radio Sydney 702 AM, the emergency broadcaster, plus a battery radio in your kit; and opening DEWS once so it works offline. Also linked from the offline note.
+- **Help message page**: for people who are Deaf, hard of hearing or can't speak, the official ways to reach 000 by text: SMS relay 0423 677 767 (a button fills in the message in the right format), TTY 106, the NRS app, and voice relay. Open straight away if your profile says hearing.
+- Narrow phones: the "Works offline" label in the top bar no longer gets cut off ("Wo…"); it shows just the tick icon, and the ? tour explains it.
+- The ? tour covers the new parts.
+
 ## 2.8.0 — 2026-11-12 · Real NSW bushfire warnings, "Are you in danger?" help message, voice input
 - The home screen now shows real bushfire incidents from the NSW Rural Fire Service: every incident within 50 km of you, plus every Emergency Warning anywhere in NSW. Checked every 5 minutes while the app is open.
 - Each warning shows its official level, fire type and status (in Chinese where we have reviewed terms; place names stay in English), how far it is from you, and when RFS last updated it.

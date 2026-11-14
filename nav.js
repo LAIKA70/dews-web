@@ -15,7 +15,7 @@ var NAV = (function () {
   };
   var subs = [], liveSubs = [];
   var CACHE_KEY = 'dews-places';
-  var SAFE = { assembly: 1, shelter: 1, nsp: 2, police: 2, fire: 2, ses: 2, rescue: 2, hospital: 3 };
+  var SAFE = { nsp: 2, police: 2, fire: 2, ses: 2, rescue: 2, hospital: 3 }; /* no OSM assembly points (DESIGN-DECISIONS #27) */
 
   function emit() { subs.forEach(function (f) { try { f(); } catch (e) {} }); }
   function emitLive() { liveSubs.forEach(function (f) { try { f(); } catch (e) {} }); }
@@ -144,8 +144,9 @@ var NAV = (function () {
   function fromPack(p) {
     var R = { assembly: 4000, nsp: 8000, hospital: 12000, police: 6000, fire: 6000, ses: 12000, rescue: 6000, clinic: 3000, water: 1500, ev: 3000, phone: 3000 }, out = [];
     pack.rows.forEach(function (r, i) {
+      if (r[0] === 'assembly' || (r[0] === 'nsp' && !(pack.v >= 2))) return; /* only official NSPs */
       var q = { lat: r[1], lng: r[2] }, d = dist(p, q); if (d > (R[r[0]] || 3000)) return;
-      out.push({ id: 'k' + i, type: r[0], lat: r[1], lng: r[2], name: r[3] || '', nameZh: r[4] || '', note: '', ed: r[5] === 1, osm: true, d: st.pos ? d : null });
+      out.push({ id: 'k' + i, type: r[0], lat: r[1], lng: r[2], name: r[3] || '', nameZh: r[4] || '', note: r[0] === 'nsp' ? (r[5] || '') : '', ed: r[5] === 1, osm: true, d: st.pos ? d : null });
     });
     out.sort(function (a, b) { return a.d - b.d; });
     var per = {}, keep = [];
@@ -155,7 +156,6 @@ var NAV = (function () {
   }
 
   function typeOf(t) {
-    if (t.emergency === 'assembly_point') return 'assembly';
     if (t.amenity === 'hospital') return 'hospital';
     if (t.amenity === 'fire_station') return 'fire';
     if (t.amenity === 'police') return 'police';
@@ -181,7 +181,7 @@ var NAV = (function () {
     try {
       var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
       if (c && c.items && c.items.length && (!st.pos || dist(st.pos, c.from) < 5000)) {
-        st.places = c.items; st.src = 'cache'; st.loadedAt = c.at; st.loadedFrom = c.from; return true;
+        st.places = c.items.filter(function (x) { return x.type !== 'assembly'; }); st.src = 'cache'; st.loadedAt = c.at; st.loadedFrom = c.from; return true;
       }
     } catch (e) {}
     return false;
@@ -212,7 +212,6 @@ var NAV = (function () {
     if (navigator.onLine === false) { if (!fromCache()) useSamples(); afterPlaces(); return; }
     if (loading) return; loading = true;
     var p = st.pos, q = '[out:json][timeout:20];(' +
-      'node["emergency"="assembly_point"](around:3000,' + p.lat + ',' + p.lng + ');' +
       'nwr["amenity"="hospital"](around:6000,' + p.lat + ',' + p.lng + ');' +
       'nwr["amenity"~"^(fire_station|police)$"](around:4000,' + p.lat + ',' + p.lng + ');' +
       'node["amenity"="drinking_water"](around:1500,' + p.lat + ',' + p.lng + ');' +
@@ -417,7 +416,7 @@ var NAV = (function () {
   return {
     state: st, onChange: function (f) { subs.push(f); }, onLive: function (f) { liveSubs.push(f); },
     enable: enable, auto: auto, startLocation: startLocation, loadPlaces: loadPlaces, setManual: setManual, setPicking: setPicking,
-    retry: function () { startLocation(true); }, setAvoid: setAvoid, offset: offset, packInfo: function () { return pack ? { built: pack.built, osmBase: pack.osmBase, area: pack.area } : null; },
+    retry: function () { startLocation(true); }, setAvoid: setAvoid, offset: offset, packInfo: function () { return pack ? { built: pack.built, osmBase: pack.osmBase, area: pack.area, nsp: pack.nsp || null } : null; },
     list: withDist, target: target, setTarget: setTarget, cycleTarget: cycleTarget, guide: guide,
     mount: mount, mapState: function () { return mapState; }, setFollow: setFollow, recenter: recenter,
     dist: dist, bearing: bearing

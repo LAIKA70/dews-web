@@ -93,7 +93,7 @@ const txt = p => p.locator('body').innerText();
 // 6. offline after loading
 { const { page, ctx } = await open({ state: { liveSeen: { 900002: 'watch' } } });
   await ctx.setOffline(true); await page.evaluate(() => window.dispatchEvent(new Event('offline'))); await page.waitForTimeout(400);
-  ok((await txt(page)).includes('You’re offline'), 'offline flagged, warnings still shown');
+  { const t = await txt(page); ok(t.includes('Works offline:') && t.includes('Bushfire warnings:') && await page.locator('.live-wrap.is-stale').count() === 1, 'offline flagged, warnings still shown'); }
   await ctx.close(); }
 
 // 7. quiet day

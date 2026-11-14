@@ -8,7 +8,7 @@ const AXE = readFileSync(process.env.AXE, 'utf8');
 const srv = spawn('python3', ['-m', 'http.server', '8097', '-d', root], { stdio: 'ignore' });
 await new Promise(r => setTimeout(r, 800));
 const feed = readFileSync(root + 'tests/fixtures/rfs-levels.json', 'utf8');
-const routes = ['#/', '#/alert/rfs/900002', '#/alert/rfs/900003', '#/fires', '#/sos', '#/sos/h/fire', '#/sos/h/fire/leave', '#/sos/help', '#/prepare', '#/prepare/kit', '#/prepare/plan', '#/prepare/quiz', '#/learn', '#/learn/fire', '#/map', '#/map/go', '#/me', '#/me/card', '#/me/sources'];
+const routes = ['#/', '#/prepare/alerts', '#/sos/msg/hurt/ok', '#/alert/rfs/900002', '#/alert/rfs/900003', '#/fires', '#/sos', '#/sos/h/fire', '#/sos/h/fire/leave', '#/sos/help', '#/prepare', '#/prepare/kit', '#/prepare/plan', '#/prepare/quiz', '#/learn', '#/learn/fire', '#/map', '#/map/go', '#/me', '#/me/card', '#/me/sources'];
 const PAL = process.env.PAL || 'a';
 const b = await chromium.launch();
 const issues = {}; const add = (k, v) => { (issues[k] = issues[k] || new Set()).add(v); };

@@ -759,3 +759,26 @@ body.em .guide{border-color:var(--green);border-width:2px}
 .dock-in:has(.btn-primary + .btn-red){flex-direction:column;gap:var(--s2)}
 .sit-search:has(.mic-tip){margin-top:44px}
 .msg-edit:has(.mic-tip){margin-top:40px}
+/* 2.9 — offline banner: what works + how old the warnings are */
+.offbar{display:block;padding:var(--s3);font-weight:500}
+.offbar p{display:flex;gap:var(--s2);align-items:flex-start;line-height:1.4}
+.offbar p+p{margin-top:6px}
+.offbar .ok .ic{color:var(--green-text)}
+.offbar .old{color:var(--ink)}
+.offbar .old .ic{color:var(--orange-text)}
+.offbar .ic{flex:none;margin-top:2px}
+.offbar .textlink{margin-top:6px}
+/* live warnings: scope up front; stale state on the card itself */
+.callout.scope{margin-bottom:var(--s3)}
+.callout.scope a{text-decoration:underline;font-weight:700;color:inherit}
+.live-wrap.is-stale{border:2px solid var(--orange);border-radius:var(--r-lg);padding:var(--s3)}
+.live-wrap.is-stale .alert,.live-wrap.is-stale .live-row{filter:grayscale(.7);opacity:.85}
+.stale-tag{display:flex;gap:6px;align-items:center;font-weight:800;color:var(--orange-text);margin-bottom:var(--s2)}
+.stale-tag .ic{width:18px;height:18px;flex:none}
+.live-other{margin-top:var(--s4)}
+/* relay service box */
+details.nrs summary{cursor:pointer;list-style:revert;min-height:44px;display:list-item;padding-top:10px}
+.nrs .wf-h{margin-bottom:6px}
+/* narrow English header: keep the chip's icon, drop its words (the ? icon needs the room) */
+.top .chip .ic{width:16px;height:16px;flex:none}
+@media (max-width:420px){ html:lang(en) .top .chip .ell, .top .chip:not(.ok) .ell{display:none} html:lang(en) .top .chip, .top .chip:not(.ok){padding:6px} }

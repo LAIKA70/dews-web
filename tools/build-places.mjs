@@ -101,7 +101,8 @@ for (const f of nspFeats) {
   const c = f.geometry && f.geometry.coordinates; if (!c) continue;
   const pr = f.properties || {};
   if (pr.last_edited_date && pr.last_edited_date > nspEdited) nspEdited = pr.last_edited_date;
-  const addr = [pr.Location, pr.Suburb].filter(Boolean).join(', ');
+  const loc = (pr.Location || '').trim(), sub = (pr.Suburb || '').trim();
+  const addr = !sub || loc.toLowerCase().includes(sub.toLowerCase()) ? loc : [loc, sub].filter(Boolean).join(', ');
   out.push(['nsp', +c[1].toFixed(5), +c[0].toFixed(5), (pr.Title || '').trim(), '', addr, pr.Type || '']);
 }
 out.sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);

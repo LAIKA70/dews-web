@@ -48,7 +48,7 @@ function linkify(s){
 function hz(id){ for (var i = 0; i < HAZARDS.length; i++) if (HAZARDS[i].id === id) return HAZARDS[i]; return null; }
 function srcLine(key){
   var s = SOURCES[key]; if (!s) return '';
-  return '<p class="src">' + t('source') + ': <a href="' + s.u + '" target="_blank" rel="noopener">' + esc(s.t) + '</a> · ' + t('checked') + ' ' + CONTENT_CHECKED + '</p>';
+  return '<p class="src">' + t('source') + ': <a href="' + s.u + '" target="_blank" rel="noopener">' + esc(s.t) + '</a> · ' + t('checked') + ' ' + (s.d || CONTENT_CHECKED) + '</p>';
 }
 function toast(msg){
   var el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); el.textContent = msg;
@@ -90,6 +90,7 @@ var P = {
   share:'<path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"/>',
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   wifi:'<path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19v.01"/><path d="M3 3l18 18"/>',
   mobile:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
   tablet:'<rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
@@ -155,7 +156,7 @@ function render(){
     var r = sosRoute(p); main = r.main; dock = r.dock || ''; top = emTop(p.length > 1 ? r.back || '#/sos' : null);
   } else {
     top = normalTop();
-    if (p[0] === 'prepare') main = p[1] === 'kit' ? vKit() : p[1] === 'plan' ? vPlan() : p[1] === 'quiz' ? vQuiz() : vPrepare();
+    if (p[0] === 'prepare') main = p[1] === 'kit' ? vKit() : p[1] === 'plan' ? vPlan() : p[1] === 'quiz' ? vQuiz() : p[1] === 'alerts' ? vNoNet() : vPrepare();
     else if (p[0] === 'map') main = vMap();
     else if (p[0] === 'learn') main = p[1] ? vLearn(p[1]) : vLearnList();
     else if (S.mvp && !p[0]) main = vKit();
@@ -194,9 +195,17 @@ function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t(
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
 function offChip(){
   if (!('serviceWorker' in navigator)) return '';
-  return swReady ? '<span class="chip ok">' + ic('check') + '<span class="ell">' + t('offlineReady') + '</span></span>' : '<span class="chip"><span class="ell">' + t('offlineNot') + '</span></span>';
+  return swReady ? '<span class="chip ok" role="img" title="' + t('offlineReady') + '" aria-label="' + t('offlineReady') + '">' + ic('check') + '<span class="ell" aria-hidden="true">' + t('offlineReady') + '</span></span>'
+    : '<span class="chip" role="img" title="' + t('offlineNot') + '" aria-label="' + t('offlineNot') + '">' + ic('download') + '<span class="ell" aria-hidden="true">' + t('offlineNot') + '</span></span>';
 }
-function offlineBar(){ return navigator.onLine === false ? '<div class="offbar">' + ic('wifi') + t('youreOffline') + '</div>' : ''; }
+function hhmm(ms){ var d = new Date(ms); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+function offlineBar(){
+  if (navigator.onLine !== false) return '';
+  var w = window.WARN && WARN.state;
+  return '<div class="offbar" role="status"><p class="ok">' + ic('check') + '<span><b>' + t('offWorksH') + '</b> ' + t('offWorks') + '</span></p>' +
+    '<p class="old">' + ic('alert') + '<span><b>' + t('offWarnH') + '</b> ' + (w && w.at ? t('offWarnAt').replace('{t}', hhmm(w.at)).replace('{ago}', ago(w.at)) : t('offWarnNone')) + '</span></p>' +
+    '<a class="textlink" href="#/prepare/alerts">' + t('noNetLink') + ic('chevR') + '</a></div>';
+}
 function helpBtn(){ return S.lang && !TOOL ? '<button class="iconbtn helpbtn" data-a="tourStart" aria-label="' + t('helpBtn') + '" title="' + t('helpBtn') + '">' + ic('quiz') + '</button>' : ''; }
 function normalTop(){
   return '<header class="top"><a class="brand" href="#/" aria-label="DEWS home">DEWS</a>' + offChip() + '<span class="sp"></span>' + helpBtn() +
@@ -255,7 +264,7 @@ function liveStatus(){
   if (w.at) bits.push(t('liveChecked') + ' ' + ago(w.at));
   var line = '<p class="small live-src">' + ic('fire') + '<span>' + t('liveFrom') + (bits.length ? ' · ' + bits.join(' · ') : '') + '</span></p>';
   var warn = '';
-  if (navigator.onLine === false || w.state === 'offline') warn = t('liveOffline');
+  if (navigator.onLine === false || w.state === 'offline') warn = '';
   else if (w.state === 'error' && !w.at) warn = t('liveError');
   else if (w.state === 'error' || (w.at && WARN.stale())) warn = t('liveStale');
   return line + (warn ? '<p class="warnline">' + ic('alert') + '<span>' + warn + ' <a href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + '</a></span></p>' : '');
@@ -270,7 +279,15 @@ function liveRow(x){
   return '<a class="live-row lv-' + lv + '" href="#/alert/rfs/' + esc(inc.id) + '"><i class="live-dot"></i><span class="grow"><b>' + esc(lvName(inc)) + '</b> · ' + esc(inc.title) +
     '<br><span class="small">' + liveTerm(inc.type) + (x.far ? ' · ' + liveFar(x.far, inc) : '') + '</span></span>' + ic('chevR') + '</a>';
 }
+function liveScopeBox(){
+  return '<div class="callout scope">' + ic('fire') + '<span>' + t('scopeLine') + ' <a href="https://www.nsw.gov.au/emergency/hazards-near-me-app" target="_blank" rel="noopener">Hazards Near Me</a> · <a href="https://www.ses.nsw.gov.au/storm-resources/before-a-storm/know-your-warnings" target="_blank" rel="noopener">NSW SES</a></span></div>';
+}
 function liveCard(){
+  var w0 = WARN.state, old = !!w0.at && (navigator.onLine === false || w0.state === 'offline' || WARN.stale());
+  return '<div class="live-wrap' + (old ? ' is-stale' : '') + '">' + liveScopeBox() +
+    (old ? '<p class="stale-tag">' + ic('alert') + t('staleTag').replace('{t}', hhmm(w0.at)).replace('{ago}', ago(w0.at)) + '</p>' : '') + liveCardIn() + '</div>';
+}
+function liveCardIn(){
   var sel = liveSel(), w = WARN.state, hasPos = !!NAV.state.pos;
   var warned = sel.filter(function(x){ return x.inc.level; }), other = sel.filter(function(x){ return !x.inc.level; });
   var top = warned[0], h = '';
@@ -287,9 +304,11 @@ function liveCard(){
       (!hasPos ? '<p class="small">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>' : '') + '</div></div></div>';
   }
   if (top && !hasPos) h += '<p class="small" style="margin-top:8px">' + t('liveNeedLoc') + '</p><button class="textlink" data-a="navEnable">' + t('guideEnable') + ic('chevR') + '</button>';
-  var rest = warned.slice(1).concat(other);
-  if (rest.length) h += '<div class="stack live-list">' + rest.slice(0, 4).map(liveRow).join('') + '</div>' + (rest.length > 4 ? '<a class="textlink" href="#/fires">' + t('liveAll') + ' (' + sel.length + ')' + ic('chevR') + '</a>' : '');
-  h += liveStatus() + '<p class="small">' + t('liveScope') + '</p>';
+  var more = warned.slice(1, 4), oth = other.slice(0, Math.max(0, 4 - more.length));
+  if (more.length) h += '<div class="stack live-list">' + more.map(liveRow).join('') + '</div>';
+  if (oth.length) h += '<h3 class="label live-other">' + t('liveOtherH') + '</h3><p class="small">' + t('liveOtherSub') + '</p><div class="stack live-list">' + oth.map(liveRow).join('') + '</div>';
+  if (sel.length > 1 + more.length + oth.length) h += '<a class="textlink" href="#/fires">' + t('liveAll') + ' (' + sel.length + ')' + ic('chevR') + '</a>';
+  h += liveStatus();
   return h;
 }
 function vFires(){
@@ -567,9 +586,17 @@ function vMsg(id, ok){
       '<div class="msg-acts"><button class="btn btn-line" data-a="msgSms">' + ic('msg') + t('msgSms') + '</button>' +
       '<button class="btn btn-line" data-a="msgCopy">' + ic('copy') + t('msgCopy') + '</button></div>' +
       '<a class="textlink" href="#/sos/msg/' + id + '">' + ic('chevL') + t('msgEdit') + '</a>' +
-      '<div class="callout" style="margin-top:16px">' + ic('phone') + '<span>' + t('msg55') + '<br>' + t('msgCantSend') + '</span></div>' + srcLine('acma'),
+      '<div class="callout" style="margin-top:16px">' + ic('phone') + '<span>' + t('msg55') + '<br>' + t('msgCantSend') + '</span></div>' + srcLine('acma') + nrsBox(x),
     dock: dockCall()
   };
+}
+function nrsBox(x){
+  var svc = (STR[x.svc] || [''])[0], body = '000 ' + svc + '. ' + MSG.text + ' GA';
+  var inner = '<p>' + t('nrsIntro') + '</p><a class="btn btn-primary" style="margin-top:8px" href="sms:0423677767' + (/iPhone|iPad|Macintosh/.test(navigator.userAgent) ? '&' : '?') + 'body=' + encodeURIComponent(body) + '">' + ic('msg') + t('nrsSms') + '</a>' +
+    '<ul class="wf-list" style="margin-top:12px"><li>' + t('nrsSmsHow') + '</li><li>' + t('nrsTty') + '</li><li>' + t('nrsApp') + '</li><li>' + t('nrsVoice') + '</li></ul>' +
+    '<p class="small">' + t('nrsTalk') + '</p>' + srcLine('nrs');
+  return hasNeed('hearing') ? '<section class="card nrs" style="margin-top:16px"><h2 class="wf-h">' + t('nrsH') + '</h2>' + inner + '</section>'
+    : '<details class="card nrs" style="margin-top:16px"><summary class="wf-h">' + t('nrsH') + '</summary>' + inner + '</details>';
 }
 function dockCall(extra){
   return '<aside class="dock" aria-label="000"><div class="dock-in">' + (extra || '') + '<a class="btn btn-red" href="tel:000">' + ic('phone') + t('emCall') + '</a></div></aside>';
@@ -719,7 +746,16 @@ function vPrepare(){
     pc('#/prepare/kit', 'bag', t('kitTitle'), t('kitSub'), k.n, k.total, k.n + ' / ' + k.total + ' ' + t('kitHave')) +
     pc('#/learn', 'quiz', t('learnTitle'), t('learnSub'), learnDone(), HAZARDS.length, learnDone() + ' / ' + HAZARDS.length) +
     pc('#/prepare/plan', 'users', t('planTitle'), t('planSub'), p.n, p.total, p.n + ' / ' + p.total) +
+    '<a class="link-row" href="#/prepare/alerts"><span class="badge">' + ic('wifi') + '</span><span class="grow"><span class="t">' + t('noNetTitle') + '</span><span class="d">' + t('noNetShort') + '</span></span>' + ic('chevR') + '</a>' +
     pc('#/prepare/quiz', 'quiz', t('quizTitle'), t('quizSub'), q == null ? 0 : q, QUIZ.length, q == null ? '— / ' + QUIZ.length : q + ' / ' + QUIZ.length);
+}
+function vNoNet(){
+  var sec = function(n, title, body){ return '<section class="card wf"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
+  return backTo('#/prepare') + '<div class="page-head"><h1>' + t('noNetTitle') + '</h1><p class="sub">' + t('noNetSub') + '</p></div>' +
+    sec(1, t('nn1H'), '<p>' + t('nn1') + '</p><ul class="wf-list"><li>' + t('nn1Ios') + '</li><li>' + t('nn1And') + '</li></ul><p class="small">' + t('nn1Note') + '</p>' + srcLine('ausalert')) +
+    sec(2, t('nn2H'), '<p>' + t('nn2') + '</p><p class="wf-big2" style="margin-top:8px">ABC Radio Sydney · 702 AM</p><p class="small">' + t('nn2Other') + ' <a href="https://www.abc.net.au/emergency" target="_blank" rel="noopener">ABC Emergency</a></p>' +
+      '<a class="btn btn-line" style="margin-top:12px" href="#/prepare/kit">' + ic('bag') + t('nn2Kit') + '</a>' + srcLine('abcradio')) +
+    sec(3, t('nn3H'), '<p>' + t('nn3') + '</p>');
 }
 function backTo(h){ return '<div class="page-head" style="padding-bottom:0"><a class="iconbtn" href="' + h + '">' + ic('chevL') + t('back') + '</a></div>'; }
 function vKit(){
@@ -880,6 +916,10 @@ function routeLine(){
   var how = viaRoute ? t('routeOk') : r === 'loading' ? t('routeLoading') : r === 'offline' ? t('routeOffline') : r === 'failed' ? t('routeFailed') : t('straight');
   return '<p class="route-line' + (viaRoute ? ' ok' : '') + '">' + ic(viaRoute ? 'check' : 'arrow') + '<span>' + fmtDist(g.d) + ' · ' + g.mins + ' ' + t('minWalk') + ' · ' + how + '</span></p>';
 }
+function nspSrc(){
+  var k = NAV.packInfo && NAV.packInfo(), n = k && k.nsp;
+  return '<p class="src">' + t('source') + ': <a href="https://data.nsw.gov.au/data/dataset/1-1451bf9f155345c8933e09ee56becfd1" target="_blank" rel="noopener">' + t('nspSource') + '</a>' + (n && n.edited ? ' · ' + t('nspEdited') + ' ' + n.edited : k && k.built ? ' · ' + t('checked') + ' ' + k.built.slice(0, 10) : '') + '</p>';
+}
 function extMapUrl(p){
   var apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
   return apple ? 'https://maps.apple.com/?daddr=' + p.lat + ',' + p.lng + '&dirflg=w'
@@ -894,14 +934,14 @@ function placeCard(tg){
     '<h2 class="pc-name">' + esc(placeName(p)) + (p.sample ? ' <span class="chip sample">' + t('sample') + '</span>' : '') + '</h2>' +
     '<p class="small">' + esc(tx(PLACE_TYPES[p.type].name)) + (p.ed ? ' · ' + t('hasED') : '') + '</p></div></div>' +
     (st.pos ? routeLine() : '<p class="small" style="margin-top:8px">' + t('needLocForRoute') + '</p>') +
-    (p.type === 'nsp' ? '<p class="warnline">' + ic('alert') + '<span>' + t('nspNote') + '</span></p>' : '') +
+    (p.type === 'nsp' ? '<p class="warnline">' + ic('alert') + '<span>' + t('nspNote') + '</span></p>' + nspSrc() : '') +
     '<div class="btn-row">' + (st.pos ? '<a class="btn btn-primary" href="#/map/go">' + ic('arrow') + t('startGuide') + '</a>' : '') +
     '<a class="btn btn-line" href="' + extMapUrl(p) + '" target="_blank" rel="noopener">' + ic('pin') + (apple ? t('openApple') : t('openGoogle')) + '</a></div></section>';
 }
-var SAFE_TYPES = ['assembly', 'shelter', 'nsp', 'police', 'fire', 'ses', 'rescue', 'hospital'];
+var SAFE_TYPES = ['nsp', 'police', 'fire', 'ses', 'rescue', 'hospital'];
 function vGo(em){
   var back = em ? '#/sos' : '#/map', tg = NAV.target();
-  var safe = NAV.list().filter(function(x){ return ['assembly', 'shelter', 'rescue', 'hospital'].indexOf(x.p.type) >= 0; }).slice(0, 6);
+  var safe = NAV.list().filter(function(x){ return SAFE_TYPES.indexOf(x.p.type) >= 0; }).slice(0, 6);
   return '<main class="go" id="main" tabindex="-1"><div class="go-map" id="mapSlot" role="img" aria-label="' + t('mapTitle') + '">' + (NAV.mapState() === 'failed' ? '<div class="ovl">' + t('mapFailed') + '</div>' : NAV.mapState() !== 'ready' ? '<div class="ovl">' + t('mapLoading') + '</div>' : '') + '</div>' +
     '<header class="go-top glass"><a class="iconbtn" href="' + back + '" aria-label="' + t('back') + '">' + ic('chevL') + '</a><h1>' + t('goTitle') + '</h1>' + helpBtn() +
     (em ? '<a class="sosbtn" href="tel:000">' + ic('phone') + '000</a>' : '') + '</header>' +

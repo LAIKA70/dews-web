@@ -411,7 +411,7 @@ var STR21 = {
   ob2D: ['On any screen, tap the red Emergency button to call 000, tell family you’re safe, get step-by-step help and directions to the nearest place to get help.', '在任何页面点红色的“紧急”按钮，可以拨打 000、给家人报平安、查看分步指引，并获得前往最近求助地点的指路。'],
   ob3T: ['Today', '今天'], ob3D: ['Warnings for your area, and how prepared you are.', '你所在区域的预警，和你的准备进度。'],
   ob4T: ['Prepare', '准备'], ob4D: ['Work out your emergency kit, make a household plan and practise scenarios.', '算出应急包、写好家庭计划、做情景练习。'],
-  ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, fire and police stations, assembly areas and drinking water.', '实时地图，找到最近的医院、消防站和警察局、集合区和饮水点。'],
+  ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, fire and police stations, Neighbourhood Safer Places and drinking water.', '实时地图，找到最近的医院、消防站和警察局、邻里避险点和饮水点。'],
   ob6T: ['Profile', '个人档案'], ob6D: ['Your emergency card for responders, plus language, text size and appearance settings.', '给救援人员看的应急卡，以及语言、字号和外观设置。'],
   obPermT: ['Let DEWS guide you', '让 DEWS 为你指路'],
   obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。'],
@@ -575,7 +575,7 @@ var STR25 = {
   openApple: ['Open in Apple Maps', '在 Apple 地图中打开'],
   openGoogle: ['Open in Google Maps', '在 Google 地图中打开'],
   nspNote: ['A Neighbourhood Safer Place is a last resort in a bushfire, when your plan has failed. It may not have food, shelter or staff.', '邻里避险点是山火时计划失败后的最后选择，那里可能没有食物、住宿或工作人员。'],
-  srcPack: ['Places saved in the app from OpenStreetMap (community data), so they work offline.', '地点来自 OpenStreetMap（社区数据），已存进应用，离线也能用。'],
+  srcPack: ['Places are saved in the app, so they work offline. Neighbourhood Safer Places come from the official NSW RFS list; everything else from OpenStreetMap (community data).', '地点已存进应用，离线也能用。邻里避险点来自 NSW RFS 官方名单，其他地点来自 OpenStreetMap（社区数据）。'],
   updated: ['Updated', '更新于'],
   glassFrost: ['Frosted', '磨砂'], glassLiquid: ['Liquid', '液态'], glassTint: ['Tinted', '着色'], glassSolid: ['Solid', '不透明'],
   glassNote: ['Emergency and Call 000 buttons always stay solid, so they are easy to see.', '“紧急”和“拨打 000”按钮始终保持不透明，确保一眼能看到。'],
@@ -695,6 +695,47 @@ var STR28 = {
   liveNearYou: ['A bushfire warning near you', '你附近有山火警告']
 };
 for (var k28 in STR28) STR[k28] = STR28[k28];
+/* 2.9 — clearer live scope, offline banner, no-internet warnings, relay service */
+var STR29 = {
+  offWorksH: ['Works offline:', '照常可用：'],
+  offWorks: ['step-by-step guides, Call 000, help points nearby, help message.', '应对步骤、拨打 000、附近求助地点、求助信息。'],
+  offWarnH: ['Bushfire warnings:', '山火警告：'],
+  offWarnAt: ['last updated {t} ({ago}), may be out of date.', '最后更新于 {t}（{ago}），可能已过时。'],
+  offWarnNone: ['can’t be checked without internet.', '没有网络，无法获取。'],
+  noNetLink: ['How to get warnings with no internet', '没有网络时怎么收到预警'],
+  staleTag: ['Last updated {t} ({ago}). May be out of date.', '上次更新 {t}（{ago}），可能已过时。'],
+  scopeLine: ['Live warnings here are NSW bushfires only (from NSW RFS). For floods and storms, check', '这里的实时警告目前只有新州山火（来自 NSW RFS）。洪水和风暴请查看'],
+  liveOtherH: ['Other incidents nearby (not warnings)', '附近其他事件（不是警告）'],
+  liveOtherSub: ['For example planned burns, or fires with no warning level. Keep an eye on them.', '例如计划性焚烧，或没有发布警告级别的火情。留意即可。'],
+  noNetTitle: ['Getting warnings with no internet', '没有网络时怎么收到预警'],
+  noNetShort: ['Phone alerts and battery radio', '手机紧急警报和电池收音机'],
+  noNetSub: ['DEWS needs internet to check for new warnings. These two ways still reach you when it’s down.', 'DEWS 需要网络才能获取新的预警。网络断了的时候，下面两种方式仍然能收到。'],
+  nn1H: ['Keep phone emergency alerts on', '保持手机紧急警报开启'],
+  nn1: ['AusAlert sends warnings straight to phones in the area. No app is needed. Some alerts can be switched off, so check yours are on:', 'AusAlert 会把警报直接推送到所在区域的手机上，不需要安装 app。有些警报可以被关闭，请确认你的是开着的：'],
+  nn1Ios: ['iPhone: Settings → Notifications → AusAlert → keep “Priority AusAlert” on.', 'iPhone：设置 → 通知 → AusAlert → 保持“Priority AusAlert”开启。'],
+  nn1And: ['Android: Settings → Safety and emergency → Wireless emergency alerts → keep Extreme and Severe alerts on. The names can differ by phone brand.', '安卓：设置 → 安全与紧急 → 无线紧急警报 → 保持 Extreme 和 Severe 警报开启。不同品牌的名称可能不同。'],
+  nn1Note: ['Critical alerts can’t be switched off. iPads don’t receive AusAlerts. You still need phone signal.', '最高级别（Critical）的警报无法关闭。iPad 收不到 AusAlert。仍然需要有手机信号。'],
+  nn2H: ['Listen to ABC local radio', '收听 ABC 本地电台'],
+  nn2: ['ABC local radio broadcasts emergency warnings. A battery or wind-up radio works with no internet, no phone signal and no power.', 'ABC 本地电台会播报紧急警告。电池或手摇收音机不需要网络、手机信号和电。'],
+  nn2Other: ['Outside Sydney, find your local ABC frequency on', '悉尼以外的地区，请到这里查本地频率：'],
+  nn2Kit: ['Radio and spare batteries are in your kit list', '收音机和备用电池已在应急包清单里'],
+  nn3H: ['Open DEWS once now', '现在就打开一次 DEWS'],
+  nn3: ['DEWS saves its guides, help points and help message on your phone the first time it loads, so they work later without internet. Add it to your home screen so your phone keeps it.', 'DEWS 第一次载入时会把指引、求助地点和求助信息存进手机，之后没有网络也能用。把它添加到主屏幕，手机就不会把它清掉。'],
+  nrsH: ['Deaf, hard of hearing or can’t speak?', '听力或说话有困难？'],
+  nrsIntro: ['000 can’t take texts, but the National Relay Service can connect you to 000 by text.', '000 不能接收短信，但国家中继服务（NRS）可以用文字帮你接通 000。'],
+  nrsSms: ['Text this to the NRS (0423 677 767)', '用短信发给 NRS（0423 677 767）'],
+  nrsSmsHow: ['SMS relay: text 0423 677 767. Start with “000” and police, fire or ambulance, then your name, where you are and what is happening. End with “GA”.', '短信中继：发短信到 0423 677 767。开头写“000”和 police、fire 或 ambulance，再写你的名字、位置和发生了什么，结尾写“GA”。'],
+  nrsTty: ['TTY: call 106.', 'TTY（文字电话）：拨打 106。'],
+  nrsApp: ['NRS app: tap “000 Emergency call only”.', 'NRS app：点“000 Emergency call only”。'],
+  nrsVoice: ['Voice relay (for speech difficulty): call 1800 555 727, then press 1.', '语音中继（说话有困难）：拨打 1800 555 727，然后按 1。'],
+  nrsTalk: ['A relay officer will ask questions. Type PPP for police, FFF for fire or AAA for ambulance, and end each reply with GA.', '中继员会向你提问。需要警察输入 PPP，消防输入 FFF，救护车输入 AAA，每次回复结尾写 GA。']
+};
+STR29.nspSource = ['NSW RFS official list of Neighbourhood Safer Places', 'NSW RFS 官方邻里避险点名单'];
+STR29.nspEdited = ['list last updated', '名单最后更新于'];
+for (var k29 in STR29) STR[k29] = STR29[k29];
+SOURCES.ausalert = { t: 'AusAlert — Device settings', u: 'https://www.ausalert.gov.au/node/18', d: '2026-11-14' };
+SOURCES.abcradio = { t: 'Winmalee RFS Brigade — Get a battery operated radio (702 ABC Sydney)', u: 'https://www.winmaleerfs.com.au/?p=6175', d: '2026-11-14' };
+SOURCES.nrs = { t: 'Access Hub (Australian Government) — How to make an emergency call using the NRS', u: 'https://accesshub.gov.au/media/159', d: '2026-11-14' };
 SOURCES.rfs = { t: 'NSW RFS — Fires Near Me (live incidents feed, CC BY 4.0)', u: 'https://www.rfs.nsw.gov.au/fire-information/fires-near-me' };
 /* Screen tours — the ? icon on every screen. Each step: [element to light up, English, 中文].
    Steps whose element isn't on screen right now are skipped. Wording matches the real button labels. */
@@ -712,9 +753,17 @@ var TOURS = {
     ['.msg-svc', 'Say this first when 000 answers.', '000 接通后先说这个。'],
     ['.msg-read', 'Then read this out.', '然后照着念。'],
     ['.msg-acts', 'Or text it to someone who can call for you.', '或者发短信给能帮你打电话的人。'],
-    ['.dock', 'Call 000.', '拨打 000。']
+    ['.dock', 'Call 000.', '拨打 000。'],
+    ['.nrs', 'Deaf, hard of hearing or can’t speak? Text 000 through the National Relay Service.', '听力或说话有困难？可以通过国家中继服务（NRS）用文字联系 000。']
+  ],
+  alerts: [
+    ['#main .wf:nth-of-type(1)', 'Phone emergency alerts reach you without the internet. Check they are on.', '手机紧急警报不需要网络也能收到。确认它是开着的。'],
+    ['#main .wf:nth-of-type(2)', 'A battery radio still works when the power and internet are down. Save this frequency.', '停电断网时，电池收音机仍然能用。记下这个频率。'],
+    ['#main .wf:nth-of-type(3)', 'Open DEWS once now so it works offline later.', '现在就打开一次 DEWS，之后没网也能用。']
   ],
   home: [
+    ['.offbar', 'No internet: what still works, and when bushfire warnings were last updated.', '没有网络：哪些功能照常可用，以及山火警告最后更新的时间。'],
+    ['.callout.scope', 'Live warnings here are NSW bushfires only. For floods and storms, open Hazards Near Me or NSW SES.', '这里的实时警告只有新州山火。洪水和风暴请打开 Hazards Near Me 或 NSW SES。'],
     ['#main .alert', 'Real bushfire warnings from NSW RFS: every fire within 50 km of you, and every Emergency Warning in NSW. Tap a card to see what it means for you.', 'NSW RFS 的真实山火警告：你 50 公里内的所有火情，以及全新州的紧急警告。点卡片看它对你意味着什么。'],
     ['#main .meter', 'The level: yellow Advice, orange Watch and Act, red Emergency Warning.', '警告级别：黄色「建议」、橙色「注意并行动」、红色「紧急警告」。'],
     ['.live-list', 'Other fires near you, highest level first.', '你附近的其他火情，级别高的排在前面。'],
@@ -833,7 +882,7 @@ var TOURS = {
   ]
 };
 STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
-DEWS_VERSION = '2.8.0';
+DEWS_VERSION = '2.9.0';
 
 /* "Are you in danger?" situations. msg[0] is the English message for 000 / responders, msg[1] its Chinese meaning. svc = what to ask for when 000 answers. */
 var SITS = [

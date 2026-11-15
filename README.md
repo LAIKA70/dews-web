@@ -29,6 +29,7 @@ international students. It is survival-first and offline-first.
 | `content.js` | All text, safety steps and sources (English + 中文) |
 | `lib/` | MapLibre GL JS (BSD-3), bundled so the map works offline |
 | `sw.js` | Makes the app work offline. Bump `CACHE` when you change any file. |
+| `tools/make-preview.sh` | Puts a test copy at `/preview/`. Delete `preview/` again when the test is over |
 | `manifest.webmanifest`, `icon*` | Lets people add DEWS to their home screen |
 | `v1/` | The original version |
 
@@ -37,5 +38,7 @@ international students. It is survival-first and offline-first.
 Every safety instruction must come from an official source listed in
 `content.js` → `SOURCES`. Don't add advice without one.
 
-All data stays in the browser. No server, no tracking.
+All data stays in the browser. No server, no tracking. Walking routes send your location to OpenStreetMap's route service (see Profile → Sources).
+
+© 2026 LAIKA70. All rights reserved — see [LICENSE](LICENSE).
 DEWS is a guide. It does not replace official warnings or 000.

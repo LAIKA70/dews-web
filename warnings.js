@@ -161,8 +161,18 @@
   var st = { list: null, at: null, state: 'idle', error: null };
   var subs = [];
   function emit() { subs.forEach(function (f) { try { f(); } catch (e) {} }); }
+  /* a cached incident must have the shape parse() makes; anything else (old app version, damaged storage) is dropped,
+   * so a bad cache can never stop the app from opening */
+  function okInc(x) {
+    return !!x && typeof x === 'object' && typeof x.id === 'string' && typeof x.title === 'string' && Array.isArray(x.polys) &&
+      (x.point === null || (!!x.point && isFinite(x.point.lat) && isFinite(x.point.lng)));
+  }
   function loadCache() {
-    try { var c = JSON.parse(localStorage.getItem(STORE) || 'null'); if (c && c.list) { st.list = c.list; st.at = c.at; } } catch (e) {}
+    try {
+      var c = JSON.parse(localStorage.getItem(STORE) || 'null');
+      if (c && Array.isArray(c.list) && isFinite(c.at)) { st.list = c.list.filter(okInc); st.at = +c.at; }
+      else if (c !== null) localStorage.removeItem(STORE);
+    } catch (e) { try { localStorage.removeItem(STORE); } catch (e2) {} }
   }
   function saveCache() { try { localStorage.setItem(STORE, JSON.stringify({ at: st.at, list: st.list })); } catch (e) {} }
   var timer = null, inflight = null;

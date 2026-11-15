@@ -2,6 +2,8 @@
 # Copies the current app into preview/ so a branch can be tried on real phones at
 # https://laika70.github.io/dews-web/preview/ without touching the live version.
 # Run from the repo root on main:  git checkout <branch> -- <files>; sh tools/make-preview.sh
+# IMPORTANT: preview/ is public and installable. Delete it again (git rm -r preview) as soon as the test is
+# over, or it keeps old data that the live app has already fixed (DESIGN-DECISIONS #33).
 set -e
 rm -rf preview && mkdir -p preview/data preview/lib
 cp app.js app.css nav.js content.js warnings.js sw.js manifest.webmanifest icon.svg icon-192.png icon-512.png preview/

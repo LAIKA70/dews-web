@@ -6,7 +6,7 @@
  * public Overpass server, and works offline from the first visit.
  * Data © OpenStreetMap contributors, ODbL.
  */
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 
 const BBOX = [-34.25, 150.50, -33.40, 151.40]; /* south, west, north, east */
 const bb = '(' + BBOX.join(',') + ')';
@@ -85,6 +85,9 @@ const nspFeats = await fetchNsp();
 let nspEdited = 0;
 
 const j = await fetchOverpass();
+/* Overpass answers HTTP 200 even when it ran out of time, with only part of the data and a "remark".
+ * Never ship that: the app saves these places on people's phones for offline use. */
+if (j.remark) throw new Error('Overpass returned partial data: ' + String(j.remark).slice(0, 200));
 const seen = new Set(), near = new Map(), out = [];
 for (const e of j.elements) {
   const t = e.tags || {}, ty = classify(t); if (!ty) continue;
@@ -110,6 +113,18 @@ const counts = {}; out.forEach((r) => { counts[r[0]] = (counts[r[0]] || 0) + 1; 
 const data = { v: 2, area: 'Greater Sydney', bbox: BBOX, osmBase: j.osm3s && j.osm3s.timestamp_osm_base, built: new Date().toISOString(), counts,
   nsp: { source: 'NSW Rural Fire Service — Neighbourhood Safer Places (NSW Spatial Services)', edited: nspEdited ? new Date(nspEdited).toISOString().slice(0, 10) : null, count: nspFeats.length },
   licence: 'Data © OpenStreetMap contributors, ODbL 1.0; Neighbourhood Safer Places © State of New South Wales (NSW Rural Fire Service)', rows: out };
+/* Quality check before anything is saved (DESIGN-DECISIONS #34). If a source broke, keep last week's file:
+ * the job fails, nothing is committed, and GitHub emails the repo owner. */
+const FLOOR = { hospital: 25, fire: 150, police: 60, nsp: 200, water: 1500 };      /* well below today's counts */
+let prev = null;
+try { prev = JSON.parse(readFileSync(new URL('../data/places-sydney.json', import.meta.url), 'utf8')).counts; } catch (e) {}
+const problems = [];
+for (const [k, min] of Object.entries(FLOOR)) if ((counts[k] || 0) < min) problems.push(k + ' ' + (counts[k] || 0) + ' < minimum ' + min);
+if (prev) for (const [k, n] of Object.entries(prev)) {
+  if (k === 'assembly' || n < 30) continue;   /* assembly points were removed on purpose (#27); small groups change too much week to week */
+  if ((counts[k] || 0) < n * 0.8) problems.push(k + ' fell from ' + n + ' to ' + (counts[k] || 0) + ' (more than 20%)');
+}
+if (problems.length) { console.error('Places NOT updated. Check failed:\n  ' + problems.join('\n  ')); process.exit(1); }
 mkdirSync(new URL('../data/', import.meta.url), { recursive: true });
 writeFileSync(new URL('../data/places-sydney.json', import.meta.url), JSON.stringify(data));
 console.log('places:', out.length, counts);

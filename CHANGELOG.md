@@ -2,6 +2,15 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.9.1 — 2026-11-15 · Safety fixes from the 2nd assessment
+From the assessment of 2.9.0 (2026-11-15), "this week" list.
+- **Removed the old public preview** (`/preview/`). It was a copy of 2.8.0 that still showed the OpenStreetMap "assembly points" removed in 2.9.0, some of them inside the M5 tunnel.
+- **The weekly places update now checks the data before saving it.** If the map server sends only part of the data, or any main group (hospitals, fire and police stations, Neighbourhood Safer Places, water) drops by more than 20%, nothing is changed and last week's places stay on people's phones. GitHub emails the owner when this happens.
+- **DEWS never opens to a blank screen.** Saved bushfire warnings that are damaged or from an older version are thrown away and fetched again. And if any screen can't be drawn, DEWS shows "Call 000" and "Reopen DEWS" instead of nothing.
+- **Screen readers announce the bushfire warning pop-up**: it now takes focus when it appears. Esc closes it.
+- **Says plainly what leaves your phone.** The first-run guide says your location goes to OpenStreetMap's free route service when you ask for a walking route. Profile → Sources has a new "What leaves your phone" section, in English and 中文.
+- Added a `LICENSE`: all rights reserved, with the licences of MapLibre, OpenStreetMap, NSW RFS and the safety sources.
+
 ## 2.9.0 — 2026-11-14 · Official safer places, honest warning coverage, clearer offline notes
 From LAIKA's offline test of 2.8.0 on her phone.
 - **Neighbourhood Safer Places now come from the official NSW RFS list**: 240 in Greater Sydney (was 8 from OpenStreetMap). Each one shows its address, the source and the date DEWS checked the list.

@@ -331,7 +331,7 @@ function mapWarn(){
   sub += w.at ? (old ? t('mwOld') : t('mwAt')).replace('{t}', hhmm(w.at)) : '';
   return '<a class="mwarn lv-' + (top ? top.inc.level : 'none') + (old ? ' is-stale' : '') + '" href="' + href + '">' +
     '<span class="mw-ic">' + ic(top ? 'fire' : w.at ? 'check' : 'fire') + '</span><span class="grow"><span class="mw-h">' + head + '</span>' +
-    '<span class="small">' + sub + t('mwScope') + '</span></span>' + ic('chevR') + '</a>';
+    '<span class="small">' + (sub + t('mwScope')).replace(/^ · /, '') + '</span></span>' + ic('chevR') + '</a>';
 }
 function liveBack(){ return S.mvp ? '#/map' : '#/'; }
 function vFires(){

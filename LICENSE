@@ -1,0 +1,23 @@
+DEWS — Disaster readiness (web)
+Copyright (c) 2026 LAIKA70. All rights reserved.
+
+The source code, design, text and images in this repository are the work of
+LAIKA70. You may view them here, but you may not copy, modify, publish,
+distribute, sublicense or sell them, in whole or in part, without written
+permission from LAIKA70.
+
+Third-party material in this repository keeps its own licence:
+
+- MapLibre GL JS (lib/maplibre-gl.js, lib/maplibre-gl.css): BSD 3-Clause
+  licence, see lib/MAPLIBRE-LICENSE.txt.
+- Place data in data/places-sydney.json:
+  - © OpenStreetMap contributors, Open Database Licence (ODbL) 1.0.
+  - Neighbourhood Safer Places © State of New South Wales
+    (NSW Rural Fire Service), via NSW Spatial Services.
+- Bushfire warnings shown in the app are read live from the NSW Rural Fire
+  Service feed, CC BY 4.0: © State of New South Wales (NSW Rural Fire
+  Service). For current information go to www.rfs.nsw.gov.au.
+- Safety instructions are summarised from the official sources listed in
+  content.js (SOURCES), each of which keeps its own terms.
+
+DEWS is a guide. It does not replace official warnings or 000.

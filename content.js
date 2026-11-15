@@ -351,6 +351,8 @@ var STR = {
   demoAlert: ['Simulate a warning', '模拟一条预警'],
   demoAlertSub: ['See how DEWS checks in with you', '看看 DEWS 会怎样询问你'],
   sourcesTitle: ['Where our advice comes from', '内容来源'],
+  privTitle: ['What leaves your phone', '哪些信息会离开你的手机'],
+  privBody: ['DEWS has no server. Your profile, plan and kit stay on this phone. Only these requests leave it: your location, to OpenStreetMap’s route service (routing.openstreetmap.de) when you ask for a walking route, and to the Overpass service when you look for places outside Greater Sydney; map tiles, from OpenFreeMap; bushfire warnings, from NSW RFS (no personal details are sent).', 'DEWS 没有服务器。你的档案、计划和应急包只保存在这台手机上。只有以下请求会离开手机：查步行路线时，你的位置会发送给 OpenStreetMap 的路线服务（routing.openstreetmap.de）；在大悉尼以外查找地点时，会发送给 Overpass 服务；地图图块来自 OpenFreeMap；山火预警来自 NSW RFS（不发送任何个人信息）。'],
   sourcesSub: ['Every instruction comes from an official Australian source.', '每条指引都来自澳大利亚官方来源。'],
   about: ['About', '关于'],
   aboutText: ['DEWS is a preparedness guide. It doesn’t replace official warnings or emergency services. In a life-threatening emergency, call 000.', 'DEWS 是一个应急准备指南，不能替代官方预警或紧急服务。遇到生命危险，请拨打 000。'],
@@ -414,7 +416,7 @@ var STR21 = {
   ob5T: ['Nearby', '附近'], ob5D: ['A live map of the nearest hospitals, fire and police stations, Neighbourhood Safer Places and drinking water.', '实时地图，找到最近的医院、消防站和警察局、邻里避险点和饮水点。'],
   ob6T: ['Profile', '个人档案'], ob6D: ['Your emergency card for responders, plus language, text size and appearance settings.', '给救援人员看的应急卡，以及语言、字号和外观设置。'],
   obPermT: ['Let DEWS guide you', '让 DEWS 为你指路'],
-  obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。'],
+  obPermD: ['Allow location and compass now, so in an emergency DEWS can point the way straight away. Your location is only used to find places and routes near you. DEWS has no server and keeps no record. When you ask for a walking route, your location is sent to OpenStreetMap’s free route service.', '现在允许定位和指南针，紧急时 DEWS 就能立刻指路。你的位置只用于查找附近的地点和路线。DEWS 没有服务器，不保存任何记录。查步行路线时，你的位置会发送给 OpenStreetMap 的免费路线服务。'],
   obAllow: ['Allow location & compass', '允许定位和指南针'], obLater: ['Not now', '以后再说'],
   glass: ['Glass effect', '玻璃效果'], glassOn: ['On', '开'], glassOff: ['Off (solid, easier to read)', '关（不透明，更易读）']
 };
@@ -882,7 +884,7 @@ var TOURS = {
   ]
 };
 STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
-DEWS_VERSION = '2.9.0';
+DEWS_VERSION = '2.9.1';
 
 /* "Are you in danger?" situations. msg[0] is the English message for 000 / responders, msg[1] its Chinese meaning. svc = what to ask for when 000 answers. */
 var SITS = [

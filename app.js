@@ -357,10 +357,10 @@ function liveFocus(){
 }
 function liveSheet(inc){
   var f = WARN.measure(inc, NAV.state.pos), L = LEVELS[inc.level];
-  return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h">' +
+  return '<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="ci-h" data-live="' + esc(inc.id + ':' + inc.level) + '" data-id="' + esc(inc.id) + '">' +
     '<div class="alert lv-' + inc.level + '" style="margin:0"><div class="alert-band">' + ic('fire') + esc(tx(L.name)) + '<span class="chip">NSW RFS</span></div></div>' +
     '<p class="small" style="margin-top:12px">' + t('liveNearYou') + ' · ' + liveTerm(inc.type) + '</p>' +
-    '<h2 id="ci-h">' + esc(inc.title) + '</h2>' +
+    '<h2 id="ci-h" tabindex="-1">' + esc(inc.title) + '</h2>' +
     (f ? '<p class="wf-big2" style="margin-top:4px">' + liveFar(f, inc) + '</p>' : '') +
     '<p style="margin-top:8px">' + esc(tx(L.desc)) + '</p>' +
     '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" href="#/alert/rfs/' + esc(inc.id) + '" data-a="liveSeen" data-id="' + esc(inc.id) + '">' + t('seeWhatToDo') + ic('chevR') + '</a>' +
@@ -1014,7 +1014,7 @@ function vCardEdit(){
 function vSources(){
   return backTo('#/me') + '<div class="page-head"><h1>' + t('sourcesTitle') + '</h1><p class="sub">' + t('sourcesSub') + ' ' + t('checked') + ' ' + CONTENT_CHECKED + '.</p></div>' +
     '<div class="src-list">' + Object.keys(SOURCES).map(function(k){ var s = SOURCES[k]; return '<a href="' + s.u + '" target="_blank" rel="noopener"><b>' + esc(s.t) + '</b><span>' + esc(s.u) + '</span></a>'; }).join('') + '</div>' +
-    '<h2 class="label">Map &amp; places</h2><p class="small">Map tiles: OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors. Places: OpenStreetMap via Overpass API. Walking routes: FOSSGIS OSRM (routing.openstreetmap.de). Map library: MapLibre GL JS (BSD-3).</p>';
+    '<h2 class="label">' + t('privTitle') + '</h2><p class="small">' + t('privBody') + '</p>' + '<h2 class="label">Map &amp; places</h2><p class="small">Map tiles: OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors. Places: OpenStreetMap via Overpass API. Walking routes: FOSSGIS OSRM (routing.openstreetmap.de). Map library: MapLibre GL JS (BSD-3).</p>';
 }
 
 
@@ -1029,8 +1029,15 @@ function renderLayer(){
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
   else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
+  var hadFocus = L.contains(document.activeElement);
   L.innerHTML = h;
+  /* a new live warning pop-up takes focus, so screen readers announce it. A redraw of the same pop-up (warnings refresh
+   * every 5 min) only puts focus back if it was already inside; it never pulls focus from the rest of the page */
+  var ls = L.querySelector('.sheet[data-live]');
+  if (ls && (ls.getAttribute('data-live') !== liveFocused || hadFocus)) { liveFocused = ls.getAttribute('data-live'); var lh = document.getElementById('ci-h'); if (lh) try { lh.focus({ preventScroll: true }); } catch (e) {} }
+  if (!ls) liveFocused = null;
 }
+var liveFocused = null;
 var OB = 0, OB_DIR = 0;
 function deviceLang(){ var l = ((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase(); return l.indexOf('zh') === 0 ? 'zh' : 'en'; }
 function obGo(d){ if (S.lang) return; if (d > 0 && OB < OB_SLIDES.length) A.obNext(); else if (d < 0 && OB > 0) A.obBack(); }
@@ -1251,7 +1258,7 @@ document.addEventListener('input', function(e){
   }
   if (el.dataset.glassa) { S.glassA = +el.value; save(); document.documentElement.style.setProperty('--ga', (S.glassA / 100).toFixed(2)); el.setAttribute('aria-valuetext', S.glassA + '%'); }
 });
-document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { if (TOOL) stopTool(); else if (CI) A.ciClose(); } });
+document.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'link' && e.target.dataset.a) { e.preventDefault(); A[e.target.dataset.a](e.target, e); return; } if (e.key === 'Escape') { var lsh = document.querySelector('.sheet[data-live]'); if (TOOL) stopTool(); else if (CI) A.ciClose(); else if (lsh) { A.liveSeen(lsh); var mm = document.getElementById('main'); if (mm) try { mm.focus({ preventScroll: true }); } catch (x) {} } } });
 /* onboarding: swipe left/right (touch) and arrow keys; Next/Back buttons stay as the main way */
 function obFocus(){ var h = document.getElementById('ob-h'); if (h) try { h.focus({ preventScroll: true }); } catch (e) {} }
 var obTouch = null;
@@ -1268,7 +1275,7 @@ document.addEventListener('keydown', function(e){
   if (S.lang || !document.querySelector('.ob')) return;
   if (e.key === 'ArrowRight') { e.preventDefault(); obGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); obGo(-1); }
 });
-window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI) try { m.focus({ preventScroll: true }); } catch (e) {} });
+window.addEventListener('hashchange', function(){ render(); window.scrollTo(0, 0); var m = document.getElementById('main'); if (m && !TOOL && !CI && !document.querySelector('.sheet[data-live]')) try { m.focus({ preventScroll: true }); } catch (e) {} });
 window.addEventListener('online', render); window.addEventListener('offline', render);
 function after(p){
   syncAlertZone();
@@ -1294,5 +1301,21 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(BASE + 'sw.js', { scope: BASE }).then(function(){ return navigator.serviceWorker.ready; })
     .then(function(){ swReady = true; if (S.lang) { var y = window.scrollY; render(); window.scrollTo(0, y); } }).catch(function(){});
 }
+
+/* ---------- last line of defence: if a screen can't be drawn, still show how to call 000 (never a blank screen) ---------- */
+var drawScreen = render, drawLayer = renderLayer;
+function failSafe(e){
+  try { localStorage.removeItem('dews-rfs'); } catch (x) {} /* saved warnings are the most likely cause; the profile is kept */
+  var zh = false; try { zh = S.lang === 'zh'; } catch (x) {}
+  try { document.getElementById('layer').innerHTML = ''; } catch (x) {}
+  document.getElementById('app').innerHTML = '<main id="main" tabindex="-1" style="padding:32px 20px;max-width:560px;margin:0 auto">' +
+    '<h1>' + (zh ? 'DEWS 出了点问题' : 'Something went wrong in DEWS') + '</h1>' +
+    '<p style="margin-top:12px">' + (zh ? '如有生命危险，请立即拨打 000。' : 'If your life is in danger, call 000 now.') + '</p>' +
+    '<a class="btn btn-lg btn-red" href="tel:000" style="margin-top:20px">' + (zh ? '拨打 000' : 'Call 000') + '</a>' +
+    '<a class="btn btn-ghost" href="./" style="margin-top:12px">' + (zh ? '重新打开 DEWS' : 'Reopen DEWS') + '</a>' +
+    '<p class="small" style="margin-top:20px">' + esc(String((e && e.message) || e).slice(0, 160)) + '</p></main>';
+}
+render = function(){ try { drawScreen(); } catch (e) { failSafe(e); } };
+renderLayer = function(){ try { drawLayer(); } catch (e) { failSafe(e); } };
 render();
 })();

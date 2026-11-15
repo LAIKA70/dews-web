@@ -156,5 +156,27 @@ for (const [layout, size] of [['tablet', { width: 1024, height: 768 }], ['deskto
   await page.locator('.helpbtn').first().click(); await page.waitForTimeout(300);
   await page.screenshot({ path: OUT + `9-tour_map_${layout}.png` }); await ctx.close(); }
 
+// 2.9.1: a damaged warnings cache (wrong shape, e.g. from an older version) never blanks the app
+{ const { page, ctx, errs } = await open({ cache: { list: 'x', at: 1 } });
+  ok((await txt(page)).length > 200 && (await txt(page)).includes('KURNELL'), 'bad cache shape: app opens and shows fresh warnings');
+  ok(errs.length === 0, 'bad cache shape: no page errors ' + errs.join(' | '));
+  await ctx.close(); }
+// 2.9.1: the live warning pop-up takes focus (screen readers announce it); Esc closes it
+{ const { page, ctx } = await open();
+  ok(await page.evaluate(() => document.activeElement && document.activeElement.id === 'ci-h'), 'pop-up heading has focus');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+  ok(await page.locator('.sheet').count() === 0, 'Esc closes the warning pop-up');
+  await ctx.close(); }
+// 2.9.1: if a screen can't be drawn, a Call 000 screen shows instead of a blank page
+{ const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: 'block' });
+  await ctx.route(/rfs\.nsw|openfreemap|overpass|routing|fonts\./, r => r.abort());
+  await ctx.addInitScript(() => {
+    localStorage.setItem('dews2', JSON.stringify({ lang: 'zh', tutLearn: true }));
+    Object.defineProperty(window, 'WARN', { configurable: true, set(v) { v.select = () => { throw new Error('test failure'); }; this._w = v; }, get() { return this._w; } });
+  });
+  const page = await ctx.newPage(); await page.goto('http://localhost:8099/mobile/#/'); await page.waitForTimeout(1200);
+  ok(await page.locator('a[href="tel:000"]').count() > 0 && (await txt(page)).includes('拨打 000'), 'crash: fail-safe screen shows Call 000 (in Chinese)');
+  await ctx.close(); }
+
 await browser.close(); srv.kill();
 console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); process.exit(fails ? 1 : 0);

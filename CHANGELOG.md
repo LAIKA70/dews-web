@@ -2,6 +2,14 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.10.0 — 2026-11-15 · Bushfire warnings on the Directions page
+LAIKA asked for warnings in MVP mode without taking much space.
+- **A small warning card at the top of "Directions"** (called "Nearby" when MVP mode is off). One line shows the highest warning near you, how far and which way, how many more, and when DEWS last checked. With no warnings it says "No bushfire warnings within 50 km". It also says live warnings are NSW bushfires only.
+- **Tap the card for details**: one warning opens straight away; more than one opens the list. "Back" now returns to where you came from (Directions, the list or Today), not always to Today.
+- Offline or out of date, the card turns amber and says "Last updated HH:MM, may be out of date".
+- The pop-up for a nearby "Watch and Act" or "Emergency Warning" now also appears on the Directions page, so MVP mode no longer hides it.
+- The "Fires near you" list now starts with the same note on what live warnings cover.
+
 ## 2.9.1 — 2026-11-15 · Safety fixes from the 2nd assessment
 From the assessment of 2.9.0 (2026-11-15), "this week" list.
 - **Removed the old public preview** (`/preview/`). It was a copy of 2.8.0 that still showed the OpenStreetMap "assembly points" removed in 2.9.0, some of them inside the M5 tunnel.

@@ -137,8 +137,12 @@ function readiness(){
 
 /* ---------- router ---------- */
 function parts(){ return location.hash.replace(/^#\/?/, '').split('/').filter(Boolean); }
+var LIVE_FROM = null, LAST_HASH = null;
 function render(){
   var p = parts(), main = '', top = '', dock = '', em = p[0] === 'sos';
+  var hsh = '#/' + p.join('/');
+  if (p[0] === 'alert' && p[1] === 'rfs') { if (LAST_HASH && LAST_HASH !== hsh && !/^#\/alert\//.test(LAST_HASH)) LIVE_FROM = LAST_HASH === '#/fires' || LAST_HASH === '#/map' || LAST_HASH === '#/' ? LAST_HASH : null; }
+  LAST_HASH = hsh;
   document.documentElement.lang = li() ? 'zh-CN' : 'en';
   document.documentElement.setAttribute('data-size', S.size);
   if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', S.theme);
@@ -311,22 +315,41 @@ function liveCardIn(){
   h += liveStatus();
   return h;
 }
+/* compact live-warning card for the map ("Directions" in MVP mode): one tap opens the details */
+function mapWarn(){
+  if (!window.WARN) return '';
+  var sel = liveSel(), w = WARN.state, warned = sel.filter(function(x){ return x.inc.level; }), top = warned[0];
+  var old = !!w.at && (navigator.onLine === false || w.state === 'offline' || WARN.stale());
+  var href = top && warned.length === 1 ? '#/alert/rfs/' + esc(top.inc.id) : '#/fires', head, sub;
+  if (top) {
+    head = '<b>' + esc(lvName(top.inc)) + '</b> · ' + esc(top.inc.title);
+    sub = (top.far ? liveFar(top.far, top.inc) + ' · ' : '') + (warned.length > 1 ? t('mwMore').replace('{n}', warned.length - 1) + ' · ' : '');
+  } else {
+    head = '<b>' + (!w.at ? t(w.state === 'error' || w.state === 'offline' ? 'liveNoData' : 'liveLoading') : NAV.state.pos ? t('liveNone') : t('liveNoneState')) + '</b>';
+    sub = sel.length ? t('mwOther').replace('{n}', sel.length) + ' · ' : '';
+  }
+  sub += w.at ? (old ? t('mwOld') : t('mwAt')).replace('{t}', hhmm(w.at)) : '';
+  return '<a class="mwarn lv-' + (top ? top.inc.level : 'none') + (old ? ' is-stale' : '') + '" href="' + href + '">' +
+    '<span class="mw-ic">' + ic(top ? 'fire' : w.at ? 'check' : 'fire') + '</span><span class="grow"><span class="mw-h">' + head + '</span>' +
+    '<span class="small">' + sub + t('mwScope') + '</span></span>' + ic('chevR') + '</a>';
+}
+function liveBack(){ return S.mvp ? '#/map' : '#/'; }
 function vFires(){
   var sel = liveSel();
-  return backTo('#/') + '<div class="page-head"><h1>' + t('liveAllTitle') + '</h1><p class="sub">' + t('liveScope') + '</p></div>' +
+  return backTo(liveBack()) + '<div class="page-head"><h1>' + t('liveAllTitle') + '</h1><p class="sub">' + t('liveScope') + '</p></div>' + liveScopeBox() +
     (sel.length ? '<div class="stack live-list">' + sel.map(liveRow).join('') + '</div>' : '<p>' + t('liveNone') + '</p>') + liveStatus() +
     '<p class="src">' + esc(WARN.ATTRIBUTION) + '</p>';
 }
 function vLive(id){
   var inc = WARN.find(id);
-  if (!inc) return backTo('#/') + '<div class="page-head"><h1>' + t('liveGone') + '</h1><p class="sub">' + t('liveGoneSub') + '</p></div>' + liveStatus();
+  if (!inc) return backTo(liveBack()) + '<div class="page-head"><h1>' + t('liveGone') + '</h1><p class="sub">' + t('liveGoneSub') + '</p></div>' + liveStatus();
   var f = WARN.measure(inc, NAV.state.pos), L = inc.level ? LEVELS[inc.level] : null, near = f && f.m <= WARN.NEAR_M, act = inc.level === 'watch' || inc.level === 'emergency';
   var n = 0, sec = function(title, body, cls){ ++n; return '<section class="card wf' + (cls ? ' ' + cls : '') + '" data-tut="wf' + n + '"><p class="wf-n">' + n + '</p><div class="grow"><h2 class="wf-h">' + title + '</h2>' + body + '</div></section>'; };
   var fnm = '<a class="btn btn-lg ' + (inc.level === 'emergency' ? 'btn-red' : 'btn-primary') + '" style="margin-top:12px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + ic('ext') + t('liveReadOfficial') + '</a>';
   var far = !f ? '<p class="small">' + t('farNeedLoc') + '</p><button class="btn btn-line" style="margin-top:8px" data-a="navEnable">' + ic('locate') + t('guideEnable') + '</button>'
     : f.inside ? '<p class="wf-big" style="color:var(--red-text)">' + ic('alert') + t('farIn') + '</p>'
     : '<p class="wf-big">' + fmtDist(f.m) + '</p><p class="small">' + (f.edge && !inc.unmapped ? t('farAway') + (li() ? '' : ' ') + dirName(f.dir) + t('farDirSuffix') : t('liveToPoint') + ' · ' + dirName(f.dir) + (li() ? '方' : '')) + '</p>';
-  return '<div class="page-head"><a class="iconbtn" href="#/">' + ic('chevL') + t('back') + '</a></div>' +
+  return '<div class="page-head"><a class="iconbtn" href="' + (LIVE_FROM || liveBack()) + '">' + ic('chevL') + t('back') + '</a></div>' +
     '<div class="alert lv-' + (inc.level || 'none') + '"><div class="alert-band">' + ic('fire') + esc(lvName(inc)) + '<span class="chip">NSW RFS</span></div>' +
     '<div class="alert-body"><h1 class="alert-act">' + esc(inc.title) + '</h1>' + (inc.level ? meter(inc.level) : '') + '</div></div>' +
     '<div class="em-quick"><a class="emb red" href="tel:000">' + ic('phone') + t('emCall') + '</a></div>' +
@@ -341,7 +364,7 @@ function vLive(id){
       ? '<p class="wf-act lv-' + inc.level + '">' + esc(tx(L.name)) + '</p><p class="small" style="margin-top:6px">' + esc(tx(L.desc)) + '</p>' +
         (act ? '<div class="callout" style="margin-top:12px">' + ic('alert') + '<span>' + t('liveActionNote') + '</span></div>' + fnm +
           '<a class="btn btn-line" style="margin-top:8px" href="#/sos/h/fire">' + ic('fire') + t('liveFireSteps') + '</a>'
-             : '<a class="btn btn-primary" style="margin-top:12px" href="#/">' + t('gotIt') + '</a><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>')
+             : '<a class="btn btn-primary" style="margin-top:12px" href="' + (LIVE_FROM || liveBack()) + '">' + t('gotIt') + '</a><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>')
       : '<p class="wf-big2">' + t('noAction') + '</p><p class="small" style="margin-top:6px">' + t('liveNoLevel') + '</p><a class="textlink" style="margin-top:8px" href="' + WARN.FNM + '" target="_blank" rel="noopener">' + t('liveOpenFnm') + ic('ext') + '</a>', act ? 'wf-strong' : '') +
     (act && near ? sec(t('qGo'), guideCard() + '<p class="small" style="margin-top:8px">' + t('awayNote') + '</p>' +
       '<a class="btn btn-lg btn-primary" style="margin-top:12px" href="#/sos/go">' + ic('arrow') + t('navPreview') + '</a>' +
@@ -889,7 +912,7 @@ function vMap(){
         '<div><div class="dist">' + fmtDist(x.d) + '</div>' + (x.b != null ? '<div class="dir"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" data-live-b="' + Math.round(x.b) + '">' + P.arrow + '</svg>' + dirName(x.b) + '</div>' : '') + '</div></button>';
     }).join('') + '</section>' +
     '<p class="small" style="margin-top:8px">' + (!st.pos && all.length ? t('browseNote') + ' ' : '') + t('evacNote') + ' ' + srcNote() + '</p>';
-  return '<div class="page-head"><h1>' + t('mapTitle') + '</h1></div>' +
+  return '<div class="page-head"><h1>' + t('mapTitle') + '</h1></div>' + mapWarn() +
     (DESKTOP ? '<div class="dgrid map-grid"><div class="sticky">' + mapEl + '</div><div>' + side + '</div></div>' : mapEl + side);
 }
 function locChip(){
@@ -1028,7 +1051,7 @@ function renderLayer(){
   else if (TOOL) h = toolView();
   else if (CI) h = checkinSheet();
   else if (S.demo.alert && !S.demo.answered && (p.length === 0)) { CI = 'affected'; h = checkinSheet(); }
-  else if (p.length === 0 && window.WARN && livePopup()) h = liveSheet(livePopup());
+  else if ((p.length === 0 || (p[0] === 'map' && !p[1])) && window.WARN && livePopup()) h = liveSheet(livePopup());
   var hadFocus = L.contains(document.activeElement);
   L.innerHTML = h;
   /* a new live warning pop-up takes focus, so screen readers announce it. A redraw of the same pop-up (warnings refresh

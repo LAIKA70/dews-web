@@ -782,3 +782,17 @@ details.nrs summary{cursor:pointer;list-style:revert;min-height:44px;display:lis
 /* narrow English header: keep the chip's icon, drop its words (the ? icon needs the room) */
 .top .chip .ic{width:16px;height:16px;flex:none}
 @media (max-width:420px){ html:lang(en) .top .chip .ell, .top .chip:not(.ok) .ell{display:none} html:lang(en) .top .chip, .top .chip:not(.ok){padding:6px} }
+
+/* 2.10.0 — compact live-warning card on the map / Directions page */
+.mwarn{display:flex;align-items:center;gap:var(--s3);margin:0 0 var(--s3);padding:10px var(--s3);border:1px solid var(--line);border-left:6px solid var(--green-text);border-radius:var(--r-md,12px);background:var(--surface);color:inherit;text-decoration:none;min-height:56px;line-height:1.35}
+.mwarn .mw-ic{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--surface-2,rgba(0,0,0,.05))}
+.mwarn .mw-h{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mwarn .small{display:block;color:var(--ink-2)}
+.mwarn > .ic{flex:none;color:var(--ink-3)}
+.mwarn.lv-advice{border-left-color:var(--yellow)} .mwarn.lv-advice .mw-ic{background:var(--yellow);color:var(--on-yellow)}
+.mwarn.lv-watch{border-left-color:var(--orange)} .mwarn.lv-watch .mw-ic{background:var(--orange);color:var(--on-orange)}
+.mwarn.lv-emergency{border-left-color:var(--red)} .mwarn.lv-emergency .mw-ic{background:var(--red);color:var(--on-red)}
+.mwarn.lv-none .mw-ic{color:var(--green-text)}
+.mwarn.is-stale{border:2px solid var(--orange);border-left-width:6px}
+.mwarn.is-stale .mw-ic{filter:grayscale(.7)}
+.mwarn .grow{min-width:0}

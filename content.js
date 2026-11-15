@@ -734,6 +734,11 @@ var STR29 = {
 };
 STR29.nspSource = ['NSW RFS official list of Neighbourhood Safer Places', 'NSW RFS 官方邻里避险点名单'];
 STR29.nspEdited = ['list last updated', '名单最后更新于'];
+STR29.mwMore = ['+{n} more', '另有 {n} 条'];
+STR29.mwOther = ['{n} other, no warning', '{n} 个非警告事件'];
+STR29.mwAt = ['Updated {t}', '更新于 {t}'];
+STR29.mwOld = ['Last updated {t}, may be out of date', '上次更新 {t}，可能已过时'];
+STR29.mwScope = [' · Live: NSW bushfires only', ' · 实时：仅新州山火'];
 for (var k29 in STR29) STR[k29] = STR29[k29];
 SOURCES.ausalert = { t: 'AusAlert — Device settings', u: 'https://www.ausalert.gov.au/node/18', d: '2026-11-14' };
 SOURCES.abcradio = { t: 'Winmalee RFS Brigade — Get a battery operated radio (702 ABC Sydney)', u: 'https://www.winmaleerfs.com.au/?p=6175', d: '2026-11-14' };
@@ -860,6 +865,7 @@ var TOURS = {
     ['.qprog', 'Your progress.', '你的进度。']
   ],
   map: [
+    ['.mwarn', 'Live NSW bushfire warnings near you. Tap for details.', '你附近的新州山火实时警告。点开查看详情。'],
     ['#mapWrap', 'Real places from OpenStreetMap: hospitals, police, fire stations, water, charging points.', 'OpenStreetMap 上的真实地点：医院、警察局、消防站、饮用水、充电点。'],
     ['.map-chip', 'Whether your location is on.', '你的定位是否开启。'],
     ['[data-a="pickMe"]', 'Location not working? Tap here, then tap where you are on the map.', '定位不了？点这里，再在地图上点你所在的地方。'],
@@ -884,7 +890,7 @@ var TOURS = {
   ]
 };
 STR.helpBtn = ['How to use this screen', '这个页面怎么用'];
-DEWS_VERSION = '2.9.1';
+DEWS_VERSION = '2.10.0';
 
 /* "Are you in danger?" situations. msg[0] is the English message for 000 / responders, msg[1] its Chinese meaning. svc = what to ask for when 000 answers. */
 var SITS = [

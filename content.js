@@ -233,7 +233,7 @@ var STR = {
   appSub: ['Disaster readiness, in your language', '用你的语言，为灾害做好准备'],
   tabHome: ['Today', '今天'], tabPrep: ['Prepare', '准备'], tabMap: ['Nearby', '附近'], tabMe: ['Profile', '个人档案'],
   sos: ['Emergency', '紧急'],
-  offlineReady: ['Works offline', '离线可用'], offlineNot: ['Saving for offline…', '正在保存离线版…'],
+  offlineReady: ['Saved on this phone: works offline', '已存到这台手机，没网也能用'], offlineNot: ['Saving for offline…', '正在保存离线版…'],
   youreOffline: ['You’re offline — everything here still works.', '你已离线，这里的功能照常可用。'],
   sample: ['Sample', '示例'], sampleData: ['Sample data — not a real warning', '示例数据，不是真实预警'],
   yourArea: ['Your area', '你所在的区域'],

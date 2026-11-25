@@ -629,7 +629,7 @@ body.em .guide{border-color:var(--green);border-width:2px}
 [data-device="tablet"] .dgrid{gap:24px}
 @media (max-width:1100px){
   [data-device="tablet"] .side{width:112px;padding:16px 8px;align-items:center}
-  [data-device="tablet"] .side-brand .chip,[data-device="tablet"] .side>.chip{display:none}
+  [data-device="tablet"] .side-brand .chip,[data-device="tablet"] .side>.chip,[data-device="tablet"] .side .offdot .ell{display:none}
   [data-device="tablet"] .side-brand{justify-content:center;padding:0}
   [data-device="tablet"] .side-sos{flex-direction:column;height:auto;padding:10px 4px;gap:2px;font-size:.8125rem;border-radius:20px}
   [data-device="tablet"] .side-nav{width:100%}
@@ -779,9 +779,16 @@ body.em .guide{border-color:var(--green);border-width:2px}
 /* relay service box */
 details.nrs summary{cursor:pointer;list-style:revert;min-height:44px;display:list-item;padding-top:10px}
 .nrs .wf-h{margin-bottom:6px}
-/* narrow English header: keep the chip's icon, drop its words (the ? icon needs the room) */
-.top .chip .ic{width:16px;height:16px;flex:none}
-@media (max-width:420px){ html:lang(en) .top .chip .ell, .top .chip:not(.ok) .ell{display:none} html:lang(en) .top .chip, .top .chip:not(.ok){padding:6px} }
+/* 2.11.0 — offline status: phone icon + dot (green = saved on this phone, works offline; grey pulsing = still saving). Tap = "No internet?" page */
+.offdot{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2);text-decoration:none;font-size:.8125rem;font-weight:600;border-radius:var(--r-pill);flex-shrink:0}
+.offic{position:relative;display:inline-flex}
+.offic .ic{width:22px;height:22px}
+.offdot .dot{position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--ink-3);box-shadow:0 0 0 2px var(--bg);animation:offpulse 1.4s ease-in-out infinite}
+.offdot.ok .dot{background:var(--green);animation:none}
+@keyframes offpulse{50%{opacity:.35}}
+.top .offdot{width:40px;height:40px;justify-content:center}
+.top .offdot .ell{display:none}
+.side .offdot{padding:8px}
 
 /* 2.10.0 — compact live-warning card on the map / Directions page */
 .mwarn{display:flex;align-items:center;gap:var(--s3);margin:0 0 var(--s3);padding:10px var(--s3);border:1px solid var(--line);border-left:6px solid var(--green-text);border-radius:var(--r-md,12px);background:var(--surface);color:inherit;text-decoration:none;min-height:56px;line-height:1.35}

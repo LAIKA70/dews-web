@@ -2,6 +2,13 @@
 
 Plain-language notes on what changed in each version.
 
+## 2.11.0 — 2026-11-26 · Offline status as a phone icon with a dot
+LAIKA saw "Wo…" in the header on her phone: the words "Works offline" didn't fit.
+- **The header now shows a small phone icon with a dot** instead of words. Green dot = DEWS is saved on this phone and works without internet. Grey, gently blinking dot = still saving.
+- **Tap it** to open "No internet? How to still get warnings".
+- Screen readers say "Saved on this phone: works offline" (中文：已存到这台手机，没网也能用).
+- On computers the sidebar still shows the words next to the icon.
+
 ## 2.10.0 — 2026-11-15 · Bushfire warnings on the Directions page
 LAIKA asked for warnings in MVP mode without taking much space.
 - **A small warning card at the top of "Directions"** (called "Nearby" when MVP mode is off). One line shows the highest warning near you, how far and which way, how many more, and when DEWS last checked. With no warnings it says "No bushfire warnings within 50 km". It also says live warnings are NSW bushfires only.

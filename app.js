@@ -199,8 +199,8 @@ function mapOvl(){ return NAV.mapState() === 'failed' ? '<div class="ovl">' + t(
 function tabLink(h, i, l, on){ return '<a href="' + h + '"' + (on ? ' class="on" aria-current="page"' : '') + '>' + ic(i) + '<span>' + l + '</span></a>'; }
 function offChip(){
   if (!('serviceWorker' in navigator)) return '';
-  return swReady ? '<span class="chip ok" role="img" title="' + t('offlineReady') + '" aria-label="' + t('offlineReady') + '">' + ic('check') + '<span class="ell" aria-hidden="true">' + t('offlineReady') + '</span></span>'
-    : '<span class="chip" role="img" title="' + t('offlineNot') + '" aria-label="' + t('offlineNot') + '">' + ic('download') + '<span class="ell" aria-hidden="true">' + t('offlineNot') + '</span></span>';
+  var lab = t(swReady ? 'offlineReady' : 'offlineNot');
+  return '<a class="offdot' + (swReady ? ' ok' : '') + '" href="#/prepare/alerts" aria-label="' + lab + '" title="' + lab + '"><span class="offic">' + ic('mobile') + '<i class="dot" aria-hidden="true"></i></span><span class="ell" aria-hidden="true">' + lab + '</span></a>';
 }
 function hhmm(ms){ var d = new Date(ms); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
 function offlineBar(){
